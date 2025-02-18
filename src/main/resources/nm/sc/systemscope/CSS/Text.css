@@ -1,0 +1,26 @@
+.name-text {
+    -fx-font-size: 28px;
+    -fx-font-family: "Arial";
+    -fx-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0.5, 1, 1);
+}
+
+.pc_label_info {
+    -fx-font-size: 16px;
+    -fx-font-family: "Arial";
+    -fx-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0.5, 1, 1);
+}
+
+.pc_loaded_info {
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2, 0.5, 1, 1);
+}

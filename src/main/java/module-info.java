@@ -10,6 +10,7 @@ module nm.sc.systemscope {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires com.github.oshi;
 
     opens nm.sc.systemscope to javafx.fxml;
     exports nm.sc.systemscope;
