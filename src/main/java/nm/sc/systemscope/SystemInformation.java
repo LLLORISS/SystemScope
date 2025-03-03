@@ -112,8 +112,7 @@ public class SystemInformation {
     }
 
     public static String getGPUVendor() {
-        SystemInfo systemInfo = new SystemInfo();
-        List<GraphicsCard> gpus = systemInfo.getHardware().getGraphicsCards();
+        List<GraphicsCard> gpus = layer.getGraphicsCards();
 
         if (gpus.isEmpty()) return "Відеокарту не знайдено";
 

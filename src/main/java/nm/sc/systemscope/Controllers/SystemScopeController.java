@@ -24,4 +24,9 @@ public class SystemScopeController {
     public void onExitBtnClicked(){
         System.exit(0);
     }*/
+
+    @FXML
+    public void onShowChartsClicked(){
+
+    }
 }
