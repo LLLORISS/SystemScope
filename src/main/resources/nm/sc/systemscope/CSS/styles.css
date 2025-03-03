@@ -19,6 +19,8 @@
 .pc_loaded_info {
     -fx-font-size: 16px;
     -fx-text-fill: #ffffff;
+    -fx-wrap-text: true;
+    -fx-max-width: 350px;
 }
 
 .temp_label {
@@ -54,3 +56,17 @@ VBox {
     -fx-padding: 15px;
     -fx-spacing: 10px;
 }
+
+.info-btn {
+    -fx-background-color: #007acc;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-min-width: 30px;
+    -fx-max-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-height: 30px;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+}
+
+

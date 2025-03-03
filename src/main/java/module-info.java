@@ -11,6 +11,9 @@ module nm.sc.systemscope {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires com.github.oshi;
+    requires java.desktop;
+    requires com.sun.jna.platform;
+    requires com.sun.jna;
 
     opens nm.sc.systemscope to javafx.fxml;
     exports nm.sc.systemscope;

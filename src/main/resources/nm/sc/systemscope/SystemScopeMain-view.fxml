@@ -32,6 +32,7 @@
             <HBox spacing="15">
                <Label text="RAM:" styleClass="pc_label_info"/>
                <Label fx:id="RAM" styleClass="pc_loaded_info"/>
+               <Button fx:id="ramInfoBtn" text="?" onAction="#showRamInfo" styleClass="info-btn"/>
             </HBox>
             <HBox spacing="15">
                <Label text="Disk:" styleClass="pc_label_info"/>
@@ -39,7 +40,6 @@
             </HBox>
          </VBox>
 
-         <!-- Центральна панель - температурні показники -->
          <VBox spacing="15" prefWidth="500" prefHeight="300">
             <Label text="🌡 Температурні показники" styleClass="section-title"/>
             <HBox spacing="15">
@@ -49,10 +49,6 @@
             <HBox spacing="15">
                <Label text="GPU Temp:" styleClass="temp_label"/>
                <Label fx:id="TempGPU" styleClass="temp_value"/>
-            </HBox>
-            <HBox spacing="15">
-               <Label text="Disk Temp:" styleClass="temp_label"/>
-               <Label fx:id="TempDisk" styleClass="temp_value"/>
             </HBox>
          </VBox>
 
