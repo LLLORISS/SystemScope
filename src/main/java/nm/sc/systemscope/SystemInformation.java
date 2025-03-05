@@ -8,6 +8,7 @@ import oshi.hardware.PhysicalMemory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import java.util.List;
@@ -28,19 +29,16 @@ public class SystemInformation {
                 .collect(Collectors.joining(", ")));
     }
 
-    public static String getRAM(){
+    public static String getRAM() {
         long totalMemory = layer.getMemory().getTotal();
 
         return formatMemory(totalMemory);
     }
+
     public static String getRamInfo(){
         List<PhysicalMemory> memoryList = layer.getMemory().getPhysicalMemory();
         if (memoryList.isEmpty()) {
             return "Інформація про фізичну пам'ять недоступна";
-        }
-
-        for (PhysicalMemory memory : memoryList) {
-            System.out.println("Пам'ять: " + memory.toString());
         }
 
         StringBuilder ramInfo = new StringBuilder();
@@ -72,7 +70,7 @@ public class SystemInformation {
     }
 
     public static String getTemperatureCPU(){
-        return String.valueOf(layer.getSensors().getCpuTemperature());
+        return layer.getSensors().getCpuTemperature() + " °C";
     }
 
     public static String getTemperatureGPU() {
@@ -94,7 +92,7 @@ public class SystemInformation {
             }
         }
 
-        return temperatures.length() > 0 ? temperatures.toString() : "Немає даних";
+        return !temperatures.isEmpty() ? temperatures.toString() : "Немає даних";
     }
 
     private static String getTemperatureForNVIDIA() {
@@ -138,9 +136,7 @@ public class SystemInformation {
     }
 
     private static String getTemperatureForIntel() {
-        StringBuilder result = new StringBuilder();
-        result.append("Intel GPU: ").append(getTemperatureCPU()).append(" °C\n");
-        return result.toString();
+        return "Intel GPU: " + getTemperatureCPU() + " °C\n";
     }
 
     public static String getProcessorName(){
@@ -151,6 +147,20 @@ public class SystemInformation {
         String model = layer.getComputerSystem().getModel();
 
         return model.split("_")[0].trim();
+    }
+
+    public static String getFansRPM(){
+        int[] fanSpeeds = layer.getSensors().getFanSpeeds();
+        if(fanSpeeds.length == 0){
+            return "Не знайдено";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for(int fan : fanSpeeds){
+            builder.append(fan).append(" ");
+        }
+
+        return builder.append("RPM").toString();
     }
 
     private static String formatMemory(long totalMemory){
@@ -181,7 +191,7 @@ public class SystemInformation {
                     formattedCards.append("AMD ").append(card.replaceAll(".*\\[([A-Za-z0-9\\s]+)\\].*", "$1"));
                 }
 
-                if (formattedCards.length() > 0 && cardsList.length > 1 && !card.equals(cardsList[cardsList.length - 1])) {
+                if (!formattedCards.isEmpty() && cardsList.length > 1 && !card.equals(cardsList[cardsList.length - 1])) {
                     formattedCards.append("\n");
                 }
             }

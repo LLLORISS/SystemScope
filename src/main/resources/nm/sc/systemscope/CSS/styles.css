@@ -42,6 +42,22 @@
     -fx-padding: 10px 20px;
 }
 
+.main-button-stop {
+    -fx-font-size: 16px;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: red;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 20px;
+}
+
+.main-button-stop:hover {
+    -fx-background-color: darkred;
+}
+
+.main-button-stop:pressed {
+    -fx-background-color: darkred;
+}
+
 .main-button:hover {
     -fx-background-color: #005f99;
 }

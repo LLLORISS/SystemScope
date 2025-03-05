@@ -50,11 +50,16 @@
                <Label text="GPU Temp:" styleClass="temp_label"/>
                <Label fx:id="TempGPU" styleClass="temp_value"/>
             </HBox>
+            <HBox spacing="15">
+               <Label text="Fans:" styleClass="temp_label"/>
+               <Label fx:id="FansSpeed" styleClass="temp_value"/>
+            </HBox>
          </VBox>
 
          <VBox spacing="15" prefWidth="350" prefHeight="250">
             <Label text="📊 Додаткові функції" styleClass="section-title"/>
             <Button fx:id="showChartsBtn" text="Показати графіки" onAction="#onShowChartsClicked" styleClass="main-button"/>
+            <Button fx:id="benchBtn" text="Бенчмарк" onAction="#onBenchClicked" styleClass="main-button"/>
          </VBox>
 
       </HBox>
