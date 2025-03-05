@@ -23,6 +23,11 @@ public class BenchWindow {
         frame.setGlassPane(glass);
         glass.setVisible(true);
 
+        JLabel head= new JLabel("SYSTEM SCOPE", SwingConstants.CENTER);
+        head.setForeground(Color.YELLOW);
+        head.setFont(new Font("Segoe UI", Font.BOLD, 25));
+        frame.getContentPane().add(head);
+
         JLabel tempCPULabel = new JLabel("CPU TEMP: 45 °C", SwingConstants.LEFT);
         tempCPULabel.setForeground(Color.PINK);
         tempCPULabel.setFont(new Font("Segoe UI", Font.BOLD, 24));

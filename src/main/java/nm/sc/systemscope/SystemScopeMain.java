@@ -1,6 +1,7 @@
 package nm.sc.systemscope;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
@@ -34,6 +35,14 @@ public class SystemScopeMain extends Application {
         javafx.geometry.Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         stage.setMaxWidth(screenBounds.getWidth());
         stage.setMaxHeight(screenBounds.getHeight());
+
+        stage.setOnCloseRequest(event -> {
+            if (controller != null) {
+                controller.shutdown();
+            }
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     @Override

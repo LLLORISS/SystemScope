@@ -1,6 +1,7 @@
 package nm.sc.systemscope.Controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -15,9 +16,12 @@ public class BenchSelectorController {
     private Button selectButton;
     @FXML
     private Stage stage;
+    @FXML
+    private String selectedFile;
 
     public void setStage(Stage stage){
         this.stage = stage;
+        this.selectedFile = "";
     }
 
     @FXML
@@ -35,11 +39,9 @@ public class BenchSelectorController {
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            String gamePath = selectedFile.getAbsolutePath();
+            this.selectedFile = selectedFile.getAbsolutePath();
 
             selectedFileLabel.setText(selectedFile.getName());
-
-            System.out.println("Вибрано гру: " + gamePath);
         } else {
             System.out.println("Файл не вибрано.");
         }
@@ -47,6 +49,23 @@ public class BenchSelectorController {
 
     @FXML
     public void onStartBenchmarkBtnClicked(){
+        if(selectedFile != null && !selectedFile.isEmpty()){
+            this.close();
+            System.out.println("Запуск бенчмарку");
+            //ЗАПУСК БЕНЧМАРКУ
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Помилка");
+            alert.setHeaderText("Не вибрано файл для запуску");
+            alert.setContentText("Для запуску тестування необхідно вибрати допустимий файл");
+            alert.showAndWait();
+        }
+    }
 
+    public void close(){
+        if(stage != null){
+            stage.close();
+        }
     }
 }
