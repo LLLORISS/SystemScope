@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import nm.sc.systemscope.BenchWindow;
+import nm.sc.systemscope.Benchmark;
 import nm.sc.systemscope.SystemInformation;
 
 import javafx.scene.paint.Color;
@@ -70,9 +71,9 @@ public class SystemScopeController {
     }
 
     @FXML
-    public void onBenchClicked() throws IOException {
+    public void onBenchClicked() {
         try {
-            if(benchWindow == null) {
+            if (benchWindow == null && !Benchmark.getBenchmarkStarted()) {
                 FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("BenchSelector-view.fxml"));
                 Parent root = loader.load();
 
@@ -84,25 +85,71 @@ public class SystemScopeController {
                 controller.setStage(stage);
                 stage.setTitle("Вибір гри");
                 stage.showAndWait();
+
+                System.out.println("Process name " + controller.getSelectedFile());
+                String selectedFile = controller.getSelectedFile();
+                Benchmark.setAbsolutePath(selectedFile);
+
+                if (selectedFile == null || selectedFile.isEmpty()) {
+                    System.out.println("Файл не вибрано, скасовано.");
+                    return;
+                }
+
+                new Thread(() -> {
+                    if (launchFile(System.getProperty("os.name").toLowerCase())) {
+                        benchWindow = new BenchWindow();
+                        benchWindow.initialize();
+
+                        waitForFileToClose();
+
+                        Platform.runLater(() -> {
+                            if (benchWindow != null) {
+                                benchWindow.close();
+                                benchWindow = null;
+                            }
+
+                            benchBtn.setText("Запустити бенчмарк");
+                            benchBtn.getStyleClass().removeAll("main-button-stop");
+                            benchBtn.getStyleClass().add("main-button");
+                        });
+                    }
+                }).start();
             }
+            else{
+                Benchmark.setBenchmarkStarted(false);
 
-            if (benchWindow == null || !benchWindow.isVisible()) {
-                benchWindow = new BenchWindow();
-                benchWindow.initialize();
+                String processName = Benchmark.getProcessName();
+
+                if(processName != null && !processName.isEmpty()){
+                    ProcessBuilder processBuilder = new ProcessBuilder();
+                    processBuilder.command("bash", "-c", "pgrep -f \"" + processName + "\"");
+
+                    try{
+                        Process process = processBuilder.start();
+                        process.waitFor();
+
+                        String processID = new String(process.getInputStream().readAllBytes()).trim();
+
+                        if (!processID.isEmpty()) {
+                            ProcessBuilder killProcessBuilder = new ProcessBuilder("bash", "-c", "kill -9 " + processID);
+                            killProcessBuilder.start();
+                        } else {
+                            System.out.println("Процес не знайдений.");
+                        }
+                    }
+                    catch(IOException | InterruptedException e){
+                        e.printStackTrace();
+                    }
+
+                }
 
                 Platform.runLater(() -> {
-                    benchBtn.setText("Зупинити бенчмарк");
+                    if (benchWindow != null) {
+                        benchWindow.close();
+                        benchWindow = null;
+                    }
 
-                    benchBtn.getStyleClass().removeAll("main-button");
-                    benchBtn.getStyleClass().add("main-button-stop");
-                });
-            } else {
-                benchWindow.close();
-                benchWindow = null;
-
-                Platform.runLater(() -> {
                     benchBtn.setText("Запустити бенчмарк");
-
                     benchBtn.getStyleClass().removeAll("main-button-stop");
                     benchBtn.getStyleClass().add("main-button");
                 });
@@ -110,6 +157,85 @@ public class SystemScopeController {
         }
         catch(IOException e){
             e.printStackTrace();
+        }
+    }
+
+    private boolean launchFile(String os){
+        try{
+            ProcessBuilder processBuilder;
+
+            String selectedFile = Benchmark.getAbsolutePath();
+
+            if(os.contains("win")){
+                processBuilder = new ProcessBuilder(selectedFile);
+            }
+            else{
+                processBuilder = new ProcessBuilder("bash", "-c", "chmod +x \"" + selectedFile + "\" && \"" + selectedFile + "\"");
+            }
+
+            Platform.runLater(() -> {
+                benchBtn.setText("Зупинити бенчмарк");
+
+                benchBtn.getStyleClass().removeAll("main-button");
+                benchBtn.getStyleClass().add("main-button-stop");
+            });
+
+            Benchmark.setBenchmarkStarted(true);
+
+            processBuilder.inheritIO();
+            Process process = processBuilder.start();
+
+            Thread.sleep(5000);
+            return process.isAlive();
+        }
+        catch(Exception e){
+            System.err.println("Помилка запуску гри: " + e.getMessage());
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Помилка запуску");
+                alert.setHeaderText("Не вдалося запустити гру");
+                alert.setContentText("Перевірте правильність вибраного файлу.");
+                alert.showAndWait();
+            });
+            return false;
+        }
+    }
+
+    private void waitForFileToClose(){
+        try{
+            String selectedFile = Benchmark.getAbsolutePath();
+            String processName = selectedFile.substring(selectedFile.lastIndexOf("/") + 1).replace(".sh", "");
+            Benchmark.setProcessName(processName);
+            boolean isRunning = true;
+
+            while(isRunning){
+                Thread.sleep(3000);
+                isRunning = isProcessRunning(processName, System.getProperty("os.name").toLowerCase());
+                System.out.println(isRunning);
+            }
+
+            System.out.println("Гра завершена, закриваємо бенчмарк...");
+        }
+        catch(InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private boolean isProcessRunning(String processName, String os){
+        try{
+            Process process;
+            if(os.contains("win")){
+                process = new ProcessBuilder("tasklist").start();
+            }
+            else{
+                process = new ProcessBuilder("bash", "-c", "pgrep -c -f \"" + processName + "\"").start();
+            }
+
+            String output = new String(process.getInputStream().readAllBytes());
+            return Integer.parseInt(output.trim()) > 0;
+        }
+        catch(Exception e){
+            return false;
         }
     }
 

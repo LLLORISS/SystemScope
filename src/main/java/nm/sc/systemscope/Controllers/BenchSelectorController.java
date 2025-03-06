@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.PipedReader;
+
 import javafx.scene.control.Label;
 
 public class BenchSelectorController {
@@ -14,7 +16,7 @@ public class BenchSelectorController {
     private Label selectedFileLabel;
     @FXML
     private Button selectButton;
-    @FXML
+
     private Stage stage;
     @FXML
     private String selectedFile;
@@ -51,8 +53,7 @@ public class BenchSelectorController {
     public void onStartBenchmarkBtnClicked(){
         if(selectedFile != null && !selectedFile.isEmpty()){
             this.close();
-            System.out.println("Запуск бенчмарку");
-            //ЗАПУСК БЕНЧМАРКУ
+
         }
         else{
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -67,5 +68,9 @@ public class BenchSelectorController {
         if(stage != null){
             stage.close();
         }
+    }
+
+    public String getSelectedFile(){
+        return this.selectedFile;
     }
 }
