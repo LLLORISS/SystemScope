@@ -22,7 +22,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SystemScopeController {
+public class
+
+SystemScopeController {
     @FXML
     private Label InfoPC;
     @FXML
@@ -66,8 +68,19 @@ public class SystemScopeController {
     }*/
 
     @FXML
-    public void onShowChartsClicked(){
+    public void onShowChartsClicked() throws IOException {
+        FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("ScopeCharts-view.fxml"));
+        Parent root = loader.load();
 
+        ScopeChartsController controller = loader.getController();
+
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.setResizable(false);
+        stage.setTitle("Графіки");
+        stage.showAndWait();
     }
 
     @FXML
@@ -211,7 +224,6 @@ public class SystemScopeController {
             while(isRunning){
                 Thread.sleep(3000);
                 isRunning = isProcessRunning(processName, System.getProperty("os.name").toLowerCase());
-                System.out.println(isRunning);
             }
 
             System.out.println("Гра завершена, закриваємо бенчмарк...");

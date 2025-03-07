@@ -5,10 +5,11 @@ import oshi.hardware.GraphicsCard;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.PhysicalMemory;
+import oshi.hardware.CentralProcessor;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import java.util.List;
@@ -72,6 +73,49 @@ public class SystemInformation {
     public static String getTemperatureCPU(){
         return layer.getSensors().getCpuTemperature() + " °C";
     }
+
+    private static GraphicsCard getDiscreteGPU() {
+        List<GraphicsCard> gpus = layer.getGraphicsCards();
+
+        for (GraphicsCard gpu : gpus) {
+            String vendor = gpu.getVendor().toLowerCase();
+
+            if (vendor.contains("nvidia") || vendor.contains("amd")) {
+                return gpu;
+            }
+        }
+
+        for (GraphicsCard gpu : gpus) {
+            String vendor = gpu.getVendor().toLowerCase();
+            if (vendor.contains("intel")) {
+                return gpu;
+            }
+        }
+
+        return null;
+    }
+
+    public static String getTemperatureDiscreteGPU() {
+        GraphicsCard gpu = getDiscreteGPU();
+
+        StringBuilder temperatures = new StringBuilder();
+
+        if(gpu != null) {
+
+            String vendor = gpu.getVendor().toLowerCase();
+
+            if (vendor.contains("nvidia")) {
+                temperatures.append(getTemperatureForNVIDIA());
+            } else if (vendor.contains("amd")) {
+                temperatures.append(getTemperatureForAMD());
+            }
+            else if(vendor.contains("intel")){
+                temperatures.append(getTemperatureForIntel());
+            }
+        }
+        return !temperatures.isEmpty() ? temperatures.toString() : "Немає даних";
+    }
+
 
     public static String getTemperatureGPU() {
         List<GraphicsCard> gpus = layer.getGraphicsCards();
@@ -162,6 +206,129 @@ public class SystemInformation {
 
         return builder.append("RPM").toString();
     }
+
+    public static String getCPUUsage(){
+        CentralProcessor processor = layer.getProcessor();
+
+        long delay = 1000;
+
+        double loadCPU = processor.getSystemCpuLoad(delay) * 100;
+
+        return String.format("%.2f%%", loadCPU);
+    }
+
+    public static String getGPUUsage(){
+        GraphicsCard gpu = getDiscreteGPU();
+
+        if (gpu == null) {
+            return "Дискретна відеокарта не знайдена";
+        }
+
+        String vendor = gpu.getVendor().toLowerCase();
+        StringBuilder usage = new StringBuilder();
+
+        if (vendor.contains("nvidia")) {
+            usage.append(getGPULoadForNvidia());
+        } else if (vendor.contains("amd")) {
+            usage.append(getGPULoadForAMD());
+        } else if (vendor.contains("intel")) {
+            usage.append(getGPULoadForIntel());
+        } else {
+            usage.append("Не підтримується виробником");
+        }
+
+        return usage.length() > 0 ? usage.toString() : "Немає даних";
+
+    }
+
+    private static String getGPULoadForNvidia(){
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+
+            Process process;
+            if (os.contains("win")) {
+                process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
+            } else {
+                process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
+            return line + "%";
+        } catch (IOException e) {
+            return "Не вдалося отримати використання для NVIDIA";
+        }
+    }
+
+    private static String getGPULoadForAMD() {
+        String os = System.getProperty("os.name").toLowerCase();
+        StringBuilder result = new StringBuilder();
+
+        try {
+            if (os.contains("win")) {
+                Process process = Runtime.getRuntime().exec("wmic path Win32_VideoController get LoadPercentage");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("%")) {
+                        result.append(line.trim()).append("\n");
+                    }
+                }
+            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                Process process = Runtime.getRuntime().exec("sensors | grep -i 'gpu'");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line.trim()).append("\n");
+                }
+
+                if (result.length() == 0) {
+                    process = Runtime.getRuntime().exec("radeontop -d 1 -n 1");
+                    reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+                    while ((line = reader.readLine()) != null) {
+                        if (line.contains("Load")) {
+                            result.append(line.trim()).append("\n");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.append("Помилка при отриманні завантаження для AMD GPU");
+        }
+
+        return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження GPU";
+    }
+
+    private static String getGPULoadForIntel() {
+        String os = System.getProperty("os.name").toLowerCase();
+        StringBuilder result = new StringBuilder();
+
+        try {
+            if (os.contains("win")) {
+                result.append("Not supported.");
+            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                Process process = Runtime.getRuntime().exec("sudo intel_gpu_top -d 1 -n 1");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("Gpu") || line.contains("Render") || line.contains("Active")) {
+                        result.append(line.trim()).append("\n");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.append("Помилка при отриманні завантаження для Intel GPU");
+        }
+
+        return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження Intel GPU";
+    }
+
 
     private static String formatMemory(long totalMemory){
         double memoryInGB = totalMemory / (1024.0 * 1024.0 * 1024.0);

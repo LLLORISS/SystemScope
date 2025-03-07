@@ -85,4 +85,30 @@ VBox {
     -fx-background-radius: 50%;
 }
 
+.chart {
+    -fx-background-color: #252526;
+    -fx-border-color: #444444;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px;
+}
+
+.chart-line {
+    -fx-stroke-width: 2px;
+    -fx-stroke: #ff5555;
+}
+
+.chart-line0 {
+    -fx-stroke-width: 2px;
+    -fx-stroke: #00ff00;
+}
+
+.chart-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.chart-legend {
+    -fx-text-fill: #ffffff;
+}
 

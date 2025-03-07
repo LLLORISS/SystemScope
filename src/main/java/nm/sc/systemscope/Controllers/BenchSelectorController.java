@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
-import java.io.PipedReader;
 
 import javafx.scene.control.Label;
 
