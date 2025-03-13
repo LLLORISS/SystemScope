@@ -14,6 +14,7 @@ public class SystemScopeMain extends Application {
     private SystemScopeController controller;
 
     @Override
+
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1350,700);

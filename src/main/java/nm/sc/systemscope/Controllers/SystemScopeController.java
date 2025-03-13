@@ -1,23 +1,24 @@
 package nm.sc.systemscope.Controllers;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import nm.sc.systemscope.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.control.Button;
 import javafx.scene.Scene;
 
 import java.io.IOException;
+import javafx.collections.ObservableList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 public class
 
@@ -40,6 +41,11 @@ SystemScopeController {
     private Label FansSpeed;
     @FXML
     private Button benchBtn;
+    @FXML
+    private ListView<ProcessInfo> processList;
+    private ObservableList<ProcessInfo> observableList;
+    @FXML
+    private TextField searchField;
 
     private ScopeChartsController scopeChartsController;
 
@@ -57,14 +63,38 @@ SystemScopeController {
             updateTemperature();
         });
 
+        try{
+            List<ProcessInfo> processes = ProcessInfoService.getRunningProcesses();
+
+            observableList = FXCollections.observableArrayList(processes);
+            processList.setItems(observableList);
+
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    filterProcesses(newValue);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            if(processes != null) {
+                processList.getItems().setAll(processes);
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
         scheduler.scheduleAtFixedRate(this::updateTemperature, 0, 2, TimeUnit.SECONDS);
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
-    /*@FXML
-    public void onExitBtnClicked(){
-        System.exit(0);
-    }*/
+    private void filterProcesses(String searchInput) throws IOException {
+        List<ProcessInfo> filtered = ProcessInfoService.searchProcess(searchInput);
+
+        observableList.clear();
+        observableList.addAll(filtered);
+    }
 
     @FXML
     public void onShowChartsClicked() throws IOException {
@@ -80,6 +110,24 @@ SystemScopeController {
         stage.setResizable(false);
         stage.setTitle("Графіки");
         stage.showAndWait();
+    }
+
+    @FXML
+    public void onKillSelectedProcessClicked(){
+        ProcessInfo selectedProcess = processList.getSelectionModel().getSelectedItem();
+        if(selectedProcess != null){
+            try{
+                ProcessInfoService.killProcess(selectedProcess.getPid());
+                processList.getItems().remove(selectedProcess);
+            }
+            catch(IOException | InterruptedException e){
+                e.printStackTrace();
+                showMessage(Alert.AlertType.ERROR, "Не вдалося завершити процес");
+            }
+        }
+        else{
+            showMessage(Alert.AlertType.ERROR, "Виберіть процес для завершення");
+        }
     }
 
     @FXML
@@ -203,11 +251,7 @@ SystemScopeController {
         catch(Exception e){
             System.err.println("Помилка запуску гри: " + e.getMessage());
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Помилка запуску");
-                alert.setHeaderText("Не вдалося запустити гру");
-                alert.setContentText("Перевірте правильність вибраного файлу.");
-                alert.showAndWait();
+                showMessage(Alert.AlertType.ERROR, "Перевірте правильність вибраного файлу.");
             });
             return false;
         }
@@ -254,11 +298,7 @@ SystemScopeController {
     public void showRamInfo(){
         String info = SystemInformation.getRamInfo();
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Розширена інформація");
-        alert.setHeaderText("Інформація про RAM:");
-        alert.setContentText(info);
-        alert.showAndWait();
+        showMessage(Alert.AlertType.INFORMATION, info);
     }
 
     private static Paint getColorByZone(double temperature) {
@@ -331,6 +371,14 @@ SystemScopeController {
         }
 
         return temperatures;
+    }
+
+    private void showMessage(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle("SystemScope");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 

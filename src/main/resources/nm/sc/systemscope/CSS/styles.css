@@ -66,7 +66,7 @@
     -fx-background-color: #004b80;
 }
 
-.VBoxSection {
+.VBoxSection, .HBoxSection{
     -fx-background-color: #252526;
     -fx-background-radius: 10px;
     -fx-padding: 15px;
@@ -127,6 +127,92 @@
       -fx-tick-label-font-family: Arial;
       -fx-tick-label-font-size: 0.94em;
       -fx-tick-label-fill: white;
+}
+
+.process-list {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-selection-bar: #007acc;
+}
+
+.process-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+}
+
+.process-list .list-cell:selected {
+    -fx-background-color: #007acc;
+    -fx-text-fill: white;
+}
+
+.process-list .list-cell:hover {
+    -fx-background-color: #34495e;
+}
+
+#searchField {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #007acc;
+}
+
+#searchField:focused {
+    -fx-border-color: #005f99;
+    -fx-background-color: #34495e;
+}
+
+#killProcessBtn {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 20px;
+}
+
+#killProcessBtn:hover {
+    -fx-background-color: #c0392b;
+}
+
+#killProcessBtn:pressed {
+    -fx-background-color: #c0392b;
+}
+
+
+.process-list .scroll-bar {
+    -fx-background-color: #34495e;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.process-list .scroll-bar .thumb {
+    -fx-background-color: #007acc;
+    -fx-background-radius: 5px;
+}
+
+.process-list .scroll-bar .thumb:hover {
+    -fx-background-color: #005f99;
+}
+
+.process-list .scroll-bar .track {
+    -fx-background-color: #2c3e50;
+    -fx-background-radius: 5px;
+}
+
+.process-list .scroll-bar .increment-button,
+.process-list .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+}
+
+.process-list .scroll-bar .increment-button:hover,
+.process-list .scroll-bar .decrement-button:hover {
+    -fx-background-color: #34495e;
 }
 
 
