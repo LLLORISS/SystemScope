@@ -14,6 +14,8 @@ module nm.sc.systemscope {
     requires java.desktop;
     requires com.sun.jna.platform;
     requires com.sun.jna;
+    requires com.google.gson;
+    requires com.fasterxml.jackson.databind;
 
     opens nm.sc.systemscope to javafx.fxml;
     exports nm.sc.systemscope;

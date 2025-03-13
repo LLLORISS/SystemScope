@@ -7,14 +7,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import nm.sc.systemscope.BenchWindow;
-import nm.sc.systemscope.Benchmark;
-import nm.sc.systemscope.SystemInformation;
+import nm.sc.systemscope.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.control.Button;
-import nm.sc.systemscope.SystemScopeMain;
 import javafx.scene.Scene;
 
 import java.io.IOException;
@@ -44,6 +41,8 @@ SystemScopeController {
     @FXML
     private Button benchBtn;
 
+    private ScopeChartsController scopeChartsController;
+
     private BenchWindow benchWindow = null;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -72,7 +71,7 @@ SystemScopeController {
         FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("ScopeCharts-view.fxml"));
         Parent root = loader.load();
 
-        ScopeChartsController controller = loader.getController();
+        scopeChartsController = loader.getController();
 
         Scene scene = new Scene(root);
         Stage stage = new Stage();
@@ -336,6 +335,10 @@ SystemScopeController {
 
 
     public void shutdown() {
+        if(scopeChartsController != null){
+            scopeChartsController.stopBackgroundUpdate();
+        }
+        DataStorage.cleanDataStorage();
         scheduler.shutdown();
     }
 }

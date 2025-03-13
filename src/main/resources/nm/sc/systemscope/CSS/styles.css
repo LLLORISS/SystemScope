@@ -1,7 +1,8 @@
 .root {
-    -fx-background-color: #1e1e1e;
+    -fx-background-color: #2c3e50; /* Світліший відтінок сірого */
     -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
+
 
 .section-title {
     -fx-font-size: 18px;
@@ -86,29 +87,41 @@ VBox {
 }
 
 .chart {
-    -fx-background-color: #252526;
-    -fx-border-color: #444444;
-    -fx-border-radius: 10px;
-    -fx-padding: 10px;
-}
-
-.chart-line {
-    -fx-stroke-width: 2px;
-    -fx-stroke: #ff5555;
-}
-
-.chart-line0 {
-    -fx-stroke-width: 2px;
-    -fx-stroke: #00ff00;
+    -fx-background-color: transparent;
 }
 
 .chart-title {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #ffffff;
+    -fx-padding: 5px;
+}
+
+.axis-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5px;
 }
 
 .chart-legend {
-    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-padding: 20px;
 }
+
+.chart-legend-item{
+    -fx-text-fill: White;
+}
+
+.chart-plot-background{
+    -fx-background-color: transparent;
+}
+
+.axis {
+      -fx-tick-label-font-family: Arial;
+      -fx-tick-label-font-size: 0.94em;
+      -fx-tick-label-fill: white;
+}
+
 
