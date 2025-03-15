@@ -1,4 +1,4 @@
-package nm.sc.systemscope;
+package nm.sc.systemscope.modules;
 
 public class ProcessInfo {
     private String processName;

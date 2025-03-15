@@ -1,7 +1,7 @@
-package nm.sc.systemscope;
+package nm.sc.systemscope.modules;
 
 import javafx.scene.control.Alert;
-import nm.sc.systemscope.Controllers.SystemScopeController;
+import nm.sc.systemscope.controllers.SystemScopeController;
 
 import java.io.BufferedReader;
 import java.io.IOException;

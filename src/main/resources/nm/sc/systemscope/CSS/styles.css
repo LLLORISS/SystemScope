@@ -218,8 +218,7 @@
 .rightPanel {
     -fx-background-color: #252526;
     -fx-pref-width: 400px;
-    -fx-padding: 20px;
-    -fx-spacing: 10px;
+    -fx-padding: 10px;
 }
 
 .right_panel_header_label {
@@ -234,5 +233,18 @@
     -fx-text-fill: #ffffff;
     -fx-wrap-text: true;
     -fx-max-width: 350px;
+}
+
+.right_panel_title {
+     -fx-font-size: 18px;
+     -fx-font-weight: bold;
+     -fx-text-fill: #ffffff;
+     -fx-padding: 5px;
+     -fx-text-alignment: center;
+     -fx-alignment: center;
+}
+
+.onHover{
+    -fx-background-color: ORANGE;
 }
 

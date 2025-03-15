@@ -1,4 +1,4 @@
-package nm.sc.systemscope.Controllers;
+package nm.sc.systemscope.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

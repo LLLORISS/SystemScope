@@ -18,6 +18,10 @@ module nm.sc.systemscope {
 
     opens nm.sc.systemscope to javafx.fxml;
     exports nm.sc.systemscope;
-    exports nm.sc.systemscope.Controllers;
-    opens nm.sc.systemscope.Controllers to javafx.fxml;
+    exports nm.sc.systemscope.controllers;
+    opens nm.sc.systemscope.controllers to javafx.fxml;
+    exports nm.sc.systemscope.modules;
+    opens nm.sc.systemscope.modules to javafx.fxml;
+    exports nm.sc.systemscope.adapters;
+    opens nm.sc.systemscope.adapters to javafx.fxml;
 }

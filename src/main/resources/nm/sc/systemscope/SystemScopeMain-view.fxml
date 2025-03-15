@@ -12,7 +12,7 @@
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             stylesheets="@CSS/styles.css"
-            fx:controller="nm.sc.systemscope.Controllers.SystemScopeController">
+            fx:controller="nm.sc.systemscope.controllers.SystemScopeController">
 
    <children>
       <VBox spacing="30" AnchorPane.leftAnchor="30" AnchorPane.topAnchor="30" AnchorPane.rightAnchor="30">

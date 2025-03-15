@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import nm.sc.systemscope.modules.ScopeLineChart?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
+<?import nm.sc.systemscope.modules.ScopeLineChart?>
 <AnchorPane fx:id="anchorPane" prefHeight="600.0" prefWidth="1000.0"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             stylesheets="@CSS/styles.css"
-            fx:controller="nm.sc.systemscope.Controllers.ScopeChartsController">
+            fx:controller="nm.sc.systemscope.controllers.ScopeChartsController">
 
     <HBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
 
         <VBox spacing="20" alignment="CENTER" styleClass="VBoxCharts" HBox.hgrow="ALWAYS">
             <HBox spacing="20.0" styleClass="HBoxCharts">
-                <LineChart fx:id="tempCPUChart" prefHeight="450.0" prefWidth="850.0" title="Температура CPU">
-                    <xAxis><CategoryAxis fx:id="xTempCPU" label="Час"/></xAxis>
-                    <yAxis><NumberAxis fx:id="yTempCPU" label="Температура (°C)"/></yAxis>
-                </LineChart>
-                <LineChart fx:id="tempGPUChart" prefHeight="450.0" prefWidth="850.0" title="Температура GPU">
-                    <xAxis><CategoryAxis fx:id="xTempGPU" label="Час"/></xAxis>
-                    <yAxis><NumberAxis fx:id="yTempGPU" label="Температура (°C)"/></yAxis>
-                </LineChart>
+                <ScopeLineChart fx:id="tempCPUChart" prefHeight="450.0" prefWidth="850.0" title="Температура CPU"/>
+                <ScopeLineChart fx:id="tempGPUChart" prefHeight="450.0" prefWidth="850.0" title="Температура GPU"/>
             </HBox>
             <HBox spacing="20.0" styleClass="HBoxCharts">
-                <LineChart fx:id="usageCPUChart" prefHeight="450.0" prefWidth="850.0" title="Використання CPU">
-                    <xAxis><CategoryAxis fx:id="xUsageCPU" label="Час"/></xAxis>
-                    <yAxis><NumberAxis fx:id="yUsageCPU" label="Використання (%)"/></yAxis>
-                </LineChart>
-                <LineChart fx:id="usageGPUChart" prefHeight="450.0" prefWidth="850.0" title="Використання GPU">
-                    <xAxis><CategoryAxis fx:id="xUsageGPU" label="Час"/></xAxis>
-                    <yAxis><NumberAxis fx:id="yUsageGPU" label="Використання (%)"/></yAxis>
-                </LineChart>
+                <ScopeLineChart fx:id="usageCPUChart" prefHeight="450.0" prefWidth="850.0" title="Використання CPU"/>
+                <ScopeLineChart fx:id="usageGPUChart" prefHeight="450.0" prefWidth="850.0" title="Використання GPU"/>
             </HBox>
         </VBox>
 
         <VBox styleClass="rightPanel">
-            <VBox>
-                <Label text="Панель" styleClass="section-title"/>
+            <VBox alignment="CENTER">
+                <Label text="Панель" styleClass="right_panel_title" alignment="CENTER"/>
                 <Label text="Середні значення" styleClass="section-title"/>
                 <HBox spacing="5.0">
                     <Label text="CPU: " styleClass="right_panel_header_label"/>
-                    <Label fx:id="labelAverageTempCPU" text="0%" styleClass="right_panel_label"/>
+                    <Label fx:id="labelAverageTempCPU" text="0" styleClass="right_panel_label"/>
                     <Label text="|" styleClass="right_panel_header_label"/>
-                    <Label fx:id="labelAverageUsageCPU" text="Середнє значення Викорситання CPU:" styleClass="right_panel_label"/>
+                    <Label fx:id="labelAverageUsageCPU" text="0" styleClass="right_panel_label"/>
                 </HBox>
                 <HBox spacing="5.0">
                     <Label text="GPU: " styleClass="right_panel_header_label"/>
-                    <Label fx:id="labelAverageTempGPU" text="Середнє значення GPU:" styleClass="right_panel_label"/>
+                    <Label fx:id="labelAverageTempGPU" text="0" styleClass="right_panel_label"/>
                     <Label text="|" styleClass="right_panel_header_label"/>
-                    <Label fx:id="labelAverageUsageGPU" text="Середнє значення викорситання GPU:" styleClass="right_panel_label"/>
+                    <Label fx:id="labelAverageUsageGPU" text="0" styleClass="right_panel_label"/>
+                </HBox>
+                <Label text="Останні показники" styleClass="section-title"/>
+                <HBox spacing="5.0">
+                    <Label text="CPU: " styleClass="right_panel_header_label"/>
+                    <Label fx:id="labelLastTempCPU" text="0" styleClass="right_panel_label"/>
+                    <Label text="|" styleClass="right_panel_header_label"/>
+                    <Label fx:id="labelLastUsageCPU" text="0" styleClass="right_panel_label"/>
+                </HBox>
+                <HBox spacing="5.0">
+                    <Label text="GPU: " styleClass="right_panel_header_label"/>
+                    <Label fx:id="labelLastTempGPU" text="0" styleClass="right_panel_label"/>
+                    <Label text="|" styleClass="right_panel_header_label"/>
+                    <Label fx:id="labelLastUsageGPU" text="0" styleClass="right_panel_label"/>
                 </HBox>
             </VBox>
         </VBox>

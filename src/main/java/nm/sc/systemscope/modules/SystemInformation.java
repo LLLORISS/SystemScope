@@ -1,4 +1,4 @@
-package nm.sc.systemscope;
+package nm.sc.systemscope.modules;
 
 import oshi.SystemInfo;
 import oshi.hardware.GraphicsCard;

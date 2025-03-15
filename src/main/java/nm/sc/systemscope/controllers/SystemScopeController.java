@@ -1,4 +1,4 @@
-package nm.sc.systemscope.Controllers;
+package nm.sc.systemscope.controllers;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -17,6 +17,8 @@ import javafx.scene.Scene;
 
 import java.io.IOException;
 import javafx.collections.ObservableList;
+import nm.sc.systemscope.modules.*;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -167,6 +169,7 @@ SystemScopeController {
                 }
 
                 new Thread(() -> {
+                    Benchmark.setBenchmarkStarted(true);
                     if (launchFile(System.getProperty("os.name").toLowerCase())) {
                         benchWindow = new BenchWindow();
                         benchWindow.initialize();
@@ -207,6 +210,7 @@ SystemScopeController {
                         } else {
                             System.out.println("Процес не знайдений.");
                         }
+                        Benchmark.cleanInfo();
                     }
                     catch(IOException | InterruptedException e){
                         e.printStackTrace();

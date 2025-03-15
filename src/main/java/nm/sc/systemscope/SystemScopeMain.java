@@ -7,7 +7,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import nm.sc.systemscope.Controllers.SystemScopeController;
+import nm.sc.systemscope.controllers.SystemScopeController;
 
 import java.io.IOException;
 

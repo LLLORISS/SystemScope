@@ -1,4 +1,4 @@
-package nm.sc.systemscope;
+package nm.sc.systemscope.adapters;
 
 import com.google.gson.*;
 import javafx.scene.chart.XYChart;

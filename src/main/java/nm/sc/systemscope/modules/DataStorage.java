@@ -1,13 +1,16 @@
-package nm.sc.systemscope;
+package nm.sc.systemscope.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import javafx.scene.chart.XYChart;
+import nm.sc.systemscope.adapters.XYChartDataAdapter;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataStorage {
     private static final String dataFolderPath = "src/main/data/";
@@ -15,6 +18,7 @@ public class DataStorage {
     private static final String GPUtemperaturesPath = dataFolderPath + "GPUtemperatures.json";
     private static final String CPUusagePath = dataFolderPath + "UsageCPU.json";
     private static final String GPUusagePath = dataFolderPath + "UsageGPU.json";
+    private static final String averagesPath = dataFolderPath + "Averages.json";
 
     static {
         createDataFolderAndFiles();
@@ -82,6 +86,18 @@ public class DataStorage {
                 e.printStackTrace();
             }
         }
+        File averagesFile = new File(averagesPath);
+        if (!averagesFile.exists()) {
+            try {
+                if (averagesFile.createNewFile()) {
+                    System.out.println("Файл 'Averages.json' був створений.");
+                } else {
+                    System.out.println("Не вдалося створити файл 'Averages.json'.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void saveCPUTemperatureData(List<XYChart.Data<String,Number>> data){
@@ -100,8 +116,13 @@ public class DataStorage {
         writeData(GPUusagePath, data);
     }
 
-    public static void saveAveragesData(int[] averages){
-
+    public static void saveAveragesData(Map<String, Integer> averages){
+        try (FileWriter writer = new FileWriter(averagesPath)) {
+            Gson gson = new GsonBuilder().create();
+            gson.toJson(averages, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static List<XYChart.Data<String, Number>> loadCPUTemperatureData(){
@@ -118,6 +139,17 @@ public class DataStorage {
 
     public static List<XYChart.Data<String, Number>> loadUsageGPUData(){
         return readData(GPUusagePath);
+    }
+
+    public static Map<String, Integer> loadAveragesData() {
+        Map<String, Integer> averages = new HashMap<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(averagesPath))) {
+            Gson gson = new GsonBuilder().create();
+            averages = gson.fromJson(reader, new TypeToken<Map<String, Integer>>() {}.getType());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return averages;
     }
 
     public static void cleanDataStorage(){
@@ -154,6 +186,14 @@ public class DataStorage {
                     System.out.println("UsageGPU.json був успішно видалений.");
                 } else {
                     System.out.println("Не вдалося видалити UsageGPU.json.");
+                }
+            }
+            File averagesFile = new File(averagesPath);
+            if (averagesFile.exists()) {
+                if (averagesFile.delete()) {
+                    System.out.println("Averages.json був успішно видалений.");
+                } else {
+                    System.out.println("Не вдалося видалити Averages.json.");
                 }
             }
         } catch (Exception e) {
