@@ -8,17 +8,17 @@
 
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
-<AnchorPane fx:id="anchorPane" prefHeight="800.0" prefWidth="1400.0"
+<AnchorPane fx:id="anchorPane"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             stylesheets="@CSS/styles.css"
             fx:controller="nm.sc.systemscope.Controllers.SystemScopeController">
 
    <children>
-      <VBox spacing="30">
+      <VBox spacing="30" AnchorPane.leftAnchor="30" AnchorPane.topAnchor="30" AnchorPane.rightAnchor="30">
          <HBox spacing="30" layoutX="30.0" layoutY="30.0">
 
-            <VBox spacing="15" prefWidth="500" prefHeight="350" styleClass="VBoxSection">
+            <VBox spacing="15" minWidth="500" minHeight="350" styleClass="VBoxSection">
                <Label text="🖥 Системна інформація" styleClass="section-title"/>
                <HBox spacing="15">
                   <Label text="PC:" styleClass="pc_label_info"/>
@@ -43,7 +43,7 @@
                </HBox>
             </VBox>
 
-            <VBox spacing="15" prefWidth="500" prefHeight="300" styleClass="VBoxSection">
+            <VBox spacing="15" minWidth="500" minHeight="300" styleClass="VBoxSection">
                <Label text="🌡 Температурні показники" styleClass="section-title"/>
                <HBox spacing="15" styleClass="HBoxSection">
                   <Label text="CPU Temp:" styleClass="temp_label"/>
@@ -59,21 +59,22 @@
                </HBox>
             </VBox>
 
-            <VBox spacing="15" prefWidth="350" prefHeight="250" styleClass="VBoxSection">
+            <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
                <Label text="📊 Додаткові функції" styleClass="section-title"/>
                <Button fx:id="showChartsBtn" text="Показати графіки" onAction="#onShowChartsClicked" styleClass="main-button"/>
                <Button fx:id="benchBtn" text="Бенчмарк" onAction="#onBenchClicked" styleClass="main-button"/>
             </VBox>
          </HBox>
-         <VBox alignment="BOTTOM_CENTER">
+         <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
 
             <VBox styleClass="HBoxSection">
                <Label text="⚙️ Запущені процеси" styleClass="section-title"/>
                <VBox styleClass="HBoxSection">
                   <TextField fx:id="searchField"/>
-                  <ListView fx:id="processList" prefHeight="300" prefWidth="500" styleClass="process-list"/>
+                  <ListView fx:id="processList" prefHeight="300" styleClass="process-list"/>
                </VBox>
                <HBox spacing="10">
+                  <Button fx:id="refresProcessesBtn" text="Оновити" onAction="#onRefreshProcessesBtnClicked" styleClass="main-button"/>
                   <Button fx:id="killProcessBtn" text="❌ Завершити" onAction="#onKillSelectedProcessClicked" styleClass="main-button"/>
                </HBox>
             </VBox>

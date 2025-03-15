@@ -73,7 +73,7 @@ public class DataStorage {
         File usageGPUFile = new File(GPUusagePath);
         if (!usageGPUFile.exists()) {
             try {
-                if (usageCPUFile.createNewFile()) {
+                if (usageGPUFile.createNewFile()) {
                     System.out.println("Файл 'UsageGPU.json' був створений.");
                 } else {
                     System.out.println("Не вдалося створити файл 'UsageGPU.json'.");
@@ -98,6 +98,10 @@ public class DataStorage {
 
     public static void saveUsageGPUData(List<XYChart.Data<String, Number>> data){
         writeData(GPUusagePath, data);
+    }
+
+    public static void saveAveragesData(int[] averages){
+
     }
 
     public static List<XYChart.Data<String, Number>> loadCPUTemperatureData(){
@@ -142,6 +146,14 @@ public class DataStorage {
                     System.out.println("UsageCPU.json був успішно видалений.");
                 } else {
                     System.out.println("Не вдалося видалити UsageCPU.json.");
+                }
+            }
+            File usageGPUFile = new File(GPUusagePath);
+            if (usageGPUFile.exists()) {
+                if (usageGPUFile.delete()) {
+                    System.out.println("UsageGPU.json був успішно видалений.");
+                } else {
+                    System.out.println("Не вдалося видалити UsageGPU.json.");
                 }
             }
         } catch (Exception e) {

@@ -4,8 +4,10 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import nm.sc.systemscope.*;
 
@@ -106,9 +108,12 @@ SystemScopeController {
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setMaximized(true);
         stage.setResizable(false);
         stage.setTitle("Графіки");
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
         stage.showAndWait();
     }
 
@@ -117,8 +122,9 @@ SystemScopeController {
         ProcessInfo selectedProcess = processList.getSelectionModel().getSelectedItem();
         if(selectedProcess != null){
             try{
-                ProcessInfoService.killProcess(selectedProcess.getPid());
-                processList.getItems().remove(selectedProcess);
+                if(ProcessInfoService.killProcess(selectedProcess.getPid())){
+                    processList.getItems().remove(selectedProcess);
+                }
             }
             catch(IOException | InterruptedException e){
                 e.printStackTrace();
@@ -128,6 +134,11 @@ SystemScopeController {
         else{
             showMessage(Alert.AlertType.ERROR, "Виберіть процес для завершення");
         }
+    }
+
+    @FXML
+    public void onRefreshProcessesBtnClicked(){
+        updateProcessList();
     }
 
     @FXML
@@ -373,7 +384,7 @@ SystemScopeController {
         return temperatures;
     }
 
-    private void showMessage(Alert.AlertType type, String message) {
+    public static void showMessage(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setTitle("SystemScope");
         alert.setHeaderText(null);
@@ -381,6 +392,19 @@ SystemScopeController {
         alert.showAndWait();
     }
 
+    private void updateProcessList() {
+        try {
+            List<ProcessInfo> processes = ProcessInfoService.getRunningProcesses();
+
+            observableList.clear();
+
+            observableList.addAll(processes);
+
+            processList.setItems(observableList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void shutdown() {
         if(scopeChartsController != null){

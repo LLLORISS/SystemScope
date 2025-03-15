@@ -215,4 +215,24 @@
     -fx-background-color: #34495e;
 }
 
+.rightPanel {
+    -fx-background-color: #252526;
+    -fx-pref-width: 400px;
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+}
+
+.right_panel_header_label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #ffffff;
+    -fx-wrap-text: true;
+    -fx-max-width: 350px;
+}
+
+.right_panel_label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff;
+    -fx-wrap-text: true;
+    -fx-max-width: 350px;
+}
 

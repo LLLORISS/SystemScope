@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<installation>
+    <info>
+        <appname>SystemScope</appname>
+        <version>1.0</version>
+    </info>
+    <files>
+        <file src="target/SystemScope-1.0-SNAPSHOT-jar-with-dependencies.jar" target="SystemScope.jar"/>
+    </files>
+    <launcher>
+        <executable>myapp</executable>
+        <os family="unix">
+            <command>java -jar lib/SystemScope.jar</command>
+        </os>
+        <os family="windows">
+            <command>javaw.exe -jar lib/SystemScope.jar</command>
+        </os>
+    </launcher>
+</installation>

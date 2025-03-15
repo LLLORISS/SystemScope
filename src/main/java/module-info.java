@@ -8,7 +8,6 @@ module nm.sc.systemscope {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires com.github.oshi;
     requires java.desktop;

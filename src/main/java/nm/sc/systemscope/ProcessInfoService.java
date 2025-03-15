@@ -1,5 +1,8 @@
 package nm.sc.systemscope;
 
+import javafx.scene.control.Alert;
+import nm.sc.systemscope.Controllers.SystemScopeController;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,27 +53,39 @@ public class ProcessInfoService {
     }
 
 
-    public static void killProcess(int pid) throws IOException, InterruptedException {
+    public static boolean killProcess(int pid) throws IOException, InterruptedException {
+        boolean flag = false;
         String os = System.getProperty("os.name").toLowerCase();
         Process process;
 
-        if(os.contains("win")){
-            process = Runtime.getRuntime().exec("taskkill /PID " + pid);
-        }
-        else{
-            process = Runtime.getRuntime().exec("kill -9 " + pid);
-        }
+        try {
+            if (os.contains("win")) {
+                process = Runtime.getRuntime().exec("taskkill /PID " + pid);
+            } else {
+                process = Runtime.getRuntime().exec("kill -9 " + pid);
+            }
 
-        process.waitFor();
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                System.out.println("Процес з PID " + pid + " успішно завершено.");
+                flag = true;
+                return flag;
+            } else {
+                SystemScopeController.showMessage( Alert.AlertType.ERROR,"Не вдалося завершити процес з PID " + pid + ". Код завершення: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            SystemScopeController.showMessage(Alert.AlertType.ERROR,"Помилка при спробі завершити процес з PID " + pid + ": " + e.getMessage());
+            throw e;
+        }
+        return flag;
     }
 
     public static List<ProcessInfo> searchProcess(String searchInput) throws IOException {
         List<ProcessInfo> filtered = new ArrayList<>();
 
-        boolean isNumeric = false;
-        int searchPid = -1;
+        boolean isNumeric;
         try {
-            searchPid = Integer.parseInt(searchInput);
             isNumeric = true;
         } catch (NumberFormatException e) {
             isNumeric = false;

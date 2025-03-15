@@ -52,14 +52,9 @@ public class BenchSelectorController {
     public void onStartBenchmarkBtnClicked(){
         if(selectedFile != null && !selectedFile.isEmpty()){
             this.close();
-
         }
         else{
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Помилка");
-            alert.setHeaderText("Не вибрано файл для запуску");
-            alert.setContentText("Для запуску тестування необхідно вибрати допустимий файл");
-            alert.showAndWait();
+            SystemScopeController.showMessage(Alert.AlertType.ERROR, "Для запуску тестування необхідно вибрати допустимий файл");
         }
     }
 

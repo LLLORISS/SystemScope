@@ -3,6 +3,7 @@ package nm.sc.systemscope;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -17,7 +18,7 @@ public class SystemScopeMain extends Application {
 
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1350,700);
+        Scene scene = new Scene(fxmlLoader.load());
         controller = fxmlLoader.getController();
         setStageParams(stage);
         stage.setScene(scene);
@@ -28,14 +29,11 @@ public class SystemScopeMain extends Application {
         stage.setTitle("SystemScope");
 
         stage.setMaximized(true);
-        stage.setResizable(true);
+        stage.setResizable(false);
 
-        stage.setMinHeight(700);
-        stage.setMinWidth(1450);
-
-        javafx.geometry.Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setMaxWidth(screenBounds.getWidth());
-        stage.setMaxHeight(screenBounds.getHeight());
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
 
         stage.setOnCloseRequest(event -> {
             if (controller != null) {
