@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import nm.sc.systemscope.controllers.SystemScopeController;
+import nm.sc.systemscope.modules.DataStorage;
+import nm.sc.systemscope.modules.Theme;
 
 import java.io.IOException;
 
@@ -17,9 +19,12 @@ public class SystemScopeMain extends Application {
     @Override
 
     public void start(Stage stage) throws IOException {
+        DataStorage.saveThemeToConfig(Theme.DARK);
         FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         controller = fxmlLoader.getController();
+        controller.setScene(scene);
+        controller.applyTheme();
         setStageParams(stage);
         stage.setScene(scene);
         stage.show();

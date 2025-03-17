@@ -1,7 +1,6 @@
 package nm.sc.systemscope.modules;
 
 import javafx.scene.control.Alert;
-import nm.sc.systemscope.controllers.SystemScopeController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -72,10 +71,12 @@ public class ProcessInfoService {
                 flag = true;
                 return flag;
             } else {
-                SystemScopeController.showMessage( Alert.AlertType.ERROR,"Не вдалося завершити процес з PID " + pid + ". Код завершення: " + exitCode);
+                ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR,"Не вдалося завершити процес з PID " + pid + ". Код завершення: " + exitCode);
+                alert.showAndWait();
             }
         } catch (IOException | InterruptedException e) {
-            SystemScopeController.showMessage(Alert.AlertType.ERROR,"Помилка при спробі завершити процес з PID " + pid + ": " + e.getMessage());
+            ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR,"Помилка при спробі завершити процес з PID " + pid + ": " + e.getMessage());
+            alert.showAndWait();
             throw e;
         }
         return flag;

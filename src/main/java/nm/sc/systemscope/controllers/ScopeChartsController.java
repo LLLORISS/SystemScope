@@ -2,19 +2,18 @@ package nm.sc.systemscope.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javafx.scene.control.Label;
 import nm.sc.systemscope.modules.DataStorage;
 import nm.sc.systemscope.modules.ScopeLineChart;
 import nm.sc.systemscope.modules.SystemInformation;
+import nm.sc.systemscope.modules.Theme;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +48,13 @@ public class ScopeChartsController {
 
     private ScheduledExecutorService executorService;
 
+    private Theme theme;
+
+    private Scene scene;
+
     @FXML
     public void initialize(){
+        applyTheme();
         tempCPUChart.setAxisX("Час");
         tempCPUChart.setAxisY("Температура (°C)");
         tempGPUChart.setAxisX("Час");
@@ -177,6 +181,26 @@ public class ScopeChartsController {
             labelLastTempGPU.setText(data.get("last_gpu_temp") + " °C");
             labelLastUsageCPU.setText(data.get("last_usage_cpu") + " %");
             labelLastUsageGPU.setText(data.get("last_usage_gpu") + " %");
+        }
+    }
+
+    public void setScene(Scene scene){
+        this.scene = scene;
+    }
+
+    public void applyTheme(){
+        theme = DataStorage.loadThemeFromConfig();
+        if (this.scene != null) {
+            this.scene.getStylesheets().clear();
+
+            String themeStyleFile = "";
+
+            if (theme == Theme.DARK) {
+                themeStyleFile = "/nm/sc/systemscope/CSS/styles.css";
+            } else if (theme == Theme.LIGHT) {
+                themeStyleFile = "/nm/sc/systemscope/CSS/light-styles.css";
+            }
+            this.scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(themeStyleFile)).toExternalForm());
         }
     }
 

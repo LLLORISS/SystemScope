@@ -5,16 +5,14 @@ import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.File;
 
 import javafx.scene.control.Label;
+import nm.sc.systemscope.modules.ScopeAlert;
 
 public class BenchSelectorController {
     @FXML
     private Label selectedFileLabel;
-    @FXML
-    private Button selectButton;
 
     private Stage stage;
     @FXML
@@ -54,7 +52,8 @@ public class BenchSelectorController {
             this.close();
         }
         else{
-            SystemScopeController.showMessage(Alert.AlertType.ERROR, "Для запуску тестування необхідно вибрати допустимий файл");
+            ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Для запуску тестування необхідно вибрати допустимий файл");
+            alert.showAndWait();
         }
     }
 

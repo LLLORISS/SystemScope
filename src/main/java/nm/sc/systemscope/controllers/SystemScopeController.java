@@ -19,10 +19,13 @@ import java.io.IOException;
 import javafx.collections.ObservableList;
 import nm.sc.systemscope.modules.*;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class
 
@@ -53,11 +56,18 @@ SystemScopeController {
 
     private ScopeChartsController scopeChartsController;
 
+    private Theme theme;
+
+    private Scene scene;
+
     private BenchWindow benchWindow = null;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @FXML
     public void initialize() {
+        theme = DataStorage.loadThemeFromConfig();
+        applyTheme();
+        System.out.println(theme);
         Platform.runLater(() -> {
             InfoPC.setText(SystemInformation.getComputerName());
             CPU.setText(SystemInformation.getProcessorName());
@@ -81,9 +91,7 @@ SystemScopeController {
                 }
             });
 
-            if(processes != null) {
-                processList.getItems().setAll(processes);
-            }
+            processList.getItems().setAll(processes);
         }
         catch(IOException e){
             e.printStackTrace();
@@ -109,6 +117,8 @@ SystemScopeController {
 
         Scene scene = new Scene(root);
         Stage stage = new Stage();
+        scopeChartsController.setScene(scene);
+        scopeChartsController.applyTheme();
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("Графіки");
@@ -130,17 +140,31 @@ SystemScopeController {
             }
             catch(IOException | InterruptedException e){
                 e.printStackTrace();
-                showMessage(Alert.AlertType.ERROR, "Не вдалося завершити процес");
+                ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Не вдалося завершити процес");
+                alert.showAndWait();
             }
         }
         else{
-            showMessage(Alert.AlertType.ERROR, "Виберіть процес для завершення");
+            ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Виберіть процес для завершення");
         }
     }
 
     @FXML
     public void onRefreshProcessesBtnClicked(){
         updateProcessList();
+    }
+
+    @FXML
+    public void onThemeToggleClicked(){
+        if(theme.equals(Theme.DARK)){
+            theme = Theme.LIGHT;
+            DataStorage.saveThemeToConfig(Theme.LIGHT);
+        }
+        else if(theme.equals(Theme.LIGHT)){
+            theme = Theme.DARK;
+            DataStorage.saveThemeToConfig(Theme.DARK);
+        }
+        applyTheme();
     }
 
     @FXML
@@ -266,7 +290,8 @@ SystemScopeController {
         catch(Exception e){
             System.err.println("Помилка запуску гри: " + e.getMessage());
             Platform.runLater(() -> {
-                showMessage(Alert.AlertType.ERROR, "Перевірте правильність вибраного файлу.");
+                ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Перевірте правильність вибраного файлу.");
+                alert.showAndWait();
             });
             return false;
         }
@@ -313,7 +338,8 @@ SystemScopeController {
     public void showRamInfo(){
         String info = SystemInformation.getRamInfo();
 
-        showMessage(Alert.AlertType.INFORMATION, info);
+        ScopeAlert alert = new ScopeAlert(Alert.AlertType.INFORMATION, info);
+        alert.showAndWait();
     }
 
     private static Paint getColorByZone(double temperature) {
@@ -327,13 +353,29 @@ SystemScopeController {
     }
 
     private double parseTemperature(String tempString) {
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\d+(\\.\\d+)?");
-        java.util.regex.Matcher matcher = pattern.matcher(tempString);
+        Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
+        Matcher matcher = pattern.matcher(tempString);
 
         if (matcher.find()) {
             return Double.parseDouble(matcher.group());
         } else {
             throw new NumberFormatException("Не вдалося знайти числове значення в: " + tempString);
+        }
+    }
+
+    public void applyTheme(){
+        if (this.scene != null) {
+            this.scene.getStylesheets().clear();
+
+            String themeStyleFile = "";
+
+            if (theme == Theme.DARK) {
+                themeStyleFile = "/nm/sc/systemscope/CSS/styles.css";
+            } else if (theme == Theme.LIGHT) {
+                themeStyleFile = "/nm/sc/systemscope/CSS/light-styles.css";
+            }
+
+            this.scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(themeStyleFile)).toExternalForm());
         }
     }
 
@@ -371,8 +413,8 @@ SystemScopeController {
     }
 
     private double[] parseMultipleTemperatures(String tempString) {
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\d+(\\.\\d+)?");
-        java.util.regex.Matcher matcher = pattern.matcher(tempString);
+        Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
+        Matcher matcher = pattern.matcher(tempString);
 
         double[] temperatures = new double[2];
         int index = 0;
@@ -388,14 +430,6 @@ SystemScopeController {
         return temperatures;
     }
 
-    public static void showMessage(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle("SystemScope");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private void updateProcessList() {
         try {
             List<ProcessInfo> processes = ProcessInfoService.getRunningProcesses();
@@ -408,6 +442,10 @@ SystemScopeController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setScene(Scene scene){
+        this.scene = scene;
     }
 
     public void shutdown() {

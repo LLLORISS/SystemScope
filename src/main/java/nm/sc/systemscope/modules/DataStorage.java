@@ -7,10 +7,7 @@ import javafx.scene.chart.XYChart;
 import nm.sc.systemscope.adapters.XYChartDataAdapter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataStorage {
     private static final String dataFolderPath = "src/main/data/";
@@ -20,6 +17,7 @@ public class DataStorage {
     private static final String GPUusagePath = dataFolderPath + "UsageGPU.json";
     private static final String averagesPath = dataFolderPath + "Averages.json";
 
+    private static final String configPath = "config.properties";
     static {
         createDataFolderAndFiles();
     }
@@ -221,5 +219,27 @@ public class DataStorage {
             e.printStackTrace();
         }
         return data;
+    }
+
+    public static Theme loadThemeFromConfig() {
+        Properties props = new Properties();
+        try (InputStream stream = new FileInputStream(configPath)) {
+            props.load(stream);
+            String theme = props.getProperty("theme", "DARK");
+            return Theme.valueOf(theme.toUpperCase());
+        } catch (IOException | IllegalArgumentException e) {
+            return Theme.DARK;
+        }
+    }
+
+    public static void saveThemeToConfig(Theme theme) {
+        Properties props = new Properties();
+        props.setProperty("theme", theme.name());
+
+        try (OutputStream output = new FileOutputStream(configPath)) {
+            props.store(output, "Theme Configuration");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

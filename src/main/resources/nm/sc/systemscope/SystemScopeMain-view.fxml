@@ -11,7 +11,6 @@
 <AnchorPane fx:id="anchorPane"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
-            stylesheets="@CSS/styles.css"
             fx:controller="nm.sc.systemscope.controllers.SystemScopeController">
 
    <children>
@@ -63,6 +62,7 @@
                <Label text="📊 Додаткові функції" styleClass="section-title"/>
                <Button fx:id="showChartsBtn" text="Показати графіки" onAction="#onShowChartsClicked" styleClass="main-button"/>
                <Button fx:id="benchBtn" text="Бенчмарк" onAction="#onBenchClicked" styleClass="main-button"/>
+               <Button fx:id="themeToggleBtn" text="Перемкнути тему" onAction="#onThemeToggleClicked" styleClass="main-button"/>
             </VBox>
          </HBox>
          <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
@@ -74,7 +74,7 @@
                   <ListView fx:id="processList" prefHeight="300" styleClass="process-list"/>
                </VBox>
                <HBox spacing="10">
-                  <Button fx:id="refresProcessesBtn" text="Оновити" onAction="#onRefreshProcessesBtnClicked" styleClass="main-button"/>
+                  <Button fx:id="refreshProcessesBtn" text="Оновити" onAction="#onRefreshProcessesBtnClicked" styleClass="main-button"/>
                   <Button fx:id="killProcessBtn" text="❌ Завершити" onAction="#onKillSelectedProcessClicked" styleClass="main-button"/>
                </HBox>
             </VBox>
