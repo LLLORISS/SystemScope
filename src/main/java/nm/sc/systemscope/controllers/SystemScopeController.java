@@ -2,6 +2,7 @@ package nm.sc.systemscope.controllers;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -18,7 +19,9 @@ import javafx.scene.Scene;
 import java.io.IOException;
 import javafx.collections.ObservableList;
 import nm.sc.systemscope.modules.*;
+import oshi.hardware.UsbDevice;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,8 +53,13 @@ public class SystemScopeController {
     @FXML
     private Button benchBtn;
     @FXML
-    private ListView<ProcessInfo> processList;
+    private ScopeListView<ProcessInfo> processList;
+    @FXML
+    private ScopeListView<ScopeUsbDevice> devicesList;
+
     private ObservableList<ProcessInfo> observableList;
+    private ObservableList<ScopeUsbDevice> observableDevicesList;
+
     @FXML
     private TextField searchField;
 
@@ -81,9 +89,15 @@ public class SystemScopeController {
 
         try{
             List<ProcessInfo> processes = ProcessInfoService.getRunningProcesses();
+            List<ScopeUsbDevice> devices = SystemInformation.getScopeUsbDevices(SystemInformation.getUsbDevices());
 
             observableList = FXCollections.observableArrayList(processes);
-            processList.setItems(observableList);
+            observableDevicesList = FXCollections.observableArrayList(devices);
+
+            Platform.runLater(() -> {
+                processList.setItems(observableList);
+                devicesList.setItems(observableDevicesList);
+            });
 
             searchField.textProperty().addListener((observable, oldValue, newValue) -> {
                 try {
@@ -92,8 +106,6 @@ public class SystemScopeController {
                     throw new RuntimeException(e);
                 }
             });
-
-            processList.getItems().setAll(processes);
         }
         catch(IOException e){
             e.printStackTrace();
@@ -109,10 +121,12 @@ public class SystemScopeController {
      * @throws IOException if an error occurs during process filtering
      */
     private void filterProcesses(String searchInput) throws IOException {
-        List<ProcessInfo> filtered = ProcessInfoService.searchProcess(searchInput);
+        List<ProcessInfo> filtered = ScopeListView.searchItems(searchInput, ProcessInfoService.getRunningProcesses());
 
-        observableList.clear();
-        observableList.addAll(filtered);
+        Platform.runLater(()->{
+            observableList.clear();
+            observableList.addAll(filtered);
+        });
     }
 
     /**
@@ -169,6 +183,14 @@ public class SystemScopeController {
     @FXML
     public void onRefreshProcessesBtnClicked(){
         updateProcessList();
+    }
+
+    /**
+     * Updates the list of devices
+     */
+    @FXML
+    public void onRefreshDevicesBtnClicked(){
+        updateDevicesList();
     }
 
     /**
@@ -344,6 +366,19 @@ public class SystemScopeController {
         }
 
         return temperatures;
+    }
+
+    /**
+     * A method that updates devices list
+     */
+    private void updateDevicesList(){
+        List<ScopeUsbDevice> devices = SystemInformation.getScopeUsbDevices(SystemInformation.getUsbDevices());
+
+        observableDevicesList.clear();
+
+        observableDevicesList.addAll(devices);
+
+        devicesList.setItems(observableDevicesList);
     }
 
     /**

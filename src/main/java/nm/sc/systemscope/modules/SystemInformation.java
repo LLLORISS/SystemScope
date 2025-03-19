@@ -1,15 +1,12 @@
 package nm.sc.systemscope.modules;
 
 import oshi.SystemInfo;
-import oshi.hardware.GraphicsCard;
-import oshi.hardware.HWDiskStore;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.PhysicalMemory;
-import oshi.hardware.CentralProcessor;
+import oshi.hardware.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import java.util.List;
@@ -431,6 +428,33 @@ public class SystemInformation {
         }
 
         return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження Intel GPU";
+    }
+
+    /**
+     * Retrieves a list of USB devices connected to the system.
+     *
+     * @return a list of {@link UsbDevice} objects representing the USB devices connected to the system
+     */
+    public static List<UsbDevice> getUsbDevices(){
+        SystemInfo info = new SystemInfo();
+        return info.getHardware().getUsbDevices(false);
+    }
+
+    /**
+     * Converts a list of {@link UsbDevice} objects into a list of {@link ScopeUsbDevice} objects.
+     * Each {@link UsbDevice} in the input list is wrapped into a {@link ScopeUsbDevice}.
+     *
+     * @param usbDevices the list of {@link UsbDevice} objects to be converted
+     * @return a list of {@link ScopeUsbDevice} objects representing the converted USB devices
+     */
+    public static List<ScopeUsbDevice> getScopeUsbDevices(List<UsbDevice> usbDevices){
+        List<ScopeUsbDevice> devices = new ArrayList<>();
+
+        for(UsbDevice device : usbDevices){
+            devices.add(new ScopeUsbDevice(device));
+        }
+
+        return devices;
     }
 
     /**

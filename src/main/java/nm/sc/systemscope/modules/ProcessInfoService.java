@@ -99,40 +99,4 @@ public class ProcessInfoService {
         }
         return flag;
     }
-
-    /**
-     * Searches for processes that match the given search input by process name or PID.
-     *
-     * @param searchInput The input to search for (either process name or PID).
-     * @return A list of ProcessInfo objects that match the search criteria.
-     * @throws IOException If an error occurs while retrieving the list of running processes.
-     */
-    public static List<ProcessInfo> searchProcess(String searchInput) throws IOException {
-        List<ProcessInfo> filtered = new ArrayList<>();
-
-        boolean isNumeric;
-        try {
-            isNumeric = true;
-        } catch (NumberFormatException e) {
-            isNumeric = false;
-        }
-
-        for (ProcessInfo process : getRunningProcesses()) {
-            boolean matchesName = process.getProcessName().toLowerCase().contains(searchInput.toLowerCase());
-
-            boolean matchesPid = false;
-            if (isNumeric) {
-                String pidString = String.valueOf(process.getPid());
-                if (pidString.contains(searchInput)) {
-                    matchesPid = true;
-                }
-            }
-
-            if (matchesName || matchesPid) {
-                filtered.add(process);
-            }
-        }
-
-        return filtered;
-    }
 }

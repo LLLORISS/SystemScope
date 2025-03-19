@@ -6,8 +6,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import nm.sc.systemscope.modules.ScopeListView ?>
+
 <AnchorPane fx:id="anchorPane"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -57,7 +58,13 @@
                   <Label fx:id="FansSpeed" styleClass="temp_value"/>
                </HBox>
             </VBox>
-
+            <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
+               <Label text="🖥 Підключені пристрої" styleClass="section-title"/>
+               <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30" spacing="10">
+                  <Button fx:id="refreshDevicesBtn" text="Оновити" onAction="#onRefreshDevicesBtnClicked" styleClass="main-button"/>
+                  <ScopeListView fx:id="devicesList"  prefHeight="300" styleClass="process-list"/>
+               </VBox>
+            </VBox>
             <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
                <Label text="📊 Додаткові функції" styleClass="section-title"/>
                <Button fx:id="showChartsBtn" text="Показати графіки" onAction="#onShowChartsClicked" styleClass="main-button"/>
@@ -66,12 +73,11 @@
             </VBox>
          </HBox>
          <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
-
             <VBox styleClass="HBoxSection">
                <Label text="⚙️ Запущені процеси" styleClass="section-title"/>
                <VBox styleClass="HBoxSection">
                   <TextField fx:id="searchField"/>
-                  <ListView fx:id="processList" prefHeight="300" styleClass="process-list"/>
+                  <ScopeListView fx:id="processList" prefHeight="300" styleClass="process-list"/>
                </VBox>
                <HBox spacing="10">
                   <Button fx:id="refreshProcessesBtn" text="Оновити" onAction="#onRefreshProcessesBtnClicked" styleClass="main-button"/>
