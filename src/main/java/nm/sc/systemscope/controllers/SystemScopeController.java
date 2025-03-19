@@ -61,7 +61,6 @@ public class SystemScopeController {
 
     private Scene scene;
 
-    private BenchWindow benchWindow = null;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -194,7 +193,7 @@ public class SystemScopeController {
     @FXML
     public void onBenchClicked(){
         try {
-            if (benchWindow == null && !Benchmark.getBenchmarkStarted()) {
+            if (Benchmark.getBenchWindow() == null && !Benchmark.getBenchmarkStarted()) {
                 FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("BenchSelector-view.fxml"));
                 Parent root = loader.load();
 
@@ -216,66 +215,10 @@ public class SystemScopeController {
                     return;
                 }
 
-                new Thread(() -> {
-                    Benchmark.setBenchmarkStarted(true);
-                    if (launchFile(System.getProperty("os.name").toLowerCase())) {
-                        benchWindow = new BenchWindow();
-                        benchWindow.initialize();
-
-                        waitForFileToClose();
-
-                        Platform.runLater(() -> {
-                            if (benchWindow != null) {
-                                benchWindow.close();
-                                benchWindow = null;
-                            }
-
-                            benchBtn.setText("Запустити бенчмарк");
-                            benchBtn.getStyleClass().removeAll("main-button-stop");
-                            benchBtn.getStyleClass().add("main-button");
-                        });
-                    }
-                }).start();
+                Benchmark.startBenchmark(this);
             }
             else{
-                Benchmark.setBenchmarkStarted(false);
-
-                String processName = Benchmark.getProcessName();
-
-                if(processName != null && !processName.isEmpty()){
-                    ProcessBuilder processBuilder = new ProcessBuilder();
-                    processBuilder.command("bash", "-c", "pgrep -f \"" + processName + "\"");
-
-                    try{
-                        Process process = processBuilder.start();
-                        process.waitFor();
-
-                        String processID = new String(process.getInputStream().readAllBytes()).trim();
-
-                        if (!processID.isEmpty()) {
-                            ProcessBuilder killProcessBuilder = new ProcessBuilder("bash", "-c", "kill -9 " + processID);
-                            killProcessBuilder.start();
-                        } else {
-                            System.out.println("Процес не знайдений.");
-                        }
-                        Benchmark.clearInfo();
-                    }
-                    catch(IOException | InterruptedException e){
-                        e.printStackTrace();
-                    }
-
-                }
-
-                Platform.runLater(() -> {
-                    if (benchWindow != null) {
-                        benchWindow.close();
-                        benchWindow = null;
-                    }
-
-                    benchBtn.setText("Запустити бенчмарк");
-                    benchBtn.getStyleClass().removeAll("main-button-stop");
-                    benchBtn.getStyleClass().add("main-button");
-                });
+                Benchmark.stopBenchmark();
             }
         }
         catch(IOException e){
@@ -284,97 +227,7 @@ public class SystemScopeController {
     }
 
     /**
-     * Method that runs the selected file for the benchmark
-     * @param os name of the operating system
-     * @return the result of running the file
-     */
-    private boolean launchFile(String os){
-        try{
-            ProcessBuilder processBuilder;
-
-            String selectedFile = Benchmark.getAbsolutePath();
-
-            if(os.contains("win")){
-                processBuilder = new ProcessBuilder(selectedFile);
-            }
-            else{
-                processBuilder = new ProcessBuilder("bash", "-c", "chmod +x \"" + selectedFile + "\" && \"" + selectedFile + "\"");
-            }
-
-            Platform.runLater(() -> {
-                benchBtn.setText("Зупинити бенчмарк");
-
-                benchBtn.getStyleClass().removeAll("main-button");
-                benchBtn.getStyleClass().add("main-button-stop");
-            });
-
-            Benchmark.setBenchmarkStarted(true);
-
-            processBuilder.inheritIO();
-            Process process = processBuilder.start();
-
-            Thread.sleep(5000);
-            return process.isAlive();
-        }
-        catch(Exception e){
-            System.err.println("Помилка запуску гри: " + e.getMessage());
-            Platform.runLater(() -> {
-                ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Перевірте правильність вибраного файлу.");
-                alert.showAndWait();
-            });
-            return false;
-        }
-    }
-
-    /**
-     * A method that monitors the current status of the game, the method ends when the benchmark file is closed
-     */
-    private void waitForFileToClose(){
-        try{
-            String selectedFile = Benchmark.getAbsolutePath();
-            String processName = selectedFile.substring(selectedFile.lastIndexOf("/") + 1).replace(".sh", "");
-            Benchmark.setProcessName(processName);
-            boolean isRunning = true;
-
-            while(isRunning){
-                Thread.sleep(3000);
-                isRunning = isProcessRunning(processName, System.getProperty("os.name").toLowerCase());
-            }
-
-            System.out.println("Гра завершена, закриваємо бенчмарк...");
-        }
-        catch(InterruptedException e){
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    /**
-     * A method that checks if the process is running in the operating system
-     * @param processName process name
-     * @param os operating system name
-     * @return running status
-     */
-    private boolean isProcessRunning(String processName, String os){
-        try{
-            Process process;
-            if(os.contains("win")){
-                process = new ProcessBuilder("tasklist").start();
-            }
-            else{
-                process = new ProcessBuilder("bash", "-c", "pgrep -c -f \"" + processName + "\"").start();
-            }
-
-            String output = new String(process.getInputStream().readAllBytes());
-            return Integer.parseInt(output.trim()) > 0;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    /**
      * A method that creates a dialog box and displays additional information about RAM.
-     * The method may not work if you do not have the appropriate access rights to system folders.
      */
     @FXML
     public void showRamInfo(){
@@ -507,6 +360,34 @@ public class SystemScopeController {
             processList.setItems(observableList);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Updates the text and style of the benchmark button based on the current state of the benchmark.
+     * If the benchmark has started, the button text will change to "Зупинити бенчмарк" (Stop Benchmark)
+     * and the style class will be updated to indicate the stop state. If the benchmark is not started,
+     * the button text will change to "Запустити бенчмарк" (Start Benchmark) and the style class will
+     * revert to the start state.
+     * <p>
+     * This method ensures that UI updates are performed on the JavaFX application thread using
+     * {@link Platform#runLater(Runnable)}.
+     * </p>
+     */
+    public void swapBenchButton(){
+        if(Benchmark.getBenchmarkStarted()) {
+            Platform.runLater(() -> {
+                benchBtn.setText("Зупинити бенчмарк");
+                benchBtn.getStyleClass().removeAll("main-button");
+                benchBtn.getStyleClass().add("main-button-stop");
+            });
+        }
+        else{
+            Platform.runLater(() -> {
+                benchBtn.setText("Запустити бенчмарк");
+                benchBtn.getStyleClass().removeAll("main-button-stop");
+                benchBtn.getStyleClass().add("main-button");
+            });
         }
     }
 

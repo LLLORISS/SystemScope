@@ -52,25 +52,31 @@ public class SystemInformation {
 
     /**
      * Retrieves detailed information about the physical memory (RAM) in the system.
-     *
+     * The method may not work if you do not have the appropriate access rights to system folders.
      * @return a string with detailed information about each physical memory module.
      */
     public static String getRamInfo(){
-        List<PhysicalMemory> memoryList = layer.getMemory().getPhysicalMemory();
-        if (memoryList.isEmpty()) {
-            return "Інформація про фізичну пам'ять недоступна";
+        try {
+            List<PhysicalMemory> memoryList = layer.getMemory().getPhysicalMemory();
+            if (memoryList.isEmpty()) {
+                return "Інформація про фізичну пам'ять недоступна";
+            }
+
+            StringBuilder ramInfo = new StringBuilder();
+
+            for (PhysicalMemory memory : memoryList) {
+                ramInfo.append(String.format("Виробник: %s\n", memory.getManufacturer()));
+                ramInfo.append(String.format("Тип пам'яті: %s\n", memory.getMemoryType()));
+                ramInfo.append(String.format("Частота: %.2f GHz\n", memory.getClockSpeed() / 1000.0));
+                ramInfo.append(String.format("Об'єм: %s\n", formatMemory(memory.getCapacity())));
+            }
+
+            return ramInfo.toString();
         }
-
-        StringBuilder ramInfo = new StringBuilder();
-
-        for(PhysicalMemory memory : memoryList){
-            ramInfo.append(String.format("Виробник: %s\n", memory.getManufacturer()));
-            ramInfo.append(String.format("Тип пам'яті: %s\n", memory.getMemoryType()));
-            ramInfo.append(String.format("Частота: %.2f GHz\n", memory.getClockSpeed() / 1000.0));
-            ramInfo.append(String.format("Об'єм: %s\n", formatMemory(memory.getCapacity())));
+        catch(Exception e){
+            e.printStackTrace();
+            return "Помилка при отриманні інформації про фізичну пам'ять: " + e.getMessage();
         }
-
-        return ramInfo.toString();
     }
 
     /**

@@ -78,6 +78,10 @@ public class BenchSelectorController {
         }
     }
 
+    public void swapBenchButton(){
+
+    }
+
     /**
      * A method that returns the path to the selected file
      * @return Path to the selected file
