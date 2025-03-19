@@ -9,10 +9,18 @@ import javafx.scene.control.Tooltip;
 
 import java.util.List;
 
+/**
+ * Custom LineChart class that extends JavaFX's LineChart to provide additional functionalities,
+ * including custom tooltips and data point management.
+ */
 public class ScopeLineChart extends LineChart<String, Number> {
     private XYChart.Series<String, Number> series;
     private int MAX_DATA_POINTS;
 
+    /**
+     * Constructor to initialize the chart with a CategoryAxis for X-axis and a NumberAxis for Y-axis.
+     * It also sets the maximum data points to 20 by default.
+     */
     public ScopeLineChart() {
         super(new CategoryAxis(), new NumberAxis());
         series = new XYChart.Series<>();
@@ -21,18 +29,39 @@ public class ScopeLineChart extends LineChart<String, Number> {
         this.MAX_DATA_POINTS = 20;
     }
 
+    /**
+     * Sets the label for the X-axis.
+     *
+     * @param axis The label for the X-axis.
+     */
     public void setAxisX(String axis) {
         getXAxis().setLabel(axis);
     }
 
+    /**
+     * Sets the label for the Y-axis.
+     *
+     * @param axis The label for the Y-axis.
+     */
     public void setAxisY(String axis) {
         getYAxis().setLabel(axis);
     }
 
+    /**
+     * Sets the name of the series.
+     *
+     * @param name The name of the series.
+     */
     public void setSeriesName(String name) {
         series.setName(name);
     }
 
+    /**
+     * Adds a new data point to the series.
+     * If the number of data points exceeds the maximum limit, the oldest point is removed.
+     *
+     * @param data The data point to be added.
+     */
     public void add(XYChart.Data<String, Number> data) {
         series.getData().add(data);
 
@@ -43,15 +72,30 @@ public class ScopeLineChart extends LineChart<String, Number> {
         setTips();
     }
 
+    /**
+     * Adds multiple data points to the series at once.
+     *
+     * @param data A list of data points to be added.
+     */
     public void addAll(List<XYChart.Data<String, Number>> data) {
         series.getData().addAll(data);
         setTips();
     }
 
+    /**
+     * Gets the data of the series.
+     *
+     * @return An ObservableList of the series data.
+     */
     public ObservableList<XYChart.Data<String, Number>> getSeriesData() {
         return series.getData();
     }
 
+    /**
+     * Calculates and returns the average value of the Y-values in the series.
+     *
+     * @return The average of the Y-values.
+     */
     public int getAverageValue() {
         if (series.getData().isEmpty()) return 0;
         int average = 0;
@@ -61,14 +105,29 @@ public class ScopeLineChart extends LineChart<String, Number> {
         return average / series.getData().size();
     }
 
+    /**
+     * Sets the maximum number of data points to be stored in the series.
+     *
+     * @param maxDataPoints The maximum number of data points.
+     */
     public void setMaxDataPoints(int maxDataPoints){
         this.MAX_DATA_POINTS = maxDataPoints;
     }
 
-    public int getMAX_DATA_POINTS() {
+    /**
+     * Gets the maximum number of data points allowed in the series.
+     *
+     * @return The maximum number of data points.
+     */
+    public int getMaxDataPoints() {
         return MAX_DATA_POINTS;
     }
 
+    /**
+     * Sets tooltips for each data point in the series.
+     * The tooltip shows the Y-value of each data point when hovered.
+     * It also adds mouse hover effects to change the stroke of the data point.
+     */
     private void setTips() {
         if (!this.getData().isEmpty()) {
             for (XYChart.Series<String, Number> series : this.getData()) {

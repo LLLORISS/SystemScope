@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 
 import java.util.List;
 
+/**
+ * The `SystemInfo` class provides methods for retrieving system information, including details
+ * about the graphics cards, RAM, disk storage, CPU, and other hardware components.
+ */
 public class SystemInformation {
     private static SystemInfo systemInfo;
     private static HardwareAbstractionLayer layer;
@@ -23,6 +27,11 @@ public class SystemInformation {
         layer = systemInfo.getHardware();
     }
 
+    /**
+     * Retrieves the names and vendors of the graphics cards in the system.
+     *
+     * @return a formatted string containing the names and vendors of the graphics cards.
+     */
     public static String getGraphicCards() {
         List<GraphicsCard> gpus = layer.getGraphicsCards();
         return formatGPU(gpus.stream()
@@ -30,12 +39,22 @@ public class SystemInformation {
                 .collect(Collectors.joining(", ")));
     }
 
+    /**
+     * Retrieves the total amount of RAM in the system.
+     *
+     * @return a formatted string with the total RAM size.
+     */
     public static String getRAM() {
         long totalMemory = layer.getMemory().getTotal();
 
         return formatMemory(totalMemory);
     }
 
+    /**
+     * Retrieves detailed information about the physical memory (RAM) in the system.
+     *
+     * @return a string with detailed information about each physical memory module.
+     */
     public static String getRamInfo(){
         List<PhysicalMemory> memoryList = layer.getMemory().getPhysicalMemory();
         if (memoryList.isEmpty()) {
@@ -54,6 +73,11 @@ public class SystemInformation {
         return ramInfo.toString();
     }
 
+    /**
+     * Retrieves information about the disk storage in the system.
+     *
+     * @return a string with the models and sizes of the disks.
+     */
     public static String getDiskStorage() {
         List<HWDiskStore> disks = layer.getDiskStores();
 
@@ -70,10 +94,20 @@ public class SystemInformation {
         return diskInfo.toString();
     }
 
+    /**
+     * Retrieves the current CPU temperature.
+     *
+     * @return a string with the current CPU temperature in Celsius.
+     */
     public static String getTemperatureCPU(){
         return layer.getSensors().getCpuTemperature() + " °C";
     }
 
+    /**
+     * Retrieves the discrete graphics card (GPU) from the system, prioritizing NVIDIA or AMD.
+     *
+     * @return the discrete GPU if found, null otherwise.
+     */
     private static GraphicsCard getDiscreteGPU() {
         List<GraphicsCard> gpus = layer.getGraphicsCards();
 
@@ -95,6 +129,11 @@ public class SystemInformation {
         return null;
     }
 
+    /**
+     * Retrieves the temperature of the discrete GPU in the system.
+     *
+     * @return a string with the temperature of the discrete GPU, or "No data" if not available.
+     */
     public static String getTemperatureDiscreteGPU() {
         GraphicsCard gpu = getDiscreteGPU();
 
@@ -116,7 +155,11 @@ public class SystemInformation {
         return !temperatures.isEmpty() ? temperatures.toString() : "Немає даних";
     }
 
-
+    /**
+     * Retrieves the temperature of all GPUs in the system.
+     *
+     * @return a string with the temperatures of all GPUs, or "No data" if not available.
+     */
     public static String getTemperatureGPU() {
         List<GraphicsCard> gpus = layer.getGraphicsCards();
 
@@ -139,6 +182,11 @@ public class SystemInformation {
         return !temperatures.isEmpty() ? temperatures.toString() : "Немає даних";
     }
 
+    /**
+     * Retrieves the temperature for an NVIDIA GPU.
+     *
+     * @return a string with the temperature of the NVIDIA GPU.
+     */
     private static String getTemperatureForNVIDIA() {
         try {
             Process process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader");
@@ -155,6 +203,11 @@ public class SystemInformation {
         }
     }
 
+    /**
+     * Retrieves the temperature for an AMD GPU.
+     *
+     * @return a string with the temperature of the AMD GPU.
+     */
     private static String getTemperatureForAMD() {
         try {
             Process process;
@@ -179,20 +232,40 @@ public class SystemInformation {
         }
     }
 
+    /**
+     * Retrieves the temperature for an Intel GPU.
+     *
+     * @return a string with the temperature of the Intel GPU.
+     */
     private static String getTemperatureForIntel() {
         return "Intel GPU: " + getTemperatureCPU() + " °C\n";
     }
 
+    /**
+     * Retrieves the name of the processor.
+     *
+     * @return a string containing the processor's name.
+     */
     public static String getProcessorName(){
         return layer.getProcessor().getProcessorIdentifier().getName();
     }
 
+    /**
+     * Retrieves the model name of the computer.
+     *
+     * @return the computer's model name.
+     */
     public static String getComputerName() {
         String model = layer.getComputerSystem().getModel();
 
         return model.split("_")[0].trim();
     }
 
+    /**
+     * Retrieves the fan speeds in RPM (Revolutions Per Minute).
+     *
+     * @return a string with the fan speeds or "Not found" if no fan data is available.
+     */
     public static String getFansRPM(){
         int[] fanSpeeds = layer.getSensors().getFanSpeeds();
         if(fanSpeeds.length == 0){
@@ -207,6 +280,11 @@ public class SystemInformation {
         return builder.append("RPM").toString();
     }
 
+    /**
+     * Retrieves the current CPU usage percentage.
+     *
+     * @return a string with the CPU usage as a percentage.
+     */
     public static String getCPUUsage(){
         CentralProcessor processor = layer.getProcessor();
 
@@ -217,6 +295,11 @@ public class SystemInformation {
         return String.format("%.2f%%", loadCPU);
     }
 
+    /**
+     * Retrieves the GPU usage percentage for the discrete GPU.
+     *
+     * @return a string with the GPU usage, or a message indicating no GPU is found.
+     */
     public static String getGPUUsage(){
         GraphicsCard gpu = getDiscreteGPU();
 
@@ -241,6 +324,11 @@ public class SystemInformation {
 
     }
 
+    /**
+     * Retrieves the GPU load for an NVIDIA GPU.
+     *
+     * @return a string with the load percentage for the NVIDIA GPU.
+     */
     private static String getGPULoadForNvidia(){
         try {
             String os = System.getProperty("os.name").toLowerCase();
@@ -260,6 +348,11 @@ public class SystemInformation {
         }
     }
 
+    /**
+     * Retrieves the GPU load for an AMD GPU.
+     *
+     * @return a string with the load percentage for the AMD GPU.
+     */
     private static String getGPULoadForAMD() {
         String os = System.getProperty("os.name").toLowerCase();
         StringBuilder result = new StringBuilder();
@@ -303,6 +396,11 @@ public class SystemInformation {
         return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження GPU";
     }
 
+    /**
+     * Retrieves the GPU load for an Intel GPU.
+     *
+     * @return a string with the load percentage for the Intel GPU.
+     */
     private static String getGPULoadForIntel() {
         String os = System.getProperty("os.name").toLowerCase();
         StringBuilder result = new StringBuilder();
@@ -329,12 +427,23 @@ public class SystemInformation {
         return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження Intel GPU";
     }
 
-
+    /**
+     * Converts memory size from bytes to a human-readable format (GB).
+     *
+     * @param totalMemory the memory size in bytes.
+     * @return a string representing the memory size in gigabytes.
+     */
     private static String formatMemory(long totalMemory){
         double memoryInGB = totalMemory / (1024.0 * 1024.0 * 1024.0);
         return String.format("%.2f GB", memoryInGB);
     }
 
+    /**
+     * Formats the graphics card information.
+     *
+     * @param cards a string containing the graphics card details.
+     * @return a formatted string with the graphics card names and models.
+     */
     private static String formatGPU(String cards) {
         if (cards != null && !cards.isEmpty()) {
             String[] cardsList = cards.split(",");

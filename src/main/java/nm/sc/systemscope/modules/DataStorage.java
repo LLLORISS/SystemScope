@@ -9,6 +9,10 @@ import nm.sc.systemscope.adapters.XYChartDataAdapter;
 import java.io.*;
 import java.util.*;
 
+/**
+ * The {@code DataStorage} class provides functionality for saving and loading CPU/GPU
+ * temperature and usage data, as well as storing theme settings in a configuration file.
+ */
 public class DataStorage {
     private static final String dataFolderPath = "src/main/data/";
     private static final String CPUtemperaturesPath = dataFolderPath + "CPUtemperatures.json";
@@ -22,75 +26,36 @@ public class DataStorage {
         createDataFolderAndFiles();
     }
 
-    private static void createDataFolderAndFiles(){
+    /**
+     * Creates the necessary data folder and JSON files if they do not exist.
+     */
+    private static void createDataFolderAndFiles() {
         File dataFolder = new File(dataFolderPath);
-        if(!dataFolder.exists()){
-            if(dataFolder.mkdirs()){
-                System.out.println("Папка 'data' була створена.");
-            }
-            else{
-                System.out.println("Не вдалося створити папку 'data'.");
-            }
+        if (!dataFolder.exists() && dataFolder.mkdirs()) {
+            System.out.println("The 'data' folder was created.");
         }
 
-        File cpuFile = new File(CPUtemperaturesPath);
-        if (!cpuFile.exists()) {
-            try {
-                if (cpuFile.createNewFile()) {
-                    System.out.println("Файл 'CPUtemperatures.json' був створений.");
-                } else {
-                    System.out.println("Не вдалося створити файл 'CPUtemperatures.json'.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        createFile(CPUtemperaturesPath, "CPUtemperatures.json");
+        createFile(GPUtemperaturesPath, "GPUtemperatures.json");
+        createFile(CPUusagePath, "UsageCPU.json");
+        createFile(GPUusagePath, "UsageGPU.json");
+        createFile(averagesPath, "Averages.json");
+    }
 
-        File gpuFile = new File(GPUtemperaturesPath);
-        if (!gpuFile.exists()) {
+    /**
+     * Creates a file if it does not exist.
+     *
+     * @param path The file path.
+     * @param fileName The name of the file.
+     */
+    private static void createFile(String path, String fileName) {
+        File file = new File(path);
+        if (!file.exists()) {
             try {
-                if (gpuFile.createNewFile()) {
-                    System.out.println("Файл 'GPUtemperatures.json' був створений.");
+                if (file.createNewFile()) {
+                    System.out.println("File '" + fileName + "' was created.");
                 } else {
-                    System.out.println("Не вдалося створити файл 'GPUtemperatures.json'.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        File usageCPUFile = new File(CPUusagePath);
-        if (!usageCPUFile.exists()) {
-            try {
-                if (usageCPUFile.createNewFile()) {
-                    System.out.println("Файл 'UsageCPU.json' був створений.");
-                } else {
-                    System.out.println("Не вдалося створити файл 'UsageCPU.json'.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        File usageGPUFile = new File(GPUusagePath);
-        if (!usageGPUFile.exists()) {
-            try {
-                if (usageGPUFile.createNewFile()) {
-                    System.out.println("Файл 'UsageGPU.json' був створений.");
-                } else {
-                    System.out.println("Не вдалося створити файл 'UsageGPU.json'.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        File averagesFile = new File(averagesPath);
-        if (!averagesFile.exists()) {
-            try {
-                if (averagesFile.createNewFile()) {
-                    System.out.println("Файл 'Averages.json' був створений.");
-                } else {
-                    System.out.println("Не вдалося створити файл 'Averages.json'.");
+                    System.out.println("Failed to create file '" + fileName + "'.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -98,22 +63,47 @@ public class DataStorage {
         }
     }
 
+    /**
+     * Saves CPU temperature data to a JSON file.
+     *
+     * @param data The list of CPU temperature data.
+     */
     public static void saveCPUTemperatureData(List<XYChart.Data<String,Number>> data){
         writeData(CPUtemperaturesPath,data);
     }
 
+    /**
+     * Saves GPU temperature data to a JSON file.
+     *
+     * @param data The list of GPU temperature data.
+     */
     public static void saveGPUTemperatureData(List<XYChart.Data<String, Number>> data){
         writeData(GPUtemperaturesPath, data);
     }
 
+    /**
+     * Saves CPU usage data to a JSON file.
+     *
+     * @param data The list of CPU usage data.
+     */
     public static void saveUsageCPUData(List<XYChart.Data<String, Number>> data){
        writeData(CPUusagePath, data);
     }
 
+    /**
+     * Saves GPU usage data to a JSON file.
+     *
+     * @param data The list of GPU usage data.
+     */
     public static void saveUsageGPUData(List<XYChart.Data<String, Number>> data){
         writeData(GPUusagePath, data);
     }
 
+    /**
+     * Saves average values to a JSON file.
+     *
+     * @param averages The map containing average values.
+     */
     public static void saveAveragesData(Map<String, Integer> averages){
         try (FileWriter writer = new FileWriter(averagesPath)) {
             Gson gson = new GsonBuilder().create();
@@ -123,22 +113,47 @@ public class DataStorage {
         }
     }
 
+    /**
+     * Loads CPU temperature data from a JSON file.
+     *
+     * @return A list of CPU temperature data.
+     */
     public static List<XYChart.Data<String, Number>> loadCPUTemperatureData(){
        return readData(CPUtemperaturesPath);
     }
 
+    /**
+     * Loads GPU temperature data from a JSON file.
+     *
+     * @return A list of GPU temperature data.
+     */
     public static List<XYChart.Data<String, Number>> loadGPUTemperatureData(){
         return readData(GPUtemperaturesPath);
     }
 
+    /**
+     * Loads CPU usage data from a JSON file.
+     *
+     * @return A list of CPU usage data.
+     */
     public static List<XYChart.Data<String, Number>> loadUsageCPUData(){
         return readData(CPUusagePath);
     }
 
+    /**
+     * Loads GPU usage data from a JSON file.
+     *
+     * @return A list of GPU usage data.
+     */
     public static List<XYChart.Data<String, Number>> loadUsageGPUData(){
         return readData(GPUusagePath);
     }
 
+    /**
+     * Loads the stored average values from a JSON file.
+     *
+     * @return A map containing average values.
+     */
     public static Map<String, Integer> loadAveragesData() {
         Map<String, Integer> averages = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(averagesPath))) {
@@ -150,55 +165,38 @@ public class DataStorage {
         return averages;
     }
 
-    public static void cleanDataStorage(){
-        try {
-            File cpuFile = new File(CPUtemperaturesPath);
-            if (cpuFile.exists()) {
-                if (cpuFile.delete()) {
-                    System.out.println("CPUtemperatures.json був успішно видалений.");
-                } else {
-                    System.out.println("Не вдалося видалити CPUtemperatures.json.");
-                }
-            }
+    /**
+     * Clears all stored data by deleting the JSON files.
+     */
+    public static void cleanDataStorage() {
+        deleteFile(CPUtemperaturesPath, "CPUtemperatures.json");
+        deleteFile(GPUtemperaturesPath, "GPUtemperatures.json");
+        deleteFile(CPUusagePath, "UsageCPU.json");
+        deleteFile(GPUusagePath, "UsageGPU.json");
+        deleteFile(averagesPath, "Averages.json");
+    }
 
-            File gpuFile = new File(GPUtemperaturesPath);
-            if (gpuFile.exists()) {
-                if (gpuFile.delete()) {
-                    System.out.println("GPUtemperatures.json був успішно видалений.");
-                } else {
-                    System.out.println("Не вдалося видалити GPUtemperatures.json.");
-                }
-            }
-
-            File usageCPUFile = new File(CPUusagePath);
-            if (usageCPUFile.exists()) {
-                if (usageCPUFile.delete()) {
-                    System.out.println("UsageCPU.json був успішно видалений.");
-                } else {
-                    System.out.println("Не вдалося видалити UsageCPU.json.");
-                }
-            }
-            File usageGPUFile = new File(GPUusagePath);
-            if (usageGPUFile.exists()) {
-                if (usageGPUFile.delete()) {
-                    System.out.println("UsageGPU.json був успішно видалений.");
-                } else {
-                    System.out.println("Не вдалося видалити UsageGPU.json.");
-                }
-            }
-            File averagesFile = new File(averagesPath);
-            if (averagesFile.exists()) {
-                if (averagesFile.delete()) {
-                    System.out.println("Averages.json був успішно видалений.");
-                } else {
-                    System.out.println("Не вдалося видалити Averages.json.");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    /**
+     * Deletes a file if it exists.
+     *
+     * @param path The file path.
+     * @param fileName The name of the file.
+     */
+    private static void deleteFile(String path, String fileName) {
+        File file = new File(path);
+        if (file.exists() && file.delete()) {
+            System.out.println(fileName + " was successfully deleted.");
+        } else {
+            System.out.println("Failed to delete " + fileName + ".");
         }
     }
 
+    /**
+     * Writes a list of data to a JSON file.
+     *
+     * @param path The file path.
+     * @param data The data to be written.
+     */
     private static void writeData(String path, List<XYChart.Data<String, Number>> data){
         try(FileWriter writer = new FileWriter(path)){
             Gson gson = new GsonBuilder().registerTypeAdapter(XYChart.Data.class, new XYChartDataAdapter()).create();
@@ -209,6 +207,12 @@ public class DataStorage {
         }
     }
 
+    /**
+     * Reads data from a JSON file.
+     *
+     * @param path The file path.
+     * @return A list of data.
+     */
     private static List<XYChart.Data<String, Number>> readData(String path){
         List<XYChart.Data<String, Number>> data = new ArrayList<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(path))){
@@ -221,6 +225,11 @@ public class DataStorage {
         return data;
     }
 
+    /**
+     * Loads the theme setting from the configuration file.
+     *
+     * @return The loaded theme, or {@code Theme.DARK} if an error occurs.
+     */
     public static Theme loadThemeFromConfig() {
         Properties props = new Properties();
         try (InputStream stream = new FileInputStream(configPath)) {
@@ -232,6 +241,11 @@ public class DataStorage {
         }
     }
 
+    /**
+     * Saves the theme setting to the configuration file.
+     *
+     * @param theme The theme to save.
+     */
     public static void saveThemeToConfig(Theme theme) {
         Properties props = new Properties();
         props.setProperty("theme", theme.name());

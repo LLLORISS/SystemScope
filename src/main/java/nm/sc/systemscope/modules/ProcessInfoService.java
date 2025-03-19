@@ -8,7 +8,18 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A service class that provides methods for interacting with running processes.
+ * It can retrieve the list of running processes, search for processes by name or PID,
+ * and kill a process by its PID.
+ */
 public class ProcessInfoService {
+    /**
+     * Retrieves a list of running processes on the current system.
+     *
+     * @return A list of ProcessInfo objects representing the running processes.
+     * @throws IOException If an error occurs while reading the process list.
+     */
     public static List<ProcessInfo> getRunningProcesses() throws IOException {
         List<ProcessInfo> processList = new ArrayList<>();
 
@@ -51,7 +62,14 @@ public class ProcessInfoService {
         return processList;
     }
 
-
+    /**
+     * Attempts to kill a process by its PID.
+     *
+     * @param pid The process identifier (PID) of the process to be killed.
+     * @return True if the process was successfully killed, otherwise false.
+     * @throws IOException If an error occurs while executing the kill command.
+     * @throws InterruptedException If the kill process is interrupted.
+     */
     public static boolean killProcess(int pid) throws IOException, InterruptedException {
         boolean flag = false;
         String os = System.getProperty("os.name").toLowerCase();
@@ -82,6 +100,13 @@ public class ProcessInfoService {
         return flag;
     }
 
+    /**
+     * Searches for processes that match the given search input by process name or PID.
+     *
+     * @param searchInput The input to search for (either process name or PID).
+     * @return A list of ProcessInfo objects that match the search criteria.
+     * @throws IOException If an error occurs while retrieving the list of running processes.
+     */
     public static List<ProcessInfo> searchProcess(String searchInput) throws IOException {
         List<ProcessInfo> filtered = new ArrayList<>();
 

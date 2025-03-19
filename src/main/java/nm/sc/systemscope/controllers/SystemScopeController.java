@@ -27,9 +27,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class
-
-SystemScopeController {
+/**
+ * The class that manages the main SystemScope window
+ */
+public class SystemScopeController {
     @FXML
     private Label InfoPC;
     @FXML
@@ -63,11 +64,13 @@ SystemScopeController {
     private BenchWindow benchWindow = null;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    /**
+     * A method that initializes initial values
+     */
     @FXML
     public void initialize() {
         theme = DataStorage.loadThemeFromConfig();
         applyTheme();
-        System.out.println(theme);
         Platform.runLater(() -> {
             InfoPC.setText(SystemInformation.getComputerName());
             CPU.setText(SystemInformation.getProcessorName());
@@ -101,6 +104,11 @@ SystemScopeController {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
+    /**
+     * A method that filters all similar processes by a given name
+     * @param searchInput input data for the search
+     * @throws IOException if an error occurs during process filtering
+     */
     private void filterProcesses(String searchInput) throws IOException {
         List<ProcessInfo> filtered = ProcessInfoService.searchProcess(searchInput);
 
@@ -108,6 +116,10 @@ SystemScopeController {
         observableList.addAll(filtered);
     }
 
+    /**
+     * Creates and opens a window with charts
+     * @throws IOException if an error occurs when opening the window
+     */
     @FXML
     public void onShowChartsClicked() throws IOException {
         FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("ScopeCharts-view.fxml"));
@@ -129,6 +141,9 @@ SystemScopeController {
         stage.showAndWait();
     }
 
+    /**
+     * A method that forcibly terminates the selected process
+     */
     @FXML
     public void onKillSelectedProcessClicked(){
         ProcessInfo selectedProcess = processList.getSelectionModel().getSelectedItem();
@@ -149,11 +164,17 @@ SystemScopeController {
         }
     }
 
+    /**
+     * Updates the list of processes
+     */
     @FXML
     public void onRefreshProcessesBtnClicked(){
         updateProcessList();
     }
 
+    /**
+     * Changes the theme color to the opposite (dark or light)
+     */
     @FXML
     public void onThemeToggleClicked(){
         if(theme.equals(Theme.DARK)){
@@ -167,8 +188,11 @@ SystemScopeController {
         applyTheme();
     }
 
+    /**
+     * A method that launches a window with a file selection for the benchmark and controls the benchmarking process
+     */
     @FXML
-    public void onBenchClicked() {
+    public void onBenchClicked(){
         try {
             if (benchWindow == null && !Benchmark.getBenchmarkStarted()) {
                 FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("BenchSelector-view.fxml"));
@@ -234,7 +258,7 @@ SystemScopeController {
                         } else {
                             System.out.println("Процес не знайдений.");
                         }
-                        Benchmark.cleanInfo();
+                        Benchmark.clearInfo();
                     }
                     catch(IOException | InterruptedException e){
                         e.printStackTrace();
@@ -259,6 +283,11 @@ SystemScopeController {
         }
     }
 
+    /**
+     * Method that runs the selected file for the benchmark
+     * @param os name of the operating system
+     * @return the result of running the file
+     */
     private boolean launchFile(String os){
         try{
             ProcessBuilder processBuilder;
@@ -297,6 +326,9 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that monitors the current status of the game, the method ends when the benchmark file is closed
+     */
     private void waitForFileToClose(){
         try{
             String selectedFile = Benchmark.getAbsolutePath();
@@ -316,6 +348,12 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that checks if the process is running in the operating system
+     * @param processName process name
+     * @param os operating system name
+     * @return running status
+     */
     private boolean isProcessRunning(String processName, String os){
         try{
             Process process;
@@ -334,6 +372,10 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that creates a dialog box and displays additional information about RAM.
+     * The method may not work if you do not have the appropriate access rights to system folders.
+     */
     @FXML
     public void showRamInfo(){
         String info = SystemInformation.getRamInfo();
@@ -342,6 +384,11 @@ SystemScopeController {
         alert.showAndWait();
     }
 
+    /**
+     * A method that determines the color relative to the input data on topics
+     * @param temperature temperature indicator
+     * @return Сolor relative to the temperature (temperature <= 70° - Green, temperature >= 70 and <= 90 - Orange, temperature > 90 - RED
+     */
     private static Paint getColorByZone(double temperature) {
         if (temperature <= 70) {
             return Color.GREEN;
@@ -352,6 +399,11 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that converts a string with temperature to a number by removing extra characters
+     * @param tempString input string
+     * @return Temperature value
+     */
     private double parseTemperature(String tempString) {
         Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
         Matcher matcher = pattern.matcher(tempString);
@@ -363,6 +415,9 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that applies a style file to the current window
+     */
     public void applyTheme(){
         if (this.scene != null) {
             this.scene.getStylesheets().clear();
@@ -379,6 +434,9 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that updates the current values of components
+     */
     private void updateTemperature() {
         String tempCPUString = SystemInformation.getTemperatureCPU();
         String tempGPUString = SystemInformation.getTemperatureGPU();
@@ -412,6 +470,11 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that converts the temperature of several video cards to numbers
+     * @param tempString input string with temperatures
+     * @return An array of numbers with temperatures
+     */
     private double[] parseMultipleTemperatures(String tempString) {
         Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
         Matcher matcher = pattern.matcher(tempString);
@@ -430,6 +493,9 @@ SystemScopeController {
         return temperatures;
     }
 
+    /**
+     * A method that updates processes list
+     */
     private void updateProcessList() {
         try {
             List<ProcessInfo> processes = ProcessInfoService.getRunningProcesses();
@@ -444,10 +510,17 @@ SystemScopeController {
         }
     }
 
+    /**
+     * A method that sets the scene
+     * @param scene scene for display
+     */
     public void setScene(Scene scene){
         this.scene = scene;
     }
 
+    /**
+     * A method that closes all necessary events and scheduled operations
+     */
     public void shutdown() {
         if(scopeChartsController != null){
             scopeChartsController.stopBackgroundUpdate();

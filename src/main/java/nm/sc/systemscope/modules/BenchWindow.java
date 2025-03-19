@@ -7,6 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A floating benchmark window displaying system statistics such as CPU and GPU usage and temperature.
+ */
 public class BenchWindow {
 
     private JFrame frame;
@@ -17,6 +20,9 @@ public class BenchWindow {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    /**
+     * Initializes the benchmark window and starts the scheduled updates.
+     */
     public void initialize() {
         scheduler.scheduleAtFixedRate(this::updateBenchmark, 0, 1, TimeUnit.SECONDS);
 
@@ -65,6 +71,9 @@ public class BenchWindow {
         frame.setVisible(true);
     }
 
+    /**
+     * A transparent pane to capture and block mouse events.
+     */
     private static class TransparentPane extends JComponent {
         public TransparentPane() {
             setOpaque(false);
@@ -86,16 +95,28 @@ public class BenchWindow {
         }
     }
 
+    /**
+     * Closes the benchmark window.
+     */
     public void close() {
         if (frame != null) {
             frame.dispose();
         }
+        this.shutdownScheduler();
     }
 
+    /**
+     * Checks if the benchmark window is visible.
+     *
+     * @return true if the window is visible, false otherwise.
+     */
     public boolean isVisible() {
         return frame != null && frame.isVisible();
     }
 
+    /**
+     * Updates the benchmark data displayed in the window.
+     */
     private void updateBenchmark(){
         String tempCPU = SystemInformation.getTemperatureCPU();
         String tempGPU = SystemInformation.getTemperatureDiscreteGPU();
@@ -110,6 +131,9 @@ public class BenchWindow {
         });
     }
 
+    /**
+     * Shuts down the scheduler to stop periodic updates.
+     */
     private void shutdownScheduler() {
         scheduler.shutdown();
         try {

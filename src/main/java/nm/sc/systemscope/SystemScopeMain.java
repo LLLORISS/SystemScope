@@ -13,11 +13,19 @@ import nm.sc.systemscope.modules.Theme;
 
 import java.io.IOException;
 
+/**
+ * The main class to run the program
+ */
 public class SystemScopeMain extends Application {
     private SystemScopeController controller;
 
+    /**
+     * Starts the JavaFX application.
+     *
+     * @param stage The primary stage for this application.
+     * @throws IOException If there is an issue loading the FXML file.
+     */
     @Override
-
     public void start(Stage stage) throws IOException {
         DataStorage.saveThemeToConfig(Theme.DARK);
         FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
@@ -30,6 +38,11 @@ public class SystemScopeMain extends Application {
         stage.show();
     }
 
+    /**
+     * Configures the main stage parameters such as size, title, and close event handling.
+     *
+     * @param stage The primary stage to configure.
+     */
     private void setStageParams(Stage stage) {
         stage.setTitle("SystemScope");
 
@@ -49,6 +62,11 @@ public class SystemScopeMain extends Application {
         });
     }
 
+    /**
+     * Stops the application, ensuring proper cleanup.
+     *
+     * @throws Exception If an error occurs during shutdown.
+     */
     @Override
     public void stop() throws Exception {
         if (controller != null) {
@@ -57,6 +75,11 @@ public class SystemScopeMain extends Application {
         super.stop();
     }
 
+    /**
+     * The main entry point of the application.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         launch();
     }

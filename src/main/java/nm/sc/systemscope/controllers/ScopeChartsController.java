@@ -18,6 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A class that controls events and implements the functions of the main interface
+ */
 public class ScopeChartsController {
     @FXML
     private ScopeLineChart tempCPUChart;
@@ -52,6 +55,9 @@ public class ScopeChartsController {
 
     private Scene scene;
 
+    /**
+     * A method that initializes the initial values for the created window
+     */
     @FXML
     public void initialize(){
         applyTheme();
@@ -94,11 +100,17 @@ public class ScopeChartsController {
         startBackgroundUpdate();
     }
 
+    /**
+     * A method that starts background data refreshing at intervals of 2 seconds
+     */
     private void startBackgroundUpdate(){
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(this::updateCharts, 0, 2, TimeUnit.SECONDS);
     }
 
+    /**
+     * A method that updates graphs and their data
+     */
     private void updateCharts(){
         String currentTime = timeFormat.format(new Date());
 
@@ -155,6 +167,18 @@ public class ScopeChartsController {
         }
     }
 
+    /**
+     *
+     * @param tempCPU Input temperature of CPU
+     * @param tempGPU Input temperature of GPU
+     * @param usageCPU Input usage of CPU
+     * @param usageGPU Input usage of GPU
+     * @param lastCPU Input data of last CPU temperature
+     * @param lastGPU Input data of last GPU temperature
+     * @param lastUsageCPU Input data of last Usage of CPU
+     * @param lastUsageGPU Input data of last Usage of GPU
+     * @return Map<String,Integer> which contains the average values of the input data
+     */
     private Map<String, Integer> getAveragesMap(int tempCPU, int tempGPU, int usageCPU, int usageGPU, int lastCPU, int lastGPU, int lastUsageCPU, int lastUsageGPU){
         Map<String, Integer> result = new HashMap<>();
 
@@ -170,6 +194,10 @@ public class ScopeChartsController {
         return result;
     }
 
+    /**
+     * Method that updates text fields with data
+     * @param data Accepts Map<String, Integer> of input data to update
+     */
     private void labelsUpdateFromMap(Map<String, Integer> data){
         if(data != null && !data.isEmpty()) {
             this.labelAverageTempCPU.setText(data.get("cpu_temp") + " °C");
@@ -184,10 +212,17 @@ public class ScopeChartsController {
         }
     }
 
+    /**
+     * A method that sets current scene
+     * @param scene
+     */
     public void setScene(Scene scene){
         this.scene = scene;
     }
 
+    /**
+     * A method that applies a style file to the current window
+     */
     public void applyTheme(){
         theme = DataStorage.loadThemeFromConfig();
         if (this.scene != null) {
@@ -204,6 +239,9 @@ public class ScopeChartsController {
         }
     }
 
+    /**
+     * Method to stop background data updates
+     */
     public void stopBackgroundUpdate() {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdown();

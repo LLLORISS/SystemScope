@@ -10,6 +10,9 @@ import java.io.File;
 import javafx.scene.control.Label;
 import nm.sc.systemscope.modules.ScopeAlert;
 
+/**
+ * A class that creates a file selection window for the benchmark
+ */
 public class BenchSelectorController {
     @FXML
     private Label selectedFileLabel;
@@ -18,11 +21,17 @@ public class BenchSelectorController {
     @FXML
     private String selectedFile;
 
+    /**
+     * A method that sets the current stage
+     */
     public void setStage(Stage stage){
         this.stage = stage;
         this.selectedFile = "";
     }
 
+    /**
+     * A method that checks the selected file and sets the path to the selected file
+     */
     @FXML
     public void onSelectGameBtnClicked() {
         FileChooser fileChooser = new FileChooser();
@@ -46,6 +55,9 @@ public class BenchSelectorController {
         }
     }
 
+    /**
+     * A method that checks the selected file and closes the window
+     */
     @FXML
     public void onStartBenchmarkBtnClicked(){
         if(selectedFile != null && !selectedFile.isEmpty()){
@@ -57,12 +69,19 @@ public class BenchSelectorController {
         }
     }
 
+    /**
+     * A method that closes the window
+     */
     public void close(){
         if(stage != null){
             stage.close();
         }
     }
 
+    /**
+     * A method that returns the path to the selected file
+     * @return Path to the selected file
+     */
     public String getSelectedFile(){
         return this.selectedFile;
     }
