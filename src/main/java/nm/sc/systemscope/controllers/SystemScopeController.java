@@ -2,7 +2,6 @@ package nm.sc.systemscope.controllers;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -11,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import nm.sc.systemscope.*;
+import javafx.concurrent.Task;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -19,9 +19,7 @@ import javafx.scene.Scene;
 import java.io.IOException;
 import javafx.collections.ObservableList;
 import nm.sc.systemscope.modules.*;
-import oshi.hardware.UsbDevice;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,6 +50,9 @@ public class SystemScopeController {
     private Label FansSpeed;
     @FXML
     private Button benchBtn;
+    @FXML
+    private Button themeToggleBtn;
+
     @FXML
     private ScopeListView<ProcessInfo> processList;
     @FXML
@@ -228,19 +229,20 @@ public class SystemScopeController {
                 stage.setTitle("Вибір гри");
                 stage.showAndWait();
 
-                System.out.println("Process name " + controller.getSelectedFile());
-                String selectedFile = controller.getSelectedFile();
-                Benchmark.setAbsolutePath(selectedFile);
+                if (controller.getStartClicked()) {
+                    System.out.println("Process name " + controller.getSelectedFile());
+                    String selectedFile = controller.getSelectedFile();
+                    Benchmark.setAbsolutePath(selectedFile);
 
-                if (selectedFile == null || selectedFile.isEmpty()) {
-                    System.out.println("Файл не вибрано, скасовано.");
-                    return;
+                    if (selectedFile == null || selectedFile.isEmpty()) {
+                        System.out.println("Файл не вибрано, скасовано.");
+                        return;
+                    }
+
+                    Benchmark.startBenchmark(this);
+                } else {
+                    Benchmark.stopBenchmark();
                 }
-
-                Benchmark.startBenchmark(this);
-            }
-            else{
-                Benchmark.stopBenchmark();
             }
         }
         catch(IOException e){
@@ -305,44 +307,71 @@ public class SystemScopeController {
                 themeStyleFile = "/nm/sc/systemscope/CSS/light-styles.css";
             }
 
+            updateThemeButton();
+
             this.scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(themeStyleFile)).toExternalForm());
         }
+    }
+
+    /**
+     * Updates the text of the theme toggle button based on the current theme.
+     * <p>
+     * indicating the option to switch to the light theme.,
+     * indicating the option to switch to the dark theme.
+     */
+    private void updateThemeButton() {
+        Platform.runLater(()->{
+            if (theme == Theme.DARK) {
+                themeToggleBtn.setText("Світла тема");
+            } else {
+                themeToggleBtn.setText("Темна тема");
+            }
+        });
     }
 
     /**
      * A method that updates the current values of components
      */
     private void updateTemperature() {
-        String tempCPUString = SystemInformation.getTemperatureCPU();
-        String tempGPUString = SystemInformation.getTemperatureGPU();
-        String Fans = SystemInformation.getFansRPM();
+        Task<Void> updateTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                String tempCPUString = SystemInformation.getTemperatureCPU();
+                String tempGPUString = SystemInformation.getTemperatureGPU();
+                String Fans = SystemInformation.getFansRPM();
 
-        try {
-            double tempCPU = parseTemperature(tempCPUString);
-            double[] gpuTemps = parseMultipleTemperatures(tempGPUString);
+                try {
+                    double tempCPU = parseTemperature(tempCPUString);
+                    double[] gpuTemps = parseMultipleTemperatures(tempGPUString);
 
-            Platform.runLater(() -> {
-                TempCPU.setText(tempCPUString);
-                TempCPU.setTextFill(getColorByZone(tempCPU));
+                    Platform.runLater(() -> {
+                        TempCPU.setText(tempCPUString);
+                        TempCPU.setTextFill(getColorByZone(tempCPU));
 
-                String formattedGPU = gpuTemps.length > 1
-                        ? String.format("Intel GPU: %.1f °C\nNVIDIA GPU: %.1f °C", gpuTemps[0], gpuTemps[1])
-                        : String.format("GPU: %.1f °C", gpuTemps[0]);
-                TempGPU.setText(formattedGPU);
+                        String formattedGPU = gpuTemps.length > 1
+                                ? String.format("Intel GPU: %.1f °C\nNVIDIA GPU: %.1f °C", gpuTemps[0], gpuTemps[1])
+                                : String.format("GPU: %.1f °C", gpuTemps[0]);
+                        TempGPU.setText(formattedGPU);
 
-                TempGPU.setTextFill(getColorByZone(Math.max(gpuTemps[0], gpuTemps.length > 1 ? gpuTemps[1] : gpuTemps[0])));
+                        TempGPU.setTextFill(getColorByZone(Math.max(gpuTemps[0], gpuTemps.length > 1 ? gpuTemps[1] : gpuTemps[0])));
 
-                FansSpeed.setText(Fans);
-                if (Fans.equals("Не знайдено")) {
-                    FansSpeed.setTextFill(Color.ORANGE);
-                } else {
-                    FansSpeed.setTextFill(Color.GREEN);
+                        FansSpeed.setText(Fans);
+                        if (Fans.equals("Не знайдено")) {
+                            FansSpeed.setTextFill(Color.ORANGE);
+                        } else {
+                            FansSpeed.setTextFill(Color.GREEN);
+                        }
+                    });
+
+                } catch (NumberFormatException e) {
+                    System.err.println("Помилка парсингу температури: " + e.getMessage());
                 }
-            });
 
-        } catch (NumberFormatException e) {
-            System.err.println("Помилка парсингу температури: " + e.getMessage());
-        }
+                return null;
+            }
+        };
+
+        new Thread(updateTask).start();
     }
 
     /**

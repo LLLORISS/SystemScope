@@ -9,6 +9,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import nm.sc.systemscope.controllers.SystemScopeController;
 import nm.sc.systemscope.modules.DataStorage;
+import nm.sc.systemscope.modules.SystemTrayManager;
 import nm.sc.systemscope.modules.Theme;
 
 import java.io.IOException;
@@ -27,15 +28,23 @@ public class SystemScopeMain extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
-        DataStorage.saveThemeToConfig(Theme.DARK);
-        FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        controller = fxmlLoader.getController();
-        controller.setScene(scene);
-        controller.applyTheme();
-        setStageParams(stage);
-        stage.setScene(scene);
-        stage.show();
+        try {
+            DataStorage.saveThemeToConfig(Theme.DARK);
+            FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            controller = fxmlLoader.getController();
+            controller.setScene(scene);
+            controller.applyTheme();
+            setStageParams(stage);
+            stage.setScene(scene);
+
+            SystemTrayManager.addToSystemTray(stage);
+            stage.show();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+            Platform.exit();
+        }
     }
 
     /**
@@ -52,14 +61,6 @@ public class SystemScopeMain extends Application {
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         stage.setWidth(screenBounds.getWidth());
         stage.setHeight(screenBounds.getHeight());
-
-        stage.setOnCloseRequest(event -> {
-            if (controller != null) {
-                controller.shutdown();
-            }
-            Platform.exit();
-            System.exit(0);
-        });
     }
 
     /**
@@ -69,8 +70,8 @@ public class SystemScopeMain extends Application {
      */
     @Override
     public void stop() throws Exception {
-        if (controller != null) {
-            controller.shutdown();
+       if (controller != null){
+           controller.shutdown();
         }
         super.stop();
     }

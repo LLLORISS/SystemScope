@@ -6,11 +6,12 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="nm.sc.systemscope.controllers.BenchSelectorController"
             stylesheets="@CSS/styles.css"
-            prefHeight="200.0" prefWidth="400.0">
+            prefHeight="250.0" prefWidth="400.0">
 
-    <Button text="Вибрати гру для бенчмарку" fx:id="selectGameButton" onAction="#onSelectGameBtnClicked" styleClass="main-button" layoutX="20" layoutY="20"/>
+    <VBox alignment="CENTER" spacing="15" layoutX="50" layoutY="40" prefWidth="300">
+        <Button text="Вибрати гру" fx:id="selectGameButton" onAction="#onSelectGameBtnClicked" styleClass="main-button"/>
+        <Label fx:id="selectedFileLabel" text="Файл не вибрано" styleClass="file-label"/>
+        <Button text="Запустити бенчмарк" fx:id="startBenchmarkButton" onAction="#onStartBenchmarkBtnClicked" styleClass="main-button-start"/>
+    </VBox>
 
-    <Label fx:id="selectedFileLabel" text="Файл не вибрано" layoutX="20" layoutY="70" style="-fx-text-fill: white;"/>
-
-    <Button text="Розпочати бенчмарк" fx:id="startBenchmarkButton" onAction="#onStartBenchmarkBtnClicked" styleClass="main-button" layoutX="20" layoutY="120"/>
 </AnchorPane>

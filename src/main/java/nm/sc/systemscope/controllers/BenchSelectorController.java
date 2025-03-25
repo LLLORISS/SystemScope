@@ -20,6 +20,8 @@ public class BenchSelectorController {
     private Stage stage;
     @FXML
     private String selectedFile;
+    @FXML
+    private Boolean startClicked = false;
 
     /**
      * A method that sets the current stage
@@ -61,6 +63,7 @@ public class BenchSelectorController {
     @FXML
     public void onStartBenchmarkBtnClicked(){
         if(selectedFile != null && !selectedFile.isEmpty()){
+            this.startClicked = true;
             this.close();
         }
         else{
@@ -70,16 +73,20 @@ public class BenchSelectorController {
     }
 
     /**
+     * A method that returns status of the button clicked
+     * @return status of button
+     */
+    public boolean getStartClicked(){
+        return this.startClicked;
+    }
+
+    /**
      * A method that closes the window
      */
     public void close(){
         if(stage != null){
             stage.close();
         }
-    }
-
-    public void swapBenchButton(){
-
     }
 
     /**

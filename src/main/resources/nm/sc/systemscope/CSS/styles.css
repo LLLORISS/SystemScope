@@ -34,6 +34,12 @@
     -fx-text-fill: #ff5555;
 }
 
+.file-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #d2dae2;
+    -fx-font-weight: bold;
+}
+
 .main-button {
     -fx-font-size: 16px;
     -fx-text-fill: #ffffff;
@@ -65,6 +71,23 @@
 .main-button:pressed {
     -fx-background-color: #004b80;
 }
+
+.main-button-start {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: #05c46b;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+}
+
+.main-button-start:hover {
+    -fx-background-color: #0be881;
+}
+
+.main-button-start:pressed {
+    -fx-background-color: #009432;
+}
+
 
 .VBoxSection, .HBoxSection{
     -fx-background-color: #252526;
@@ -247,4 +270,28 @@
 .onHover{
     -fx-background-color: ORANGE;
 }
+
+.tray-menu {
+    -fx-background-color: #000000;
+    -fx-padding: 10;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);
+}
+
+.menu-tray-button {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-background-radius: 10;
+    -fx-padding: 10 30;
+    -fx-border-color: transparent;
+    -fx-border-radius: 10;
+    -fx-pref-width: 200px;
+}
+
+.menu-tray-button:hover {
+    -fx-background-color: #555555;
+}
+
 

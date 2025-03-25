@@ -122,7 +122,9 @@ public class Benchmark {
                 benchWindow = null;
             }
 
-            controller.swapBenchButton();
+            if(controller != null) {
+                controller.swapBenchButton();
+            }
         });
     }
 
@@ -251,6 +253,7 @@ public class Benchmark {
      *
      * @return The BenchWindow instance.
      */
+
     public static BenchWindow getBenchWindow(){ return benchWindow;}
 
     /**
