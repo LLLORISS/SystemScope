@@ -15,6 +15,7 @@ import java.util.*;
  */
 public class DataStorage {
     private static final String dataFolderPath = "src/main/data/";
+    private static final String logsFolderPath = "src/main/data/logs/";
     private static final String CPUtemperaturesPath = dataFolderPath + "CPUtemperatures.json";
     private static final String GPUtemperaturesPath = dataFolderPath + "GPUtemperatures.json";
     private static final String CPUusagePath = dataFolderPath + "UsageCPU.json";
@@ -33,6 +34,11 @@ public class DataStorage {
         File dataFolder = new File(dataFolderPath);
         if (!dataFolder.exists() && dataFolder.mkdirs()) {
             System.out.println("The 'data' folder was created.");
+        }
+
+        File logsFolder = new File(logsFolderPath);
+        if(!logsFolder.exists() && logsFolder.mkdirs()){
+            System.out.println("The 'logs' folder was created.");
         }
 
         createFile(CPUtemperaturesPath, "CPUtemperatures.json");
@@ -60,6 +66,102 @@ public class DataStorage {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * Creates a log file and writes the benchmarking data, including temperatures and usage statistics for
+     * CPU and GPU, as well as average values, into the file.
+     *
+     * @param fileName the name of the log file to be created. The extension (e.g., .txt) will be appended if missing.
+     * @param tCPU a list of integer values representing the CPU temperatures during the benchmark.
+     * @param tGPU a list of integer values representing the GPU temperatures during the benchmark.
+     * @param uCPU a list of integer values representing the CPU usage percentages during the benchmark.
+     * @param uGPU a list of integer values representing the GPU usage percentages during the benchmark.
+     * @param atCPU the average CPU temperature during the benchmark.
+     * @param atGPU the average GPU temperature during the benchmark.
+     * @param auCPU the average CPU usage percentage during the benchmark.
+     * @param auGPU the average GPU usage percentage during the benchmark.
+     * @param time the timestamp of the benchmark (in seconds or milliseconds, depending on the context).
+     *
+     * @throws IOException if an I/O error occurs while creating or writing to the log file.
+     *
+     * This method first checks if the log file exists and creates a new file if necessary. It then writes
+     * the data to the file, including the individual temperatures and usages as well as the average values.
+     */
+    public static void createLogFile(String fileName, List<Integer> tCPU, List<Integer> tGPU, List<Integer> uCPU, List<Integer> uGPU,
+                                     int atCPU, int atGPU, int auCPU, int auGPU, double time) {
+        String splittedName = fileName.split("\\.")[0];
+        File file = new File(logsFolderPath + splittedName + ".txt");
+
+        if (!file.exists()) {
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("File '" + fileName + "' was created.");
+                } else {
+                    System.out.println("Failed to create file '" + fileName + "'.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try (FileWriter writer = new FileWriter(file, true)) {
+            writer.write("Benchmark Log\n");
+            writer.write("Timestamp: " + time + "\n");
+
+            writer.write("CPU Temperature (°C): ");
+            for (Integer temp : tCPU) {
+                writer.write(temp + " ");
+            }
+            writer.write("\n");
+
+            writer.write("GPU Temperature (°C): ");
+            for (Integer temp : tGPU) {
+                writer.write(temp + " ");
+            }
+            writer.write("\n");
+
+            writer.write("CPU Usage (%): ");
+            for (Integer usage : uCPU) {
+                writer.write(usage + " ");
+            }
+            writer.write("\n");
+
+            writer.write("GPU Usage (%): ");
+            for (Integer usage : uGPU) {
+                writer.write(usage + " ");
+            }
+            writer.write("\n");
+
+            writer.write("Average CPU Temperature: " + atCPU + "\n");
+            writer.write("Average GPU Temperature: " + atGPU + "\n");
+            writer.write("Average CPU Usage: " + auCPU + "\n");
+            writer.write("Average GPU Usage: " + auGPU + "\n");
+
+            writer.write("--------------------------------------------------\n");
+
+            System.out.println("Data written to file: " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Checks if a log file with the specified name already exists in the designated logs folder.
+     *
+     * @param fileName the name of the log file to check for existence. The extension (e.g., .txt) will be automatically appended if missing.
+     * @return {@code true} if the log file exists, otherwise {@code false}.
+     */
+    public static boolean isLogFileExist(String fileName){
+        String temp = fileName.split("\\.")[0];
+        File file = new File(logsFolderPath + temp + ".txt");
+
+        if(!file.exists()){
+            return false;
+        }
+        else{
+            return true;
         }
     }
 
@@ -255,5 +357,37 @@ public class DataStorage {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Retrieves a list of benchmark log files from the specified logs directory.
+     * Each log file is represented as a {@link ScopeBenchLog} object, which contains the file's absolute path and name.
+     *
+     * @return a list of {@link ScopeBenchLog} objects representing the log files in the logs directory.
+     *         If the directory does not exist or an error occurs while reading the directory, an empty list is returned.
+     */
+    public static List<ScopeBenchLog> getBenchLogs() {
+        File logsDir = new File(logsFolderPath);
+        List<ScopeBenchLog> logs = new ArrayList<>();
+
+        if(logsDir.exists() && logsDir.isDirectory()) {
+            File[] fileList = logsDir.listFiles();
+
+            if(fileList != null) {
+                for(File file : fileList) {
+                    if(file.isFile()){
+                        logs.add(new ScopeBenchLog(file.getAbsolutePath(), file.getName()));
+                    }
+                }
+            }
+            else {
+                System.out.println("Помилка при отриманні списку файлів.");
+            }
+        }
+        else {
+            System.out.println("Вказаний шлях не є директорією.");
+        }
+
+        return logs;
     }
 }

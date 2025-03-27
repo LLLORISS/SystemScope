@@ -11,15 +11,12 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import nm.sc.systemscope.*;
 import javafx.concurrent.Task;
-
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.Scene;
-
 import java.io.IOException;
 import javafx.collections.ObservableList;
 import nm.sc.systemscope.modules.*;
-
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,51 +29,31 @@ import java.util.regex.Pattern;
  * The class that manages the main SystemScope window
  */
 public class SystemScopeController {
-    @FXML
-    private Label InfoPC;
-    @FXML
-    private Label CPU;
-    @FXML
-    private Label GPU;
-    @FXML
-    private Label RAM;
-    @FXML
-    private Label DiskStorage;
-    @FXML
-    private Label TempCPU;
-    @FXML
-    private Label TempGPU;
-    @FXML
-    private Label FansSpeed;
-    @FXML
-    private Button benchBtn;
-    @FXML
-    private Button themeToggleBtn;
-
-    @FXML
-    private ScopeListView<ProcessInfo> processList;
-    @FXML
-    private ScopeListView<ScopeUsbDevice> devicesList;
+    @FXML private Label InfoPC;
+    @FXML private Label CPU;
+    @FXML private Label GPU;
+    @FXML private Label RAM;
+    @FXML private Label DiskStorage;
+    @FXML private Label TempCPU;
+    @FXML private Label TempGPU;
+    @FXML private Label FansSpeed;
+    @FXML private Button benchBtn;
+    @FXML private Button themeToggleBtn;
+    @FXML private TextField searchField;
+    @FXML private ScopeListView<ProcessInfo> processList;
+    @FXML private ScopeListView<ScopeUsbDevice> devicesList;
 
     private ObservableList<ProcessInfo> observableList;
     private ObservableList<ScopeUsbDevice> observableDevicesList;
-
-    @FXML
-    private TextField searchField;
-
     private ScopeChartsController scopeChartsController;
-
     private Theme theme;
-
     private Scene scene;
-
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
      * A method that initializes initial values
      */
-    @FXML
-    public void initialize() {
+    @FXML public void initialize() {
         theme = DataStorage.loadThemeFromConfig();
         applyTheme();
         Platform.runLater(() -> {
@@ -134,8 +111,7 @@ public class SystemScopeController {
      * Creates and opens a window with charts
      * @throws IOException if an error occurs when opening the window
      */
-    @FXML
-    public void onShowChartsClicked() throws IOException {
+    @FXML public void onShowChartsClicked() throws IOException {
         FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("ScopeCharts-view.fxml"));
         Parent root = loader.load();
 
@@ -156,10 +132,32 @@ public class SystemScopeController {
     }
 
     /**
+     * Handles the event when the "Bench Logs" button is clicked. This method loads the "LogsList-view.fxml" file,
+     * sets up the associated controller, and displays a new window (stage) with the list of logs.
+     * The stage is non-resizable, and the title of the window is set to "Логи".
+     *
+     * @throws IOException if there is an issue loading the FXML file or setting up the scene.
+     */
+    @FXML public void onBenchLogsClicked() throws IOException {
+        FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("LogsList-view.fxml"));
+        Parent root = loader.load();
+
+        LogsListViewController controller = loader.getController();
+
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        controller.setScene(scene);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.setTitle("Логи");
+
+        stage.showAndWait();
+    }
+
+    /**
      * A method that forcibly terminates the selected process
      */
-    @FXML
-    public void onKillSelectedProcessClicked(){
+    @FXML public void onKillSelectedProcessClicked(){
         ProcessInfo selectedProcess = processList.getSelectionModel().getSelectedItem();
         if(selectedProcess != null){
             try{
@@ -181,24 +179,21 @@ public class SystemScopeController {
     /**
      * Updates the list of processes
      */
-    @FXML
-    public void onRefreshProcessesBtnClicked(){
+    @FXML public void onRefreshProcessesBtnClicked(){
         updateProcessList();
     }
 
     /**
      * Updates the list of devices
      */
-    @FXML
-    public void onRefreshDevicesBtnClicked(){
+    @FXML public void onRefreshDevicesBtnClicked(){
         updateDevicesList();
     }
 
     /**
      * Changes the theme color to the opposite (dark or light)
      */
-    @FXML
-    public void onThemeToggleClicked(){
+    @FXML public void onThemeToggleClicked(){
         if(theme.equals(Theme.DARK)){
             theme = Theme.LIGHT;
             DataStorage.saveThemeToConfig(Theme.LIGHT);
@@ -213,48 +208,19 @@ public class SystemScopeController {
     /**
      * A method that launches a window with a file selection for the benchmark and controls the benchmarking process
      */
-    @FXML
-    public void onBenchClicked(){
-        try {
-            if (Benchmark.getBenchWindow() == null && !Benchmark.getBenchmarkStarted()) {
-                FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("BenchSelector-view.fxml"));
-                Parent root = loader.load();
-
-                BenchSelectorController controller = loader.getController();
-
-                Scene scene = new Scene(root);
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                controller.setStage(stage);
-                stage.setTitle("Вибір гри");
-                stage.showAndWait();
-
-                if (controller.getStartClicked()) {
-                    System.out.println("Process name " + controller.getSelectedFile());
-                    String selectedFile = controller.getSelectedFile();
-                    Benchmark.setAbsolutePath(selectedFile);
-
-                    if (selectedFile == null || selectedFile.isEmpty()) {
-                        System.out.println("Файл не вибрано, скасовано.");
-                        return;
-                    }
-
-                    Benchmark.startBenchmark(this);
-                } else {
-                    Benchmark.stopBenchmark();
-                }
-            }
+    @FXML public void onBenchClicked(){
+        if(!Benchmark.getBenchmarkStarted()) {
+            Benchmark.startBenchmark(this);
         }
-        catch(IOException e){
-            e.printStackTrace();
+        else{
+            Benchmark.stopBenchmark();
         }
     }
 
     /**
      * A method that creates a dialog box and displays additional information about RAM.
      */
-    @FXML
-    public void showRamInfo(){
+    @FXML public void showRamInfo(){
         String info = SystemInformation.getRamInfo();
 
         ScopeAlert alert = new ScopeAlert(Alert.AlertType.INFORMATION, info);
@@ -439,20 +405,18 @@ public class SystemScopeController {
      * </p>
      */
     public void swapBenchButton(){
-        if(Benchmark.getBenchmarkStarted()) {
-            Platform.runLater(() -> {
+        Platform.runLater(() -> {
+            if(Benchmark.getBenchmarkStarted()) {
                 benchBtn.setText("Зупинити бенчмарк");
                 benchBtn.getStyleClass().removeAll("main-button");
                 benchBtn.getStyleClass().add("main-button-stop");
-            });
-        }
-        else{
-            Platform.runLater(() -> {
+            }
+            else{
                 benchBtn.setText("Запустити бенчмарк");
                 benchBtn.getStyleClass().removeAll("main-button-stop");
                 benchBtn.getStyleClass().add("main-button");
-            });
-        }
+            }
+        });
     }
 
     /**

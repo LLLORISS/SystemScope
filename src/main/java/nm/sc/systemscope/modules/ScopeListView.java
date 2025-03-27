@@ -3,7 +3,6 @@ package nm.sc.systemscope.modules;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

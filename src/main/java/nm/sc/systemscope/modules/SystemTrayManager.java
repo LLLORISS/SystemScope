@@ -8,7 +8,6 @@ import javafx.stage.StageStyle;
 import nm.sc.systemscope.SystemScopeMain;
 import nm.sc.systemscope.controllers.SystemTrayMenuWindowController;
 import javafx.scene.Scene;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -139,6 +138,4 @@ public class SystemTrayManager {
             isTrayIconAdded = false;
         }
     }
-
-
 }

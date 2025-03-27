@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.application.Platform;
+import nm.sc.systemscope.modules.Benchmark;
 import nm.sc.systemscope.modules.SystemTrayManager;
 
 /**
@@ -11,14 +12,12 @@ import nm.sc.systemscope.modules.SystemTrayManager;
  * Handles user interactions such as restoring the main application window and exiting the application.
  */
 public class SystemTrayMenuWindowController {
+    @FXML private Button showButton;
+    @FXML private Button benchmarkButton;
+    @FXML private Button exitButton;
+
     private Stage menuStage;
     private Stage primaryStage;
-
-    @FXML
-    private Button showButton;
-
-    @FXML
-    private Button exitButton;
 
     /**
      * Initializes the controller with references to the primary stage and menu stage.
@@ -31,15 +30,40 @@ public class SystemTrayMenuWindowController {
         this.primaryStage = primaryStage;
         this.menuStage = menuStage;
 
+        if(Benchmark.getBenchmarkStarted()){
+            benchmarkButton.setText("Зупинити бенчмаркУ");
+        }
+
         showButton.setOnAction(e -> {
             primaryStage.show();
             menuStage.hide();
             SystemTrayManager.removeTrayIcon();
         });
 
+        benchmarkButton.setOnAction(e->{
+            if(!Benchmark.getBenchmarkStarted() ){
+                Benchmark.startBenchmark();
+                Platform.runLater(() -> {
+                    benchmarkButton.setText("Зупинити бенчмарк");
+                });
+            }
+            else{
+                Benchmark.stopBenchmark();
+                Platform.runLater(() -> {
+                    benchmarkButton.setText("Бенчмарк");
+                });
+            }
+        });
+
         exitButton.setOnAction(e -> {
-            Platform.exit();
-            System.exit(0);
+            new Thread(() -> {
+                Benchmark.stopBenchmark();
+
+                Platform.runLater(() -> {
+                    Platform.exit();
+                    System.exit(0);
+                });
+            }).start();
         });
     }
 }

@@ -11,7 +11,6 @@ import nm.sc.systemscope.controllers.SystemScopeController;
 import nm.sc.systemscope.modules.DataStorage;
 import nm.sc.systemscope.modules.SystemTrayManager;
 import nm.sc.systemscope.modules.Theme;
-
 import java.io.IOException;
 
 /**
@@ -37,6 +36,7 @@ public class SystemScopeMain extends Application {
             controller.applyTheme();
             setStageParams(stage);
             stage.setScene(scene);
+            stage.setMaximized(true);
 
             SystemTrayManager.addToSystemTray(stage);
             stage.show();
@@ -70,7 +70,7 @@ public class SystemScopeMain extends Application {
      */
     @Override
     public void stop() throws Exception {
-       if (controller != null){
+        if (controller != null){
            controller.shutdown();
         }
         super.stop();

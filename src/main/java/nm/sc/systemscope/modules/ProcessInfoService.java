@@ -1,7 +1,6 @@
 package nm.sc.systemscope.modules;
 
 import javafx.scene.control.Alert;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

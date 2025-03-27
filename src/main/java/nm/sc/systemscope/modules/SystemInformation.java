@@ -2,13 +2,11 @@ package nm.sc.systemscope.modules;
 
 import oshi.SystemInfo;
 import oshi.hardware.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
 import java.util.List;
 
 /**

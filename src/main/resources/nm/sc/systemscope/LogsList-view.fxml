@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import nm.sc.systemscope.modules.ScopeListView ?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="nm.sc.systemscope.controllers.LogsListViewController"
+            prefHeight="400.0" prefWidth="800.0">
+    <HBox styleClass="HBoxSection" spacing="15">
+        <VBox styleClass="VBoxSection" HBox.hgrow="ALWAYS">
+            <TextField fx:id="searchField" prefWidth="300.0"/>
+            <ScopeListView fx:id="logsListView" prefHeight="300" styleClass="process-list" prefWidth="700.0"/>
+        </VBox>
+
+        <VBox styleClass="VBoxSection" spacing="15" prefWidth="250.0">
+            <Button fx:id="openLogBtn" onAction="#openLogBtnClicked" styleClass="main-button" text="Відкрити" prefWidth="200.0"/>
+            <Button fx:id="updateLogBtn" onAction="#updateLogsBtnClicked" styleClass="main-button" text="Оновити" prefWidth="200.0"/>
+            <Button fx:id="removeLogBtn" onAction="#removeLogBtnClicked" styleClass="main-button" text="Видалити" prefWidth="200.0"/>
+            <Button fx:id="openLogDirBtn" onAction="#openDirBtnClicked" styleClass="main-button" text="Відкрити папку" prefWidth="200.0"/>
+            <Button fx:id="removeAll" onAction="#removeAllLogFiles" styleClass="main-button" text="Видалити все" prefWidth="200.0"/>
+        </VBox>
+    </HBox>
+</AnchorPane>
