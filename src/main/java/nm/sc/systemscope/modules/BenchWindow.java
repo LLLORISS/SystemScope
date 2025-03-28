@@ -89,18 +89,15 @@ public class BenchWindow {
             setOpaque(false);
         }
 
-        @Override
-        protected void paintComponent(Graphics g) {
+        @Override protected void paintComponent(Graphics g) {
 
         }
 
-        @Override
-        protected void processMouseEvent(MouseEvent e) {
+        @Override protected void processMouseEvent(MouseEvent e) {
 
         }
 
-        @Override
-        protected void processMouseMotionEvent(MouseEvent e) {
+        @Override protected void processMouseMotionEvent(MouseEvent e) {
 
         }
     }
@@ -190,11 +187,14 @@ public class BenchWindow {
      */
     private static int average(List<Integer> list){
         int sum = 0;
-        for(int i = 0; i < list.size(); i++){
-            sum += list.get(i);
-        }
+        if(list != null && !list.isEmpty()) {
+            for (int i = 0; i < list.size(); i++) {
+                sum += list.get(i);
+            }
 
-        return sum / list.size();
+            return sum / list.size();
+        }
+        return sum;
     }
 
     /**

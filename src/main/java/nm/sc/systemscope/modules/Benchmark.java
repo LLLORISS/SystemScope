@@ -82,7 +82,6 @@ public class Benchmark {
     /**
      * Starts the benchmark process. Initializes the benchmark and prompts the user to select a benchmark file.
      *
-     * @param instance The instance of SystemScopeController to control UI actions after benchmark is started.
      */
     public static void startBenchmark() {
         if (!benchmarkStarted && benchWindow == null) {
@@ -108,6 +107,7 @@ public class Benchmark {
         Stage stage = new Stage();
         stage.setScene(scene);
         benchController.setStage(stage);
+        benchController.setScene(scene);
         stage.setTitle("Вибір гри");
         stage.showAndWait();
 
@@ -121,8 +121,6 @@ public class Benchmark {
             } else {
                 stopBenchmark();
             }
-        } else {
-            stopBenchmark();
         }
     }
 
@@ -131,8 +129,7 @@ public class Benchmark {
      */
     private static void startBenchmarkInBackground() {
         Task<Void> benchmarkTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
+            @Override protected Void call() throws Exception {
 
                 startTime = System.currentTimeMillis();
 
@@ -156,15 +153,6 @@ public class Benchmark {
                             controller.swapBenchButton();
                         }
                     });
-
-                    endTime = System.currentTimeMillis();
-
-                    double duration = (endTime - startTime) / 1000.0;
-
-                    DataStorage.createLogFile(benchController.getBenchmarkName(), BenchWindow.getTemperaturesCPU(),
-                            BenchWindow.getTemperaturesGPU(), BenchWindow.getUsagesCPU(), BenchWindow.getUsagesGPU(),
-                            BenchWindow.getAverageTempCPU(), BenchWindow.getAverageTempGPU(), BenchWindow.getAverageUsageCPU(), BenchWindow.getAverageUsageGPU(), duration);
-
                 }
                 return null;
             }
@@ -207,12 +195,6 @@ public class Benchmark {
                 controller.swapBenchButton();
             }
         });
-
-        double duration = (endTime - startTime) / 1000.0;
-
-        DataStorage.createLogFile(benchController.getBenchmarkName(), BenchWindow.getTemperaturesCPU(),
-                BenchWindow.getTemperaturesGPU(), BenchWindow.getUsagesCPU(), BenchWindow.getUsagesGPU(),
-                BenchWindow.getAverageTempCPU(), BenchWindow.getAverageTempGPU(), BenchWindow.getAverageUsageCPU(), BenchWindow.getAverageUsageGPU(), duration);
     }
 
     /**
@@ -234,10 +216,16 @@ public class Benchmark {
             } else {
                 System.out.println("Процес не знайдений.");
             }
-            clearInfo();
+
+            endTime = System.currentTimeMillis();
 
             double duration = (endTime - startTime) / 1000.0;
 
+            DataStorage.createLogFile(processName, benchController.getBenchmarkName(), BenchWindow.getTemperaturesCPU(),
+                    BenchWindow.getTemperaturesGPU(), BenchWindow.getUsagesCPU(), BenchWindow.getUsagesGPU(),
+                    BenchWindow.getAverageTempCPU(), BenchWindow.getAverageTempGPU(), BenchWindow.getAverageUsageCPU(), BenchWindow.getAverageUsageGPU(), duration);
+
+            clearInfo();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

@@ -1,16 +1,18 @@
 package nm.sc.systemscope.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
-
 import javafx.scene.control.Label;
+import javafx.scene.Scene;
+
 import nm.sc.systemscope.modules.DataStorage;
 import nm.sc.systemscope.modules.ScopeAlert;
+import nm.sc.systemscope.modules.ScopeTheme;
 
 /**
  * A class that creates a file selection window for the benchmark
@@ -21,15 +23,21 @@ public class BenchSelectorController {
     @FXML private TextField nameLogTextField;
 
     private Stage stage;
+    private Scene scene;
     private String selectedFile;
     private String benchmarkName;
+    private ScopeTheme theme;
 
     /**
-     * A method that sets the current stage
+     * Initializes the controller and applies the theme to the scene after the UI is fully loaded.
+     * This method is executed on the JavaFX Application Thread using {@link Platform#runLater(Runnable)}.
+     * It ensures that the theme is applied only after the scene is initialized and fully rendered.
      */
-    public void setStage(Stage stage){
-        this.stage = stage;
-        this.selectedFile = "";
+    @FXML public void initialize(){
+        Platform.runLater(() -> {
+            theme = new ScopeTheme(scene);
+            theme.applyTheme();
+        });
     }
 
     /**
@@ -111,4 +119,19 @@ public class BenchSelectorController {
      * @return Name of benchmark
      */
     public String getBenchmarkName() { return this.benchmarkName; }
+
+    /**
+     * A method that sets the current stage
+     */
+    public void setStage(Stage stage){
+        this.stage = stage;
+        this.selectedFile = "";
+    }
+
+    /**
+     * A method that sets the current scene
+     */
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
 }

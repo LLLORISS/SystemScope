@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import javafx.scene.chart.XYChart;
 import nm.sc.systemscope.adapters.XYChartDataAdapter;
-
 import java.io.*;
 import java.util.*;
 
@@ -89,7 +88,7 @@ public class DataStorage {
      * This method first checks if the log file exists and creates a new file if necessary. It then writes
      * the data to the file, including the individual temperatures and usages as well as the average values.
      */
-    public static void createLogFile(String fileName, List<Integer> tCPU, List<Integer> tGPU, List<Integer> uCPU, List<Integer> uGPU,
+    public static void createLogFile(String gameName, String fileName, List<Integer> tCPU, List<Integer> tGPU, List<Integer> uCPU, List<Integer> uGPU,
                                      int atCPU, int atGPU, int auCPU, int auGPU, double time) {
         String splittedName = fileName.split("\\.")[0];
         File file = new File(logsFolderPath + splittedName + ".txt");
@@ -108,6 +107,7 @@ public class DataStorage {
 
         try (FileWriter writer = new FileWriter(file, true)) {
             writer.write("Benchmark Log\n");
+            writer.write("Selected file: " + gameName + "\n");
             writer.write("Timestamp: " + time + "\n");
 
             writer.write("CPU Temperature (°C): ");

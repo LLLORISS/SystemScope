@@ -69,8 +69,7 @@ public class ScopeBenchLog {
      *
      * @return the file name of the benchmark log file.
      */
-    @Override
-    public String toString(){
+    @Override public String toString(){
         return fileName;
     }
 }

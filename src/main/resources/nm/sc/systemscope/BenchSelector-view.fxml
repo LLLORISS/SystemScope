@@ -5,7 +5,6 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="nm.sc.systemscope.controllers.BenchSelectorController"
-            stylesheets="@CSS/styles.css"
             prefHeight="250.0" prefWidth="400.0">
 
     <VBox alignment="CENTER" spacing="15" layoutX="50" layoutY="40" prefWidth="500" prefHeight="300">

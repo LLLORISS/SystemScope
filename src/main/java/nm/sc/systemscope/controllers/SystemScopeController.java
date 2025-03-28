@@ -17,7 +17,6 @@ import javafx.scene.Scene;
 import java.io.IOException;
 import javafx.collections.ObservableList;
 import nm.sc.systemscope.modules.*;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +45,7 @@ public class SystemScopeController {
     private ObservableList<ProcessInfo> observableList;
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
-    private Theme theme;
+    private ScopeTheme theme;
     private Scene scene;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -54,9 +53,12 @@ public class SystemScopeController {
      * A method that initializes initial values
      */
     @FXML public void initialize() {
-        theme = DataStorage.loadThemeFromConfig();
-        applyTheme();
         Platform.runLater(() -> {
+            scene = themeToggleBtn.getScene();
+            theme = new ScopeTheme(scene);
+            updateTheme();
+            theme.applyTheme();
+
             InfoPC.setText(SystemInformation.getComputerName());
             CPU.setText(SystemInformation.getProcessorName());
             GPU.setText(SystemInformation.getGraphicCards());
@@ -120,7 +122,6 @@ public class SystemScopeController {
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         scopeChartsController.setScene(scene);
-        scopeChartsController.applyTheme();
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("Графіки");
@@ -194,15 +195,17 @@ public class SystemScopeController {
      * Changes the theme color to the opposite (dark or light)
      */
     @FXML public void onThemeToggleClicked(){
-        if(theme.equals(Theme.DARK)){
-            theme = Theme.LIGHT;
-            DataStorage.saveThemeToConfig(Theme.LIGHT);
+
+        if(this.theme.getTheme() == Theme.DARK){
+            theme.setTheme(Theme.LIGHT);
         }
-        else if(theme.equals(Theme.LIGHT)){
-            theme = Theme.DARK;
-            DataStorage.saveThemeToConfig(Theme.DARK);
+        else {
+            theme.setTheme(Theme.DARK);
         }
-        applyTheme();
+        Platform.runLater(() -> {
+            this.theme.applyTheme();
+            this.updateTheme();
+        });
     }
 
     /**
@@ -259,35 +262,14 @@ public class SystemScopeController {
     }
 
     /**
-     * A method that applies a style file to the current window
-     */
-    public void applyTheme(){
-        if (this.scene != null) {
-            this.scene.getStylesheets().clear();
-
-            String themeStyleFile = "";
-
-            if (theme == Theme.DARK) {
-                themeStyleFile = "/nm/sc/systemscope/CSS/styles.css";
-            } else if (theme == Theme.LIGHT) {
-                themeStyleFile = "/nm/sc/systemscope/CSS/light-styles.css";
-            }
-
-            updateThemeButton();
-
-            this.scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(themeStyleFile)).toExternalForm());
-        }
-    }
-
-    /**
      * Updates the text of the theme toggle button based on the current theme.
      * <p>
      * indicating the option to switch to the light theme.,
      * indicating the option to switch to the dark theme.
      */
-    private void updateThemeButton() {
+    public void updateTheme() {
         Platform.runLater(()->{
-            if (theme == Theme.DARK) {
+            if (theme.getTheme() == Theme.DARK) {
                 themeToggleBtn.setText("Світла тема");
             } else {
                 themeToggleBtn.setText("Темна тема");

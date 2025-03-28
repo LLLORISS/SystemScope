@@ -66,6 +66,22 @@
     -fx-background-color: #2471a3;
 }
 
+.main-button-start {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: #05c46b;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+}
+
+.main-button-start:hover {
+    -fx-background-color: #0be881;
+}
+
+.main-button-start:pressed {
+    -fx-background-color: #009432;
+}
+
 .VBoxSection, .HBoxSection {
     -fx-background-color: #f0f0f0;
     -fx-background-radius: 10px;
@@ -245,4 +261,18 @@
 
 .onHover {
     -fx-background-color: #f39c12;
+}
+
+TextField {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #007acc;
+}
+
+TextField:focused {
+    -fx-border-color: #005f99;
+    -fx-background-color: #ffffff;
 }

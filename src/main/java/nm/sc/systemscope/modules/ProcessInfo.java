@@ -60,8 +60,7 @@ public class ProcessInfo {
      *
      * @return A string representation of the process in the format "(PID: <pid>) <processName>".
      */
-    @Override
-    public String toString(){
+    @Override public String toString(){
         return "(PID: " + pid + ") "+ processName;
     }
 }

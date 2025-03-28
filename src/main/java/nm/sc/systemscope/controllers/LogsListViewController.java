@@ -13,7 +13,6 @@ import nm.sc.systemscope.SystemScopeMain;
 import nm.sc.systemscope.modules.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import javafx.scene.Scene;
 import java.util.List;
 import javafx.scene.control.TextField;
@@ -28,15 +27,20 @@ public class LogsListViewController {
     @FXML private ScopeListView<ScopeBenchLog> logsListView;
     @FXML private TextField searchField;
 
-    private Theme theme;
     private Scene scene;
     private ObservableList<ScopeBenchLog> observableLogsList;
+    private ScopeTheme theme;
     private final String logsFolderPath = "src/main/data/logs";
 
     /**
      * Initializes the controller by populating the logs list and setting up a listener for the search field.
      */
     @FXML public void initialize(){
+        Platform.runLater(() -> {
+            theme = new ScopeTheme(scene);
+            theme.applyTheme();
+        });
+
         List<ScopeBenchLog> logs = DataStorage.getBenchLogs();
 
         observableLogsList = FXCollections.observableArrayList(logs);
@@ -74,7 +78,7 @@ public class LogsListViewController {
         ScopeBenchLog selected = logsListView.getSelectionModel().getSelectedItem();
         if(selected != null){
             if(deleteSelectedLog(selected.getAbsolutePath())){
-                updateList();
+                Platform.runLater(this::updateList);
             }
             else{
                 ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Не вдалося видалити файл");
@@ -148,6 +152,7 @@ public class LogsListViewController {
                                 }
                             }
                         }
+                        Platform.runLater(this::updateList);
                     } else {
                         System.out.println("Не вдалося отримати файли з директорії.");
                     }
@@ -215,27 +220,6 @@ public class LogsListViewController {
     }
 
     /**
-     * Applies the selected theme to the scene.
-     * The theme is loaded from the configuration.
-     */
-    private void applyTheme(){
-        theme = DataStorage.loadThemeFromConfig();
-
-        if (this.scene != null) {
-            this.scene.getStylesheets().clear();
-
-            String themeStyleFile = "";
-
-            if (theme == Theme.DARK) {
-                themeStyleFile = "/nm/sc/systemscope/CSS/styles.css";
-            } else if (theme == Theme.LIGHT) {
-                themeStyleFile = "/nm/sc/systemscope/CSS/light-styles.css";
-            }
-            this.scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(themeStyleFile)).toExternalForm());
-        }
-    }
-
-    /**
      * Filters the logs based on the search input and updates the logs list accordingly.
      *
      * @param searchInput The text entered in the search field.
@@ -257,7 +241,5 @@ public class LogsListViewController {
      */
     public void setScene(Scene scene){
         this.scene = scene;
-
-        applyTheme();
     }
 }

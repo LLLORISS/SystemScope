@@ -25,15 +25,13 @@ public class SystemScopeMain extends Application {
      * @param stage The primary stage for this application.
      * @throws IOException If there is an issue loading the FXML file.
      */
-    @Override
-    public void start(Stage stage) throws IOException {
+    @Override public void start(Stage stage) throws IOException {
         try {
             DataStorage.saveThemeToConfig(Theme.DARK);
             FXMLLoader fxmlLoader = new FXMLLoader(SystemScopeMain.class.getResource("SystemScopeMain-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             controller = fxmlLoader.getController();
             controller.setScene(scene);
-            controller.applyTheme();
             setStageParams(stage);
             stage.setScene(scene);
             stage.setMaximized(true);
@@ -68,8 +66,7 @@ public class SystemScopeMain extends Application {
      *
      * @throws Exception If an error occurs during shutdown.
      */
-    @Override
-    public void stop() throws Exception {
+    @Override public void stop() throws Exception {
         if (controller != null){
            controller.shutdown();
         }

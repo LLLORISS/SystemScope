@@ -2,7 +2,6 @@ package nm.sc.systemscope.modules;
 
 import org.jetbrains.annotations.NotNull;
 import oshi.hardware.UsbDevice;
-
 import java.util.List;
 
 /**
@@ -62,8 +61,7 @@ public class ScopeUsbDevice implements UsbDevice {
      * @return the name of the USB device
      */
 
-    @Override
-    public String getName() {
+    @Override public String getName() {
         return deviceName != null ? deviceName : "Unknown Device";
     }
 
@@ -72,8 +70,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the vendor name of the USB device
      */
-    @Override
-    public String getVendor() {
+    @Override public String getVendor() {
         return vendor != null ? vendor: "Unknown Vendor";
     }
 
@@ -82,8 +79,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the vendor ID of the USB device
      */
-    @Override
-    public String getVendorId(){
+    @Override public String getVendorId(){
         return vendorID != null ? vendorID: "Unknown Vendor ID";
     }
 
@@ -92,8 +88,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the product ID of the USB device
      */
-    @Override
-    public String getProductId(){
+    @Override public String getProductId(){
         return productID != null ? productID: "Unknown Product ID";
     }
 
@@ -102,8 +97,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the serial number of the USB device
      */
-    @Override
-    public String getSerialNumber(){
+    @Override public String getSerialNumber(){
         return serialNumber != null ? serialNumber: "Unknown Serial Number";
     }
 
@@ -112,8 +106,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the unique device ID of the USB device
      */
-    @Override
-    public String getUniqueDeviceId(){
+    @Override public String getUniqueDeviceId(){
         return uniqueDeviceID != null ? uniqueDeviceID: "Unknown Unique Device ID";
     }
 
@@ -122,8 +115,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the list of connected USB devices
      */
-    @Override
-    public List<UsbDevice> getConnectedDevices() {
+    @Override public List<UsbDevice> getConnectedDevices() {
         return connectedDevice;
     }
 
@@ -132,8 +124,7 @@ public class ScopeUsbDevice implements UsbDevice {
      *
      * @return the string representation of the device
      */
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return getName();
     }
 
@@ -144,8 +135,7 @@ public class ScopeUsbDevice implements UsbDevice {
      * @return a negative integer, zero, or a positive integer as this device name is less than, equal to, or greater than the specified device name
      * @throws NullPointerException if the other device is null
      */
-    @Override
-    public int compareTo(@NotNull UsbDevice o) {
+    @Override public int compareTo(@NotNull UsbDevice o) {
         return this.deviceName.compareTo(o.getName());
     }
 }
