@@ -5,8 +5,8 @@ package nm.sc.systemscope.modules;
  * Stores the process name and its process identifier (PID).
  */
 public class ProcessInfo {
-    private String processName;
-    private int pid;
+    private final String processName;
+    private final int pid;
 
     /**
      * Constructs a ProcessInfo object with the specified process name and PID.
@@ -20,39 +20,12 @@ public class ProcessInfo {
     }
 
     /**
-     * Gets the process name.
-     *
-     * @return The name of the process.
-     */
-    public String getProcessName() {
-        return processName;
-    }
-
-    /**
      * Gets the process identifier (PID).
      *
      * @return The process identifier (PID).
      */
     public int getPid(){
         return this.pid;
-    }
-
-    /**
-     * Sets the process identifier (PID).
-     *
-     * @param pid The new process identifier (PID).
-     */
-    public void setPid(int pid) {
-        this.pid = pid;
-    }
-
-    /**
-     * Sets the process name.
-     *
-     * @param processName The new name of the process.
-     */
-    public void setProcessName(String processName) {
-        this.processName = processName;
     }
 
     /**

@@ -70,7 +70,6 @@ public class ProcessInfoService {
      * @throws InterruptedException If the kill process is interrupted.
      */
     public static boolean killProcess(int pid) throws IOException, InterruptedException {
-        boolean flag = false;
         String os = System.getProperty("os.name").toLowerCase();
         Process process;
 
@@ -85,8 +84,7 @@ public class ProcessInfoService {
 
             if (exitCode == 0) {
                 System.out.println("Процес з PID " + pid + " успішно завершено.");
-                flag = true;
-                return flag;
+                return true;
             } else {
                 ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR,"Не вдалося завершити процес з PID " + pid + ". Код завершення: " + exitCode);
                 alert.showAndWait();
@@ -96,6 +94,6 @@ public class ProcessInfoService {
             alert.showAndWait();
             throw e;
         }
-        return flag;
+        return false;
     }
 }

@@ -13,10 +13,10 @@
                 <Label text="Назва: " styleClass="file-label"/>
                 <TextField fx:id="nameLogTextField" />
             </HBox>
-            <Button text="Вибрати гру" fx:id="selectGameButton" onAction="#onSelectGameBtnClicked" styleClass="main-button"/>
+            <Button text="Вибрати гру" onAction="#onSelectGameBtnClicked" styleClass="main-button"/>
         </HBox>
         <Label fx:id="selectedFileLabel" text="Файл не вибрано" styleClass="file-label"/>
-        <Button text="Запустити бенчмарк" fx:id="startBenchmarkButton" onAction="#onStartBenchmarkBtnClicked" styleClass="main-button-start"/>
+        <Button text="Запустити бенчмарк" onAction="#onStartBenchmarkBtnClicked" styleClass="main-button-start"/>
     </VBox>
 
 </AnchorPane>

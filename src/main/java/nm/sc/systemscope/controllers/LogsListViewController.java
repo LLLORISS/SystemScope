@@ -4,16 +4,11 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
-import nm.sc.systemscope.SystemScopeMain;
 import nm.sc.systemscope.modules.*;
 import java.io.File;
 import java.io.IOException;
-import javafx.scene.Scene;
 import java.util.List;
 import javafx.scene.control.TextField;
 import java.awt.Desktop;
@@ -23,38 +18,29 @@ import java.awt.Desktop;
  * It provides methods to manage and interact with the logs, including opening, deleting, and displaying logs.
  * This class is responsible for managing the user interface of the logs list view, including interactions with the list and log files.
  */
-public class LogsListViewController {
+public class LogsListViewController extends BaseScopeController {
     @FXML private ScopeListView<ScopeBenchLog> logsListView;
     @FXML private TextField searchField;
 
-    private Scene scene;
     private ObservableList<ScopeBenchLog> observableLogsList;
-    private ScopeTheme theme;
     private final String logsFolderPath = "src/main/data/logs";
 
     /**
      * Initializes the controller by populating the logs list and setting up a listener for the search field.
      */
     @FXML public void initialize(){
-        Platform.runLater(() -> {
-            theme = new ScopeTheme(scene);
-            theme.applyTheme();
-        });
-
         List<ScopeBenchLog> logs = DataStorage.getBenchLogs();
 
         observableLogsList = FXCollections.observableArrayList(logs);
 
-        Platform.runLater(() -> {
-            logsListView.setItems(observableLogsList);
-        });
+        Platform.runLater(() -> logsListView.setItems(observableLogsList));
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             try{
                 filterProcesses(newValue);
             }
             catch(IOException e){
-                e.printStackTrace();
+                ScopeLogger.logError("Error while filtering processes: ", e);
             }
         });
     }
@@ -133,7 +119,7 @@ public class LogsListViewController {
      * If the operation is canceled, no files are deleted.
      */
     @FXML public void removeAllLogFiles(){
-        ScopeAlert alert = new ScopeAlert(Alert.AlertType.CONFIRMATION, "Ви впевнені що хочете видалити всі файли логів?");
+        ScopeAlert alert = new ScopeAlert(Alert.AlertType.CONFIRMATION, "Ви впевнені що хочете видалити всі файли лотів?");
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
@@ -146,21 +132,21 @@ public class LogsListViewController {
                         for (File file : files) {
                             if (file.isFile()) {
                                 if (file.delete()) {
-                                    System.out.println("Файл " + file.getName() + " був видалений.");
+                                    ScopeLogger.logInfo("File {} was deleted.", file.getName());
                                 } else {
-                                    System.out.println("Не вдалося видалити файл " + file.getName());
+                                    ScopeLogger.logError("Error while deleting file {}", file.getName());
                                 }
                             }
                         }
                         Platform.runLater(this::updateList);
                     } else {
-                        System.out.println("Не вдалося отримати файли з директорії.");
+                        ScopeLogger.logError("Failed to retrieve files from a directory.");
                     }
                 } else {
-                    System.out.println("Вказаний шлях не є директорією.");
+                    ScopeLogger.logError("The specified path is not a directory.");
                 }
             } else {
-                System.out.println("Операція видалення скасована.");
+                ScopeLogger.logError("The delete operation is canceled");
             }
         });
     }
@@ -193,21 +179,16 @@ public class LogsListViewController {
      */
     private void openLogViewer(String filePath){
         try{
-            FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("ScopeLogsViewer-view.fxml"));
-            Parent root = loader.load();
+            ScopeLoaderFXML loader = new ScopeLoaderFXML("ScopeLogsViewer-view.fxml");
 
-            ScopeLogsViewerController controller = loader.getController();
+            ScopeLogsViewerController controller = (ScopeLogsViewerController) loader.getController();
             controller.loadLogFile(filePath);
 
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            controller.setScene(scene);
-            stage.setTitle("Перегляд");
-            stage.setScene(scene);
-            stage.show();
+            loader.getStage().setTitle("Перегляд");
+            loader.show();
         }
         catch(IOException e){
-            e.printStackTrace();
+            ScopeLogger.logError("Error opening log viewer for file: {}", filePath, e);
         }
     }
 
@@ -222,7 +203,7 @@ public class LogsListViewController {
     /**
      * Filters the logs based on the search input and updates the logs list accordingly.
      *
-     * @param searchInput The text entered in the search field.
+     * @param searchInput The text entered the search field.
      * @throws IOException If there is an error during filtering.
      */
     private void filterProcesses(String searchInput) throws IOException {
@@ -232,14 +213,5 @@ public class LogsListViewController {
             observableLogsList.clear();
             observableLogsList.addAll(filtered);
         });
-    }
-
-    /**
-     * Sets the scene for the controller.
-     *
-     * @param scene The scene to be set for this controller.
-     */
-    public void setScene(Scene scene){
-        this.scene = scene;
     }
 }

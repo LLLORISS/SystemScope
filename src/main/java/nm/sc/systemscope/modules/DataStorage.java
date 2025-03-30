@@ -2,12 +2,12 @@ package nm.sc.systemscope.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import javafx.scene.chart.XYChart;
 import nm.sc.systemscope.adapters.XYChartDataAdapter;
 import java.io.*;
 import java.util.*;
-
 /**
  * The {@code DataStorage} class provides functionality for saving and loading CPU/GPU
  * temperature and usage data, as well as storing theme settings in a configuration file.
@@ -17,11 +17,11 @@ public class DataStorage {
     private static final String logsFolderPath = "src/main/data/logs/";
     private static final String CPUtemperaturesPath = dataFolderPath + "CPUtemperatures.json";
     private static final String GPUtemperaturesPath = dataFolderPath + "GPUtemperatures.json";
-    private static final String CPUusagePath = dataFolderPath + "UsageCPU.json";
-    private static final String GPUusagePath = dataFolderPath + "UsageGPU.json";
+    private static final String CPUsagePath = dataFolderPath + "UsageCPU.json";
+    private static final String GPUsagePath = dataFolderPath + "UsageGPU.json";
     private static final String averagesPath = dataFolderPath + "Averages.json";
-
     private static final String configPath = "config.properties";
+
     static {
         createDataFolderAndFiles();
     }
@@ -32,18 +32,18 @@ public class DataStorage {
     private static void createDataFolderAndFiles() {
         File dataFolder = new File(dataFolderPath);
         if (!dataFolder.exists() && dataFolder.mkdirs()) {
-            System.out.println("The 'data' folder was created.");
+            ScopeLogger.logInfo("The 'data' folder was created.");
         }
 
         File logsFolder = new File(logsFolderPath);
         if(!logsFolder.exists() && logsFolder.mkdirs()){
-            System.out.println("The 'logs' folder was created.");
+            ScopeLogger.logInfo("The 'logs' folder was created.");
         }
 
         createFile(CPUtemperaturesPath, "CPUtemperatures.json");
         createFile(GPUtemperaturesPath, "GPUtemperatures.json");
-        createFile(CPUusagePath, "UsageCPU.json");
-        createFile(GPUusagePath, "UsageGPU.json");
+        createFile(CPUsagePath, "UsageCPU.json");
+        createFile(GPUsagePath, "UsageGPU.json");
         createFile(averagesPath, "Averages.json");
     }
 
@@ -58,12 +58,12 @@ public class DataStorage {
         if (!file.exists()) {
             try {
                 if (file.createNewFile()) {
-                    System.out.println("File '" + fileName + "' was created.");
+                    ScopeLogger.logInfo("File '{}' was created.", fileName);
                 } else {
-                    System.out.println("Failed to create file '" + fileName + "'.");
+                    ScopeLogger.logInfo("Failed to create file '{}'.", fileName);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                ScopeLogger.logError("Error while creating file: {}", fileName, e);
             }
         }
     }
@@ -83,25 +83,21 @@ public class DataStorage {
      * @param auGPU the average GPU usage percentage during the benchmark.
      * @param time the timestamp of the benchmark (in seconds or milliseconds, depending on the context).
      *
-     * @throws IOException if an I/O error occurs while creating or writing to the log file.
-     *
-     * This method first checks if the log file exists and creates a new file if necessary. It then writes
-     * the data to the file, including the individual temperatures and usages as well as the average values.
      */
     public static void createLogFile(String gameName, String fileName, List<Integer> tCPU, List<Integer> tGPU, List<Integer> uCPU, List<Integer> uGPU,
                                      int atCPU, int atGPU, int auCPU, int auGPU, double time) {
-        String splittedName = fileName.split("\\.")[0];
-        File file = new File(logsFolderPath + splittedName + ".txt");
+        String splitName = fileName.split("\\.")[0];
+        File file = new File(logsFolderPath + splitName + ".txt");
 
         if (!file.exists()) {
             try {
                 if (file.createNewFile()) {
-                    System.out.println("File '" + fileName + "' was created.");
+                    ScopeLogger.logInfo("Log file '{}' was created.", fileName);
                 } else {
-                    System.out.println("Failed to create file '" + fileName + "'.");
+                    ScopeLogger.logError("Failed to create file '{}'.", fileName);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                ScopeLogger.logError("Error creating file '{}': ", fileName, e);
             }
         }
 
@@ -141,14 +137,14 @@ public class DataStorage {
 
             writer.write("--------------------------------------------------\n");
 
-            System.out.println("Data written to file: " + fileName);
+            ScopeLogger.logInfo("Data written to file: {}", fileName);
         } catch (IOException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while creating or writing to file: {}", fileName, e);
         }
     }
 
     /**
-     * Checks if a log file with the specified name already exists in the designated logs folder.
+     * Checks if a log file with the specified name already exists in the designated log's folder.
      *
      * @param fileName the name of the log file to check for existence. The extension (e.g., .txt) will be automatically appended if missing.
      * @return {@code true} if the log file exists, otherwise {@code false}.
@@ -157,12 +153,7 @@ public class DataStorage {
         String temp = fileName.split("\\.")[0];
         File file = new File(logsFolderPath + temp + ".txt");
 
-        if(!file.exists()){
-            return false;
-        }
-        else{
-            return true;
-        }
+        return file.exists();
     }
 
     /**
@@ -189,7 +180,7 @@ public class DataStorage {
      * @param data The list of CPU usage data.
      */
     public static void saveUsageCPUData(List<XYChart.Data<String, Number>> data){
-       writeData(CPUusagePath, data);
+       writeData(CPUsagePath, data);
     }
 
     /**
@@ -198,7 +189,7 @@ public class DataStorage {
      * @param data The list of GPU usage data.
      */
     public static void saveUsageGPUData(List<XYChart.Data<String, Number>> data){
-        writeData(GPUusagePath, data);
+        writeData(GPUsagePath, data);
     }
 
     /**
@@ -211,7 +202,7 @@ public class DataStorage {
             Gson gson = new GsonBuilder().create();
             gson.toJson(averages, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while saving data: ", e);
         }
     }
 
@@ -239,7 +230,7 @@ public class DataStorage {
      * @return A list of CPU usage data.
      */
     public static List<XYChart.Data<String, Number>> loadUsageCPUData(){
-        return readData(CPUusagePath);
+        return readData(CPUsagePath);
     }
 
     /**
@@ -248,7 +239,7 @@ public class DataStorage {
      * @return A list of GPU usage data.
      */
     public static List<XYChart.Data<String, Number>> loadUsageGPUData(){
-        return readData(GPUusagePath);
+        return readData(GPUsagePath);
     }
 
     /**
@@ -262,7 +253,7 @@ public class DataStorage {
             Gson gson = new GsonBuilder().create();
             averages = gson.fromJson(reader, new TypeToken<Map<String, Integer>>() {}.getType());
         } catch (IOException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while loading averages data: ", e);
         }
         return averages;
     }
@@ -273,8 +264,8 @@ public class DataStorage {
     public static void cleanDataStorage() {
         deleteFile(CPUtemperaturesPath, "CPUtemperatures.json");
         deleteFile(GPUtemperaturesPath, "GPUtemperatures.json");
-        deleteFile(CPUusagePath, "UsageCPU.json");
-        deleteFile(GPUusagePath, "UsageGPU.json");
+        deleteFile(CPUsagePath, "UsageCPU.json");
+        deleteFile(GPUsagePath, "UsageGPU.json");
         deleteFile(averagesPath, "Averages.json");
     }
 
@@ -287,9 +278,9 @@ public class DataStorage {
     private static void deleteFile(String path, String fileName) {
         File file = new File(path);
         if (file.exists() && file.delete()) {
-            System.out.println(fileName + " was successfully deleted.");
+            ScopeLogger.logInfo("{} was successfully deleted.", fileName);
         } else {
-            System.out.println("Failed to delete " + fileName + ".");
+            ScopeLogger.logInfo("Failed to delete {}.", fileName);
         }
     }
 
@@ -305,7 +296,7 @@ public class DataStorage {
             gson.toJson(data,writer);
         }
         catch(IOException e){
-            e.printStackTrace();
+            ScopeLogger.logError("Error while writing data to file: {}", path, e);
         }
     }
 
@@ -322,7 +313,9 @@ public class DataStorage {
             data = gson.fromJson(reader, new TypeToken<List<XYChart.Data<String, Number>>>() {}.getType());
         }
         catch(IOException e){
-            e.printStackTrace();
+            ScopeLogger.logError("Error while reading data from file: {}", path, e);
+        }catch (JsonSyntaxException e) {
+            ScopeLogger.logError("Error while parsing JSON from file: {}", path, e);
         }
         return data;
     }
@@ -355,7 +348,7 @@ public class DataStorage {
         try (OutputStream output = new FileOutputStream(configPath)) {
             props.store(output, "Theme Configuration");
         } catch (IOException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while saving theme to config file: " + configPath, e);
         }
     }
 
@@ -381,11 +374,11 @@ public class DataStorage {
                 }
             }
             else {
-                System.out.println("Помилка при отриманні списку файлів.");
+                ScopeLogger.logError("Error while getting list of files");
             }
         }
         else {
-            System.out.println("Вказаний шлях не є директорією.");
+            ScopeLogger.logError("the specified path is not a directory");
         }
 
         return logs;

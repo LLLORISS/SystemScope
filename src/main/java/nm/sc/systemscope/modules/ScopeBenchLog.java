@@ -6,8 +6,8 @@ package nm.sc.systemscope.modules;
  * such as its location and name for easier management and retrieval.
  */
 public class ScopeBenchLog {
-    private String absolutePath;
-    private String fileName;
+    private final String absolutePath;
+    private final String fileName;
 
     /**
      * Default constructor that initializes the fields to null.
@@ -35,33 +35,6 @@ public class ScopeBenchLog {
      */
     public String getAbsolutePath() {
         return absolutePath;
-    }
-
-    /**
-     * Gets the name of the benchmark log file.
-     *
-     * @return the name of the log file.
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Sets the absolute path of the benchmark log file.
-     *
-     * @param absolutePath the new absolute path of the log file.
-     */
-    public void setAbsolutePath(String absolutePath) {
-        this.absolutePath = absolutePath;
-    }
-
-    /**
-     * Sets the name of the benchmark log file.
-     *
-     * @param fileName the new name of the log file.
-     */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     /**

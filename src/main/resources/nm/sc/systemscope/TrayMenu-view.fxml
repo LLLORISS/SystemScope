@@ -11,5 +11,5 @@
 
     <Button fx:id="showButton" text="Показати вікно" styleClass="menu-tray-button"/>
     <Button fx:id="benchmarkButton" text="Бенчмарк" styleClass="menu-tray-button"/>
-    <Button fx:id="exitButton" text="Вийти" styleClass="menu-tray-button"/>
+    <Button fx:id="exitButton" text="Вихід" styleClass="menu-tray-button"/>
 </VBox>

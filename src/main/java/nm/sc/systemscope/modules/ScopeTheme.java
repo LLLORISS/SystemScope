@@ -18,7 +18,7 @@ public class ScopeTheme {
      * @param scene The JavaFX scene to which the theme will be applied.
      */
     public ScopeTheme(Scene scene){
-        this.theme = DataStorage.loadThemeFromConfig();;
+        this.theme = DataStorage.loadThemeFromConfig();
         this.scene = scene;
     }
 
@@ -27,7 +27,6 @@ public class ScopeTheme {
      * If the theme is DARK, the dark stylesheet will be applied.
      * If the theme is LIGHT, the light stylesheet will be applied.
      * The method clears any existing stylesheets before adding the new one.
-     *
      * The applied theme is saved to the configuration.
      */
     public void applyTheme(){

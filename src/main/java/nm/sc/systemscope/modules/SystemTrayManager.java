@@ -59,7 +59,7 @@ public class SystemTrayManager {
         try {
             image = ImageIO.read(Objects.requireNonNull(SystemTrayManager.class.getResource("/nm/sc/systemscope/icons/trayIcon.png")));
         } catch (IOException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while reading tray icon image: {}", e.getMessage());
             return;
         }
 
@@ -79,7 +79,7 @@ public class SystemTrayManager {
             SystemTray.getSystemTray().add(icon);
             isTrayIconAdded = true;
         } catch (AWTException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while adding tray icon to system tray: {}", e.getMessage());
         }
     }
 
@@ -125,8 +125,7 @@ public class SystemTrayManager {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+            ScopeLogger.logError("Error while showing menu window: {}", e.getMessage());        }
     }
 
     /**

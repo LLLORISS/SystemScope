@@ -13,8 +13,8 @@ import java.util.List;
  * including custom tooltips and data point management.
  */
 public class ScopeLineChart extends LineChart<String, Number> {
-    private XYChart.Series<String, Number> series;
-    private int MAX_DATA_POINTS;
+    private final XYChart.Series<String, Number> series;
+    private final int MAX_DATA_POINTS;
 
     /**
      * Constructor to initialize the chart with a CategoryAxis for X-axis and a NumberAxis for Y-axis.
@@ -105,24 +105,6 @@ public class ScopeLineChart extends LineChart<String, Number> {
     }
 
     /**
-     * Sets the maximum number of data points to be stored in the series.
-     *
-     * @param maxDataPoints The maximum number of data points.
-     */
-    public void setMaxDataPoints(int maxDataPoints){
-        this.MAX_DATA_POINTS = maxDataPoints;
-    }
-
-    /**
-     * Gets the maximum number of data points allowed in the series.
-     *
-     * @return The maximum number of data points.
-     */
-    public int getMaxDataPoints() {
-        return MAX_DATA_POINTS;
-    }
-
-    /**
      * Sets tooltips for each data point in the series.
      * The tooltip shows the Y-value of each data point when hovered.
      * It also adds mouse hover effects to change the stroke of the data point.
@@ -139,13 +121,9 @@ public class ScopeLineChart extends LineChart<String, Number> {
 
                         Tooltip.install(data.getNode(), tooltip);
 
-                        data.getNode().setOnMouseEntered(event -> {
-                            data.getNode().setStyle("-fx-stroke: red; -fx-stroke-width: 2;");
-                        });
+                        data.getNode().setOnMouseEntered(event -> data.getNode().setStyle("-fx-stroke: red; -fx-stroke-width: 2;"));
 
-                        data.getNode().setOnMouseExited(event -> {
-                            data.getNode().setStyle("");
-                        });
+                        data.getNode().setOnMouseExited(event -> data.getNode().setStyle(""));
                     }
                 }
             }

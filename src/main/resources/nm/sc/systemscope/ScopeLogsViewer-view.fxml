@@ -8,10 +8,7 @@
             fx:controller="nm.sc.systemscope.controllers.ScopeLogsViewerController"
             prefHeight="600.0" prefWidth="800.0">
 
-    <children>
-        <TextArea fx:id="area" wrapText="true" editable="false"
-                  AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-                  AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" />
-    </children>
-
+    <TextArea fx:id="area" wrapText="true" editable="false"
+              AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
 </AnchorPane>

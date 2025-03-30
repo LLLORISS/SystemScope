@@ -15,11 +15,11 @@
         </VBox>
 
         <VBox styleClass="VBoxSection" spacing="15" prefWidth="300.0">
-            <Button fx:id="openLogBtn" onAction="#openLogBtnClicked" styleClass="main-button" text="Відкрити" prefWidth="200.0"/>
-            <Button fx:id="updateLogBtn" onAction="#updateLogsBtnClicked" styleClass="main-button" text="Оновити" prefWidth="200.0"/>
-            <Button fx:id="removeLogBtn" onAction="#removeLogBtnClicked" styleClass="main-button" text="Видалити" prefWidth="200.0"/>
-            <Button fx:id="openLogDirBtn" onAction="#openDirBtnClicked" styleClass="main-button" text="Відкрити папку" prefWidth="200.0"/>
-            <Button fx:id="removeAll" onAction="#removeAllLogFiles" styleClass="main-button" text="Видалити все" prefWidth="200.0"/>
+            <Button onAction="#openLogBtnClicked" styleClass="main-button" text="Відкрити" prefWidth="200.0"/>
+            <Button onAction="#updateLogsBtnClicked" styleClass="main-button" text="Оновити" prefWidth="200.0"/>
+            <Button onAction="#removeLogBtnClicked" styleClass="main-button" text="Видалити" prefWidth="200.0"/>
+            <Button onAction="#openDirBtnClicked" styleClass="main-button" text="Відкрити папку" prefWidth="200.0"/>
+            <Button onAction="#removeAllLogFiles" styleClass="main-button" text="Видалити все" prefWidth="200.0"/>
         </VBox>
     </HBox>
 </AnchorPane>

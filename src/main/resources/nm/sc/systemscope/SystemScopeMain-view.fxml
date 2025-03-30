@@ -9,83 +9,89 @@
 <?import javafx.scene.control.TextField?>
 <?import nm.sc.systemscope.modules.ScopeListView ?>
 
-<AnchorPane fx:id="anchorPane"
-            xmlns="http://javafx.com/javafx/23.0.1"
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="nm.sc.systemscope.controllers.SystemScopeController">
 
-   <children>
-      <VBox spacing="30" AnchorPane.leftAnchor="30" AnchorPane.topAnchor="30" AnchorPane.rightAnchor="30">
-         <HBox spacing="30" layoutX="30.0" layoutY="30.0">
+   <VBox spacing="30" AnchorPane.leftAnchor="30" AnchorPane.topAnchor="30" AnchorPane.rightAnchor="30">
+      <HBox spacing="30" layoutX="30.0" layoutY="30.0">
 
-            <VBox spacing="15" minWidth="500" minHeight="350" styleClass="VBoxSection">
-               <Label text="🖥 Системна інформація" styleClass="section-title"/>
-               <HBox spacing="15">
-                  <Label text="PC:" styleClass="pc_label_info"/>
-                  <Label fx:id="InfoPC" styleClass="pc_loaded_info"/>
-               </HBox>
-               <HBox spacing="15">
-                  <Label text="CPU:" styleClass="pc_label_info"/>
-                  <Label fx:id="CPU" styleClass="pc_loaded_info"/>
-               </HBox>
-               <HBox spacing="15">
-                  <Label text="GPU:" styleClass="pc_label_info"/>
-                  <Label fx:id="GPU" styleClass="pc_loaded_info"/>
-               </HBox>
-               <HBox spacing="15">
-                  <Label text="RAM:" styleClass="pc_label_info"/>
-                  <Label fx:id="RAM" styleClass="pc_loaded_info"/>
-                  <Button fx:id="ramInfoBtn" text="?" onAction="#showRamInfo" styleClass="info-btn"/>
-               </HBox>
-               <HBox spacing="15">
-                  <Label text="Disk:" styleClass="pc_label_info"/>
-                  <Label fx:id="DiskStorage" styleClass="pc_loaded_info"/>
-               </HBox>
-            </VBox>
+         <VBox spacing="15" minWidth="500" minHeight="350" styleClass="VBoxSection">
+            <Label text="🖥 Системна інформація" styleClass="section-title"/>
+            <HBox spacing="15">
+               <Label text="PC:" styleClass="pc_label_info"/>
+               <Label fx:id="InfoPC" styleClass="pc_loaded_info"/>
+            </HBox>
+            <HBox spacing="15">
+               <Label text="CPU:" styleClass="pc_label_info"/>
+               <Label fx:id="CPU" styleClass="pc_loaded_info"/>
+            </HBox>
+            <HBox spacing="15">
+               <Label text="GPU:" styleClass="pc_label_info"/>
+               <Label fx:id="GPU" styleClass="pc_loaded_info"/>
+            </HBox>
+            <HBox spacing="15">
+               <Label text="RAM:" styleClass="pc_label_info"/>
+               <Label fx:id="RAM" styleClass="pc_loaded_info"/>
+               <Button text="?" onAction="#showRamInfo" styleClass="info-btn"/>
+            </HBox>
+            <HBox spacing="15">
+               <Label text="Disk:" styleClass="pc_label_info"/>
+               <Label fx:id="DiskStorage" styleClass="pc_loaded_info"/>
+            </HBox>
+         </VBox>
 
-            <VBox spacing="15" minWidth="500" minHeight="300" styleClass="VBoxSection">
-               <Label text="🌡 Температурні показники" styleClass="section-title"/>
-               <HBox spacing="15" styleClass="HBoxSection">
-                  <Label text="CPU Temp:" styleClass="temp_label"/>
-                  <Label fx:id="TempCPU" styleClass="temp_value"/>
-               </HBox>
-               <HBox spacing="15" styleClass="HBoxSection">
-                  <Label text="GPU Temp:" styleClass="temp_label"/>
-                  <Label fx:id="TempGPU" styleClass="temp_value"/>
-               </HBox>
-               <HBox spacing="15" styleClass="HBoxSection">
-                  <Label text="Fans:" styleClass="temp_label"/>
-                  <Label fx:id="FansSpeed" styleClass="temp_value"/>
-               </HBox>
-            </VBox>
-            <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
-               <Label text="🖥 Підключені пристрої" styleClass="section-title"/>
-               <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30" spacing="10">
-                  <Button fx:id="refreshDevicesBtn" text="Оновити" onAction="#onRefreshDevicesBtnClicked" styleClass="main-button"/>
-                  <ScopeListView fx:id="devicesList"  prefHeight="300" styleClass="process-list"/>
-               </VBox>
-            </VBox>
-            <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
-               <Label text="📊 Додаткові функції" styleClass="section-title"/>
-               <Button fx:id="showChartsBtn" text="Показати графіки" onAction="#onShowChartsClicked" styleClass="main-button" maxWidth="Infinity"/>
-               <Button fx:id="benchBtn" text="Бенчмарк" onAction="#onBenchClicked" styleClass="main-button" maxWidth="Infinity"/>
-               <Button fx:id="benchLogsBtn" text="Логи бенчмарків" onAction="#onBenchLogsClicked" styleClass="main-button" maxWidth="Infinity"/>
-               <Button fx:id="themeToggleBtn" text="Світла тема" onAction="#onThemeToggleClicked" styleClass="main-button" maxWidth="Infinity"/>
-            </VBox>
-         </HBox>
-         <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30" AnchorPane.rightAnchor="30">
-            <VBox styleClass="HBoxSection">
-               <Label text="⚙️ Запущені процеси" styleClass="section-title"/>
-               <VBox styleClass="HBoxSection">
-                  <TextField fx:id="searchField"/>
-                  <ScopeListView fx:id="processList" prefHeight="300" styleClass="process-list"/>
-               </VBox>
-               <HBox spacing="10">
-                  <Button fx:id="refreshProcessesBtn" text="Оновити" onAction="#onRefreshProcessesBtnClicked" styleClass="main-button"/>
-                  <Button fx:id="killProcessBtn" text="❌ Завершити" onAction="#onKillSelectedProcessClicked" styleClass="main-button"/>
-               </HBox>
+         <VBox spacing="15" minWidth="500" minHeight="300" styleClass="VBoxSection">
+            <Label text="🌡 Температурні показники" styleClass="section-title"/>
+            <HBox spacing="15" styleClass="HBoxSection">
+               <Label text="CPU Temp:" styleClass="temp_label"/>
+               <Label fx:id="TempCPU" styleClass="temp_value"/>
+            </HBox>
+            <HBox spacing="15" styleClass="HBoxSection">
+               <Label text="GPU Temp:" styleClass="temp_label"/>
+               <Label fx:id="TempGPU" styleClass="temp_value"/>
+            </HBox>
+            <HBox spacing="15" styleClass="HBoxSection">
+               <Label text="Fans:" styleClass="temp_label"/>
+               <Label fx:id="FansSpeed" styleClass="temp_value"/>
+            </HBox>
+         </VBox>
+         <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
+            <Label text="🖥 Підключені пристрої" styleClass="section-title"/>
+            <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30"
+                  AnchorPane.rightAnchor="30" spacing="10">
+               <Button text="Оновити" onAction="#onRefreshDevicesBtnClicked"
+                       styleClass="main-button"/>
+               <ScopeListView fx:id="devicesList" prefHeight="300" styleClass="process-list"/>
             </VBox>
          </VBox>
+         <VBox spacing="15" minWidth="350" minHeight="250" styleClass="VBoxSection">
+            <Label text="📊 Додаткові функції" styleClass="section-title"/>
+            <Button text="Показати графіки" onAction="#onShowChartsClicked"
+                    styleClass="main-button" maxWidth="Infinity"/>
+            <Button fx:id="benchBtn" text="Бенчмарк" onAction="#onBenchClicked" styleClass="main-button"
+                    maxWidth="Infinity"/>
+            <Button text="Логи бенчмарків" onAction="#onBenchLogsClicked" styleClass="main-button"
+                    maxWidth="Infinity"/>
+            <Button fx:id="themeToggleBtn" text="Світла тема" onAction="#onThemeToggleClicked" styleClass="main-button"
+                    maxWidth="Infinity"/>
+         </VBox>
+      </HBox>
+      <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30"
+            AnchorPane.rightAnchor="30">
+         <VBox styleClass="HBoxSection">
+            <Label text="⚙️ Запущені процеси" styleClass="section-title"/>
+            <VBox styleClass="HBoxSection">
+               <TextField fx:id="searchField"/>
+               <ScopeListView fx:id="processList" prefHeight="300" styleClass="process-list"/>
+            </VBox>
+            <HBox spacing="10">
+               <Button text="Оновити" onAction="#onRefreshProcessesBtnClicked"
+                       styleClass="main-button"/>
+               <Button text="❌ Завершити" onAction="#onKillSelectedProcessClicked"
+                       styleClass="main-button"/>
+            </HBox>
+         </VBox>
       </VBox>
-   </children>
+   </VBox>
 </AnchorPane>

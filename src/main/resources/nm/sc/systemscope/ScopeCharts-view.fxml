@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 <?import nm.sc.systemscope.modules.ScopeLineChart?>
-<AnchorPane fx:id="anchorPane" prefHeight="600.0" prefWidth="1000.0"
+<AnchorPane prefHeight="600.0" prefWidth="1000.0"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="nm.sc.systemscope.controllers.ScopeChartsController">

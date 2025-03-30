@@ -2,12 +2,7 @@ package nm.sc.systemscope.modules;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import nm.sc.systemscope.SystemScopeMain;
 import nm.sc.systemscope.controllers.BenchSelectorController;
 import nm.sc.systemscope.controllers.SystemScopeController;
 import java.io.IOException;
@@ -32,22 +27,10 @@ public class Benchmark {
         throw new UnsupportedOperationException("Benchmark is a static utility class and cannot be instantiated.");
     }
 
-    /**
-     * Static class constructor
-     */
     static {
         processName = "";
         absolutePath = "";
         benchmarkStarted = false;
-    }
-
-    /**
-     * Get the name of the process.
-     *
-     * @return Name Process.
-     */
-    public static String getProcessName(){
-        return processName;
     }
 
     /**
@@ -99,17 +82,11 @@ public class Benchmark {
      * Show the benchmark selector and set the absolute path.
      */
     private static void showBenchSelector() throws IOException {
-        FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("BenchSelector-view.fxml"));
-        Parent root = loader.load();
-        benchController = loader.getController();
+        ScopeLoaderFXML loader = new ScopeLoaderFXML("BenchSelector-view.fxml");
+        benchController = (BenchSelectorController) loader.getController();
 
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        benchController.setStage(stage);
-        benchController.setScene(scene);
-        stage.setTitle("Вибір гри");
-        stage.showAndWait();
+        loader.getStage().setTitle("Вибір гри");
+        loader.showAndWait();
 
         if (benchController.getStartClicked()) {
             absolutePath = benchController.getSelectedFile();
@@ -128,8 +105,9 @@ public class Benchmark {
      * Starts the benchmark in a background task.
      */
     private static void startBenchmarkInBackground() {
-        Task<Void> benchmarkTask = new Task<Void>() {
-            @Override protected Void call() throws Exception {
+        Task<Void> benchmarkTask = new Task<>() {
+            @Override
+            protected Void call() {
 
                 startTime = System.currentTimeMillis();
 
@@ -149,7 +127,7 @@ public class Benchmark {
 
                     benchmarkStarted = false;
                     Platform.runLater(() -> {
-                        if(controller != null) {
+                        if (controller != null) {
                             controller.swapBenchButton();
                         }
                     });
@@ -170,9 +148,9 @@ public class Benchmark {
         benchmarkStarted = false;
 
         if (processName != null && !processName.isEmpty()) {
-            Task<Void> stopTask = new Task<Void>() {
+            Task<Void> stopTask = new Task<>() {
                 @Override
-                protected Void call() throws Exception {
+                protected Void call() {
                     endTime = System.currentTimeMillis();
 
                     stopRunningProcess();
@@ -209,12 +187,11 @@ public class Benchmark {
             process.waitFor();
 
             String processID = new String(process.getInputStream().readAllBytes()).trim();
-            System.out.println(processID);
             if (!processID.isEmpty()) {
                 ProcessBuilder killProcessBuilder = new ProcessBuilder("bash", "-c", "kill -9 " + processID);
                 killProcessBuilder.start();
             } else {
-                System.out.println("Процес не знайдений.");
+                ScopeLogger.logError("Process {} not found.", processID);
             }
 
             endTime = System.currentTimeMillis();
@@ -227,7 +204,7 @@ public class Benchmark {
 
             clearInfo();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Помилка зупинки процесу: {}", e.getMessage(), e);
         }
     }
 
@@ -252,9 +229,9 @@ public class Benchmark {
 
             return process.isAlive();
         } catch (Exception e) {
-            System.err.println("Помилка запуску гри: " + e.getMessage());
+            ScopeLogger.logError("Error launching the game: {}", e.getMessage());
             Platform.runLater(() -> {
-                ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Перевірте правильність вибраного файлу.");
+                ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Перевірте правильність обраного файлу.");
                 alert.showAndWait();
             });
             return false;
@@ -276,7 +253,7 @@ public class Benchmark {
                 isRunning = isProcessRunning(processName, System.getProperty("os.name").toLowerCase());
             }
 
-            System.out.println("Гра завершена, закриваємо бенчмарк...");
+            ScopeLogger.logInfo("Game finished, closing benchmark...");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -324,15 +301,6 @@ public class Benchmark {
     }
 
     /**
-     * Set Absolute path of the file.
-     *
-     * @param path Absolute path of the file.
-     */
-    public static void setAbsolutePath(String path){
-        absolutePath = path;
-    }
-
-    /**
      * Set the status of the benchmark.
      *
      * @param flag True if the benchmark is running, false otherwise.
@@ -340,14 +308,6 @@ public class Benchmark {
     public static void setBenchmarkStarted(boolean flag){
         benchmarkStarted = flag;
     }
-
-    /**
-     * Get the benchmark window instance.
-     *
-     * @return The BenchWindow instance.
-     */
-
-    public static BenchWindow getBenchWindow(){ return benchWindow;}
 
     /**
      * Clear all benchmark data.

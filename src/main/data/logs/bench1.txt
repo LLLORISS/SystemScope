@@ -1,0 +1,12 @@
+Benchmark Log
+Selected file: Four Elements Trainer
+Timestamp: 9.083
+CPU Temperature (°C): 49 49 49 70 50 49 49 
+GPU Temperature (°C): 46 46 46 46 46 46 46 
+CPU Usage (%): 17 17 31 16 13 21 8 
+GPU Usage (%): 0 0 0 0 0 0 0 
+Average CPU Temperature: 52
+Average GPU Temperature: 46
+Average CPU Usage: 17
+Average GPU Usage: 0
+--------------------------------------------------

@@ -3,7 +3,6 @@ package nm.sc.systemscope.controllers;
 import nm.sc.systemscope.modules.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
 import java.util.*;
 import javafx.scene.control.Label;
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A class that controls events and implements the functions of the main interface
  */
-public class ScopeChartsController {
+public class ScopeChartsController extends BaseScopeController {
     @FXML private ScopeLineChart tempCPUChart;
     @FXML private ScopeLineChart tempGPUChart;
     @FXML private ScopeLineChart usageCPUChart;
@@ -29,20 +28,13 @@ public class ScopeChartsController {
     @FXML private Label labelLastUsageCPU;
     @FXML private Label labelLastUsageGPU;
 
-    private Scene scene;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private ScheduledExecutorService executorService;
-    private ScopeTheme theme;
 
     /**
      * A method that initializes the initial values for the created window
      */
     @FXML public void initialize(){
-        Platform.runLater(() -> {
-            theme = new ScopeTheme(scene);
-            theme.applyTheme();
-        });
-
         tempCPUChart.setAxisX("Час");
         tempCPUChart.setAxisY("Температура (°C)");
         tempGPUChart.setAxisX("Час");
@@ -147,13 +139,11 @@ public class ScopeChartsController {
                             usageGPUChart.getAverageValue(), (int) Double.parseDouble(finalTemperatureCPUString),
                             (int) Double.parseDouble(finalTemperatureGPUString), intPartCPU, intPartGPU));
                 } catch (Exception e) {
-                    System.err.println("Помилка при оновленні графіків: " + e.getMessage());
-                    e.printStackTrace();
+                    ScopeLogger.logError("Error when updating charts: {}", e.getMessage(), e);
                 }
             });
         } catch (Exception e) {
-            System.err.println("Помилка при отриманні даних системи: " + e.getMessage());
-            e.printStackTrace();
+            ScopeLogger.logError("Error when receiving system data: {}", e.getMessage());
         }
     }
 
@@ -200,14 +190,6 @@ public class ScopeChartsController {
             labelLastUsageCPU.setText(data.get("last_usage_cpu") + " %");
             labelLastUsageGPU.setText(data.get("last_usage_gpu") + " %");
         }
-    }
-
-    /**
-     * A method that sets current scene
-     * @param scene
-     */
-    public void setScene(Scene scene){
-        this.scene = scene;
     }
 
     /**

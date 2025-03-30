@@ -26,30 +26,12 @@ public class ScopeAlert extends Alert{
     }
 
     /**
-     * Gets the type of the alert.
-     *
-     * @return The type of the alert (AlertType).
-     */
-    public AlertType getType(){
-        return type;
-    }
-
-    /**
      * Gets the text of the alert.
      *
      * @return The text of the alert.
      */
     public String getText(){
         return text;
-    }
-
-    /**
-     * Sets the type of the alert.
-     *
-     * @param type The new alert type (AlertType).
-     */
-    public void setType(AlertType type){
-        this.type = type;
     }
 
     /**

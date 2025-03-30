@@ -3,17 +3,12 @@ package nm.sc.systemscope.controllers;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Screen;
-import javafx.stage.Stage;
-import nm.sc.systemscope.*;
 import javafx.concurrent.Task;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.Scene;
 import java.io.IOException;
 import javafx.collections.ObservableList;
 import nm.sc.systemscope.modules.*;
@@ -27,7 +22,7 @@ import java.util.regex.Pattern;
 /**
  * The class that manages the main SystemScope window
  */
-public class SystemScopeController {
+public class SystemScopeController extends BaseScopeController {
     @FXML private Label InfoPC;
     @FXML private Label CPU;
     @FXML private Label GPU;
@@ -45,8 +40,6 @@ public class SystemScopeController {
     private ObservableList<ProcessInfo> observableList;
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
-    private ScopeTheme theme;
-    private Scene scene;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -55,9 +48,6 @@ public class SystemScopeController {
     @FXML public void initialize() {
         Platform.runLater(() -> {
             scene = themeToggleBtn.getScene();
-            theme = new ScopeTheme(scene);
-            updateTheme();
-            theme.applyTheme();
 
             InfoPC.setText(SystemInformation.getComputerName());
             CPU.setText(SystemInformation.getProcessorName());
@@ -83,12 +73,12 @@ public class SystemScopeController {
                 try {
                     filterProcesses(newValue);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    ScopeLogger.logError("Error while filtering processes: {}", e.getMessage(), e);
                 }
             });
         }
         catch(IOException e){
-            e.printStackTrace();
+            ScopeLogger.logError("Error while initializing processes and devices: {}", e.getMessage(), e);
         }
 
         scheduler.scheduleAtFixedRate(this::updateTemperature, 0, 2, TimeUnit.SECONDS);
@@ -114,22 +104,17 @@ public class SystemScopeController {
      * @throws IOException if an error occurs when opening the window
      */
     @FXML public void onShowChartsClicked() throws IOException {
-        FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("ScopeCharts-view.fxml"));
-        Parent root = loader.load();
+        ScopeLoaderFXML loader = new ScopeLoaderFXML("ScopeCharts-view.fxml");
 
-        scopeChartsController = loader.getController();
+        scopeChartsController = (ScopeChartsController) loader.getController();
 
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        scopeChartsController.setScene(scene);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.setTitle("Графіки");
+        loader.getStage().setResizable(false);
+        loader.getStage().setTitle("Графіки");
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setWidth(screenBounds.getWidth());
-        stage.setHeight(screenBounds.getHeight());
-        stage.showAndWait();
+        loader.getStage().setWidth(screenBounds.getWidth());
+        loader.getStage().setHeight(screenBounds.getHeight());
+        loader.showAndWait();
     }
 
     /**
@@ -140,19 +125,12 @@ public class SystemScopeController {
      * @throws IOException if there is an issue loading the FXML file or setting up the scene.
      */
     @FXML public void onBenchLogsClicked() throws IOException {
-        FXMLLoader loader = new FXMLLoader(SystemScopeMain.class.getResource("LogsList-view.fxml"));
-        Parent root = loader.load();
+        ScopeLoaderFXML loader = new ScopeLoaderFXML("LogsList-view.fxml");
 
-        LogsListViewController controller = loader.getController();
+        loader.getStage().setResizable(false);
+        loader.getStage().setTitle("Логи");
 
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        controller.setScene(scene);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.setTitle("Логи");
-
-        stage.showAndWait();
+        loader.showAndWait();
     }
 
     /**
@@ -167,13 +145,14 @@ public class SystemScopeController {
                 }
             }
             catch(IOException | InterruptedException e){
-                e.printStackTrace();
+                ScopeLogger.logError("Failed to terminate the process", e);
                 ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Не вдалося завершити процес");
                 alert.showAndWait();
             }
         }
         else{
             ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Виберіть процес для завершення");
+            alert.showAndWait();
         }
     }
 
@@ -233,7 +212,7 @@ public class SystemScopeController {
     /**
      * A method that determines the color relative to the input data on topics
      * @param temperature temperature indicator
-     * @return Сolor relative to the temperature (temperature <= 70° - Green, temperature >= 70 and <= 90 - Orange, temperature > 90 - RED
+     * @return Color relative to the temperature (temperature <= 70° - Green, temperature >= 70 and <= 90 - Orange, temperature > 90 - RED
      */
     private static Paint getColorByZone(double temperature) {
         if (temperature <= 70) {
@@ -257,7 +236,7 @@ public class SystemScopeController {
         if (matcher.find()) {
             return Double.parseDouble(matcher.group());
         } else {
-            throw new NumberFormatException("Не вдалося знайти числове значення в: " + tempString);
+            throw new NumberFormatException("Failed to find a numeric value in: " + tempString);
         }
     }
 
@@ -281,9 +260,9 @@ public class SystemScopeController {
      * A method that updates the current values of components
      */
     private void updateTemperature() {
-        Task<Void> updateTask = new Task<Void>() {
+        Task<Void> updateTask = new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 String tempCPUString = SystemInformation.getTemperatureCPU();
                 String tempGPUString = SystemInformation.getTemperatureGPU();
                 String Fans = SystemInformation.getFansRPM();
@@ -312,7 +291,7 @@ public class SystemScopeController {
                     });
 
                 } catch (NumberFormatException e) {
-                    System.err.println("Помилка парсингу температури: " + e.getMessage());
+                    ScopeLogger.logError("Temperature parsing error: {}", e.getMessage());
                 }
 
                 return null;
@@ -339,7 +318,7 @@ public class SystemScopeController {
         }
 
         if (index < 2) {
-            throw new NumberFormatException("Знайдено менше двох температур у: " + tempString);
+            throw new NumberFormatException("Found less than two temperature values in: " + tempString);
         }
 
         return temperatures;
@@ -371,7 +350,7 @@ public class SystemScopeController {
 
             processList.setItems(observableList);
         } catch (IOException e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Failed to update process list", e);
         }
     }
 
@@ -399,14 +378,6 @@ public class SystemScopeController {
                 benchBtn.getStyleClass().add("main-button");
             }
         });
-    }
-
-    /**
-     * A method that sets the scene
-     * @param scene scene for display
-     */
-    public void setScene(Scene scene){
-        this.scene = scene;
     }
 
     /**

@@ -11,13 +11,10 @@ import nm.sc.systemscope.modules.SystemTrayManager;
  * Controller for the system tray menu window.
  * Handles user interactions such as restoring the main application window and exiting the application.
  */
-public class SystemTrayMenuWindowController {
+public class SystemTrayMenuWindowController extends BaseScopeController {
     @FXML private Button showButton;
     @FXML private Button benchmarkButton;
     @FXML private Button exitButton;
-
-    private Stage menuStage;
-    private Stage primaryStage;
 
     /**
      * Initializes the controller with references to the primary stage and menu stage.
@@ -27,8 +24,6 @@ public class SystemTrayMenuWindowController {
      * @param menuStage    The tray menu window.
      */
     public void initialize(Stage primaryStage, Stage menuStage) {
-        this.primaryStage = primaryStage;
-        this.menuStage = menuStage;
 
         if(Benchmark.getBenchmarkStarted()){
             benchmarkButton.setText("Зупинити бенчмаркУ");
@@ -43,27 +38,21 @@ public class SystemTrayMenuWindowController {
         benchmarkButton.setOnAction(e->{
             if(!Benchmark.getBenchmarkStarted() ){
                 Benchmark.startBenchmark();
-                Platform.runLater(() -> {
-                    benchmarkButton.setText("Зупинити бенчмарк");
-                });
+                Platform.runLater(() -> benchmarkButton.setText("Зупинити бенчмарк"));
             }
             else{
                 Benchmark.stopBenchmark();
-                Platform.runLater(() -> {
-                    benchmarkButton.setText("Бенчмарк");
-                });
+                Platform.runLater(() -> benchmarkButton.setText("Бенчмарк"));
             }
         });
 
-        exitButton.setOnAction(e -> {
-            new Thread(() -> {
-                Benchmark.stopBenchmark();
+        exitButton.setOnAction(e -> new Thread(() -> {
+            Benchmark.stopBenchmark();
 
-                Platform.runLater(() -> {
-                    Platform.exit();
-                    System.exit(0);
-                });
-            }).start();
-        });
+            Platform.runLater(() -> {
+                Platform.exit();
+                System.exit(0);
+            });
+        }).start());
     }
 }

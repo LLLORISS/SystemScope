@@ -113,15 +113,6 @@ public class BenchWindow {
     }
 
     /**
-     * Checks if the benchmark window is visible.
-     *
-     * @return true if the window is visible, false otherwise.
-     */
-    public boolean isVisible() {
-        return frame != null && frame.isVisible();
-    }
-
-    /**
      * Updates the benchmark data displayed in the window.
      */
     private void updateBenchmark(){
@@ -152,7 +143,7 @@ public class BenchWindow {
             }).start();
 
         } catch (NumberFormatException e) {
-            System.out.println("Error parsing temperature or usage values: " + e.getMessage());
+            ScopeLogger.logError("Error parsing temperature or usage values", e);
         }
 
         String finalUsageCPU = usageCPU;
@@ -188,8 +179,8 @@ public class BenchWindow {
     private static int average(List<Integer> list){
         int sum = 0;
         if(list != null && !list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++) {
-                sum += list.get(i);
+            for (Integer integer : list) {
+                sum += integer;
             }
 
             return sum / list.size();

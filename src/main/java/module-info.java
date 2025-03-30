@@ -16,6 +16,7 @@ module nm.sc.systemscope {
     requires com.google.gson;
     requires com.fasterxml.jackson.databind;
     requires annotations;
+    requires org.slf4j;
 
     opens nm.sc.systemscope to javafx.fxml;
     exports nm.sc.systemscope;

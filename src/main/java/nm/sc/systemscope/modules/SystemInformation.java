@@ -14,11 +14,10 @@ import java.util.List;
  * about the graphics cards, RAM, disk storage, CPU, and other hardware components.
  */
 public class SystemInformation {
-    private static SystemInfo systemInfo;
-    private static HardwareAbstractionLayer layer;
+    private static final HardwareAbstractionLayer layer;
 
     static {
-        systemInfo = new SystemInfo();
+        SystemInfo systemInfo = new SystemInfo();
         layer = systemInfo.getHardware();
     }
 
@@ -54,7 +53,8 @@ public class SystemInformation {
         try {
             List<PhysicalMemory> memoryList = layer.getMemory().getPhysicalMemory();
             if (memoryList.isEmpty()) {
-                return "Інформація про фізичну пам'ять недоступна";
+                ScopeLogger.logError("Physical memory information is unavailable");
+                return "Physical memory information is unavailable";
             }
 
             StringBuilder ramInfo = new StringBuilder();
@@ -69,7 +69,7 @@ public class SystemInformation {
             return ramInfo.toString();
         }
         catch(Exception e){
-            e.printStackTrace();
+            ScopeLogger.logError("Error while retrieving physical memory information: {}", e.getMessage());
             return "Помилка при отриманні інформації про фізичну пам'ять: " + e.getMessage();
         }
     }
@@ -199,7 +199,7 @@ public class SystemInformation {
             }
             return result.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while retrieving temperature for NVIDIA GPU");
             return "Помилка при отриманні температури для NVIDIA GPU";
         }
     }
@@ -228,7 +228,7 @@ public class SystemInformation {
             }
             return result.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while retrieving temperature for AMD GPU");
             return "Помилка при отриманні температури для AMD GPU";
         }
     }
@@ -321,7 +321,7 @@ public class SystemInformation {
             usage.append("Не підтримується виробником");
         }
 
-        return usage.length() > 0 ? usage.toString() : "Немає даних";
+        return !usage.isEmpty() ? usage.toString() : "Немає даних";
 
     }
 
@@ -335,15 +335,10 @@ public class SystemInformation {
             String os = System.getProperty("os.name").toLowerCase();
 
             Process process;
-            if (os.contains("win")) {
-                process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
-            } else {
-                process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
-            }
+            process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            return line + "%";
+            return reader.readLine();
         } catch (IOException e) {
             return "Не вдалося отримати використання для NVIDIA";
         }
@@ -378,7 +373,7 @@ public class SystemInformation {
                     result.append(line.trim()).append("\n");
                 }
 
-                if (result.length() == 0) {
+                if (result.isEmpty()) {
                     process = Runtime.getRuntime().exec("radeontop -d 1 -n 1");
                     reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -390,11 +385,11 @@ public class SystemInformation {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while retrieving load for AMD GPU");
             result.append("Помилка при отриманні завантаження для AMD GPU");
         }
 
-        return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження GPU";
+        return !result.isEmpty() ? result.toString() : "Не вдалося отримати завантаження GPU";
     }
 
     /**
@@ -421,11 +416,11 @@ public class SystemInformation {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ScopeLogger.logError("Error while retrieving load for Intel GPU");
             result.append("Помилка при отриманні завантаження для Intel GPU");
         }
 
-        return result.length() > 0 ? result.toString() : "Не вдалося отримати завантаження Intel GPU";
+        return !result.isEmpty() ? result.toString() : "Не вдалося отримати завантаження Intel GPU";
     }
 
     /**
@@ -492,7 +487,7 @@ public class SystemInformation {
 
                     formattedCards.append("NVIDIA ").append(model);
                 } else if (card.contains("AMD")) {
-                    formattedCards.append("AMD ").append(card.replaceAll(".*\\[([A-Za-z0-9\\s]+)\\].*", "$1"));
+                    formattedCards.append("AMD ").append(card.replaceAll(".*\\[([A-Za-z0-9\\s]+)].*", "$1"));
                 }
 
                 if (!formattedCards.isEmpty() && cardsList.length > 1 && !card.equals(cardsList[cardsList.length - 1])) {

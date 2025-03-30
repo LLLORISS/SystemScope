@@ -19,28 +19,6 @@ public class ScopeUsbDevice implements UsbDevice {
     private final List<UsbDevice> connectedDevice;
 
     /**
-     * Constructs a ScopeUsbDevice with specified details.
-     *
-     * @param deviceName the name of the USB device
-     * @param vendor the vendor name of the USB device
-     * @param vendorID the vendor ID of the USB device
-     * @param productID the product ID of the USB device
-     * @param serialNumber the serial number of the USB device
-     * @param uniqueDeviceID the unique identifier of the USB device
-     * @param connectedDevice the list of connected USB devices
-     */
-    public ScopeUsbDevice(String deviceName, String vendor, String productId,
-                          String vendorID, String productID, String serialNumber, String uniqueDeviceID, List<UsbDevice> connectedDevice) {
-        this.deviceName = deviceName;
-        this.vendor = vendor;
-        this.vendorID = vendorID;
-        this.productID = productID;
-        this.serialNumber = serialNumber;
-        this.uniqueDeviceID = uniqueDeviceID;
-        this.connectedDevice = connectedDevice;
-    }
-
-    /**
      * Constructs a ScopeUsbDevice by wrapping an existing {@link UsbDevice} instance.
      *
      * @param device the existing USB device to wrap
