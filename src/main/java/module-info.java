@@ -26,4 +26,6 @@ module nm.sc.systemscope {
     opens nm.sc.systemscope.modules to javafx.fxml;
     exports nm.sc.systemscope.adapters;
     opens nm.sc.systemscope.adapters to javafx.fxml;
+    exports nm.sc.systemscope.ScopeHardware;
+    opens nm.sc.systemscope.ScopeHardware to javafx.fxml;
 }

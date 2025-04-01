@@ -1,5 +1,7 @@
 package nm.sc.systemscope.modules;
 
+import nm.sc.systemscope.ScopeHardware.ScopeCentralProcessor;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -56,7 +58,7 @@ public class BenchWindow {
         head.setFont(new Font("Segoe UI", Font.BOLD, 25));
         frame.getContentPane().add(head);
 
-        tempCPULabel = new JLabel("CPU TEMP: " + SystemInformation.getTemperatureCPU(), SwingConstants.LEFT);
+        tempCPULabel = new JLabel("CPU TEMP: " + ScopeCentralProcessor.getTemperatureCPU(), SwingConstants.LEFT);
         tempCPULabel.setForeground(Color.PINK);
         tempCPULabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         frame.getContentPane().add(tempCPULabel);
@@ -116,9 +118,9 @@ public class BenchWindow {
      * Updates the benchmark data displayed in the window.
      */
     private void updateBenchmark(){
-        String tempCPU = SystemInformation.getTemperatureCPU();
+        String tempCPU = ScopeCentralProcessor.getTemperatureCPU();
         String tempGPU = SystemInformation.getTemperatureDiscreteGPU();
-        String usageCPU = SystemInformation.getCPUUsage();
+        String usageCPU = ScopeCentralProcessor.getCPUUsage();
         String usageGPU = SystemInformation.getGPUUsage();
 
         usageCPU = usageCPU.replace("%", "");

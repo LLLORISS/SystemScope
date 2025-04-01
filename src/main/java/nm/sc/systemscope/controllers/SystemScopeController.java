@@ -11,6 +11,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import java.io.IOException;
 import javafx.collections.ObservableList;
+import nm.sc.systemscope.ScopeHardware.ScopeCentralProcessor;
+import nm.sc.systemscope.ScopeHardware.ScopeMotherBoard;
+import nm.sc.systemscope.ScopeHardware.ScopeUsbDevice;
 import nm.sc.systemscope.modules.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,6 +27,7 @@ import java.util.regex.Pattern;
  */
 public class SystemScopeController extends BaseScopeController {
     @FXML private Label InfoPC;
+    @FXML private Label Baseboard;
     @FXML private Label CPU;
     @FXML private Label GPU;
     @FXML private Label RAM;
@@ -50,7 +54,10 @@ public class SystemScopeController extends BaseScopeController {
             scene = themeToggleBtn.getScene();
 
             InfoPC.setText(SystemInformation.getComputerName());
-            CPU.setText(SystemInformation.getProcessorName());
+            String baseboardString = ScopeMotherBoard.getManufacturer() + " "
+                    + ScopeMotherBoard.getModel() + " " + ScopeMotherBoard.getVersion();
+            Baseboard.setText(baseboardString);
+            CPU.setText(ScopeCentralProcessor.getProcessorName());
             GPU.setText(SystemInformation.getGraphicCards());
             RAM.setText(SystemInformation.getRAM());
             DiskStorage.setText(SystemInformation.getDiskStorage());
@@ -263,16 +270,16 @@ public class SystemScopeController extends BaseScopeController {
         Task<Void> updateTask = new Task<>() {
             @Override
             protected Void call() {
-                String tempCPUString = SystemInformation.getTemperatureCPU();
+                String temperatureCPU = ScopeCentralProcessor.getTemperatureCPU();
                 String tempGPUString = SystemInformation.getTemperatureGPU();
                 String Fans = SystemInformation.getFansRPM();
 
                 try {
-                    double tempCPU = parseTemperature(tempCPUString);
+                    double tempCPU = parseTemperature(temperatureCPU);
                     double[] gpuTemps = parseMultipleTemperatures(tempGPUString);
 
                     Platform.runLater(() -> {
-                        TempCPU.setText(tempCPUString);
+                        TempCPU.setText(temperatureCPU + " °C");
                         TempCPU.setTextFill(getColorByZone(tempCPU));
 
                         String formattedGPU = gpuTemps.length > 1

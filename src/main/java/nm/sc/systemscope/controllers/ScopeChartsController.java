@@ -1,5 +1,6 @@
 package nm.sc.systemscope.controllers;
 
+import nm.sc.systemscope.ScopeHardware.ScopeCentralProcessor;
 import nm.sc.systemscope.modules.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -88,42 +89,39 @@ public class ScopeChartsController extends BaseScopeController {
     private void updateCharts(){
         String currentTime = timeFormat.format(new Date());
 
-        String temperatureCPUString;
+        String temperatureCPU;
         String temperatureGPUString;
-        String usageCPUString;
+        String usageCPU;
         String usageGPUString;
 
         try {
-            temperatureCPUString = SystemInformation.getTemperatureCPU();
-            temperatureCPUString = temperatureCPUString.replaceAll("[^0-9.]", "");
+            temperatureCPU = ScopeCentralProcessor.getTemperatureCPU();
 
             temperatureGPUString = SystemInformation.getTemperatureDiscreteGPU();
             temperatureGPUString = temperatureGPUString.replaceAll("[^0-9.]", "");
 
-            usageCPUString = SystemInformation.getCPUUsage();
-            int intPartCPU = Integer.parseInt(usageCPUString.split(",")[0]);
+            usageCPU = ScopeCentralProcessor.getCPUUsage();
 
             usageGPUString = SystemInformation.getGPUUsage();
             usageGPUString = usageGPUString.replaceAll("[^0-9]", "");
             int intPartGPU = Integer.parseInt(usageGPUString.split(",")[0]);
 
-            String finalTemperatureCPUString = temperatureCPUString;
             String finalTemperatureGPUString = temperatureGPUString;
             Platform.runLater(() -> {
                 try {
-                    tempCPUChart.add(new XYChart.Data<>(currentTime, Double.parseDouble(finalTemperatureCPUString)));
+                    tempCPUChart.add(new XYChart.Data<>(currentTime, Double.parseDouble(temperatureCPU)));
                     tempGPUChart.add(new XYChart.Data<>(currentTime, Double.parseDouble(finalTemperatureGPUString)));
-                    usageCPUChart.add(new XYChart.Data<>(currentTime, intPartCPU));
+                    usageCPUChart.add(new XYChart.Data<>(currentTime, Integer.parseInt(usageCPU)));
                     usageGPUChart.add(new XYChart.Data<>(currentTime, intPartGPU));
 
-                    if(!Objects.equals(labelLastTempCPU.getText(), finalTemperatureCPUString + " °C")) {
-                        this.labelLastTempCPU.setText(finalTemperatureCPUString + " °C");
+                    if(!Objects.equals(labelLastTempCPU.getText(), temperatureCPU + " °C")) {
+                        this.labelLastTempCPU.setText(temperatureCPU + " °C");
                     }
                     if (!Objects.equals(labelLastTempGPU.getText(), finalTemperatureGPUString + " °C")) {
                         labelLastTempGPU.setText(finalTemperatureGPUString + " °C");
                     }
-                    if (!Objects.equals(labelLastUsageCPU.getText(), intPartCPU + " %")) {
-                        labelLastUsageCPU.setText(intPartCPU + " %");
+                    if (!Objects.equals(labelLastUsageCPU.getText(), usageCPU + " %")) {
+                        labelLastUsageCPU.setText(usageCPU + " %");
                     }
                     if (!Objects.equals(labelLastUsageGPU.getText(), intPartGPU + " %")) {
                         labelLastUsageGPU.setText(intPartGPU + " %");
@@ -136,8 +134,8 @@ public class ScopeChartsController extends BaseScopeController {
                     DataStorage.saveUsageCPUData(usageCPUChart.getSeriesData());
                     DataStorage.saveUsageGPUData(usageGPUChart.getSeriesData());
                     DataStorage.saveAveragesData(getAveragesMap(tempCPUChart.getAverageValue(), tempGPUChart.getAverageValue(), usageCPUChart.getAverageValue(),
-                            usageGPUChart.getAverageValue(), (int) Double.parseDouble(finalTemperatureCPUString),
-                            (int) Double.parseDouble(finalTemperatureGPUString), intPartCPU, intPartGPU));
+                            usageGPUChart.getAverageValue(), (int) Double.parseDouble(temperatureCPU),
+                            (int) Double.parseDouble(finalTemperatureGPUString), Integer.parseInt(usageCPU), intPartGPU));
                 } catch (Exception e) {
                     ScopeLogger.logError("Error when updating charts: {}", e.getMessage(), e);
                 }

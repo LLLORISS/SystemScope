@@ -1,4 +1,4 @@
-package nm.sc.systemscope.modules;
+package nm.sc.systemscope.ScopeHardware;
 
 import org.jetbrains.annotations.NotNull;
 import oshi.hardware.UsbDevice;

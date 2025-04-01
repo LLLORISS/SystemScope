@@ -19,6 +19,10 @@
          <VBox spacing="15" minWidth="500" minHeight="350" styleClass="VBoxSection">
             <Label text="🖥 Системна інформація" styleClass="section-title"/>
             <HBox spacing="15">
+               <Label text="Baseboard:" styleClass="pc_label_info"/>
+               <Label fx:id="Baseboard" styleClass="pc_loaded_info"/>
+            </HBox>
+            <HBox spacing="15">
                <Label text="PC:" styleClass="pc_label_info"/>
                <Label fx:id="InfoPC" styleClass="pc_loaded_info"/>
             </HBox>

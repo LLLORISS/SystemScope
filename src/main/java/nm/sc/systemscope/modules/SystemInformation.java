@@ -1,10 +1,8 @@
 package nm.sc.systemscope.modules;
 
+import nm.sc.systemscope.ScopeHardware.*;
 import oshi.SystemInfo;
 import oshi.hardware.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -96,15 +94,6 @@ public class SystemInformation {
     }
 
     /**
-     * Retrieves the current CPU temperature.
-     *
-     * @return a string with the current CPU temperature in Celsius.
-     */
-    public static String getTemperatureCPU(){
-        return layer.getSensors().getCpuTemperature() + " °C";
-    }
-
-    /**
      * Retrieves the discrete graphics card (GPU) from the system, prioritizing NVIDIA or AMD.
      *
      * @return the discrete GPU if found, null otherwise.
@@ -145,12 +134,15 @@ public class SystemInformation {
             String vendor = gpu.getVendor().toLowerCase();
 
             if (vendor.contains("nvidia")) {
-                temperatures.append(getTemperatureForNVIDIA());
+                NvidiaCard nvidia = new NvidiaCard();
+                temperatures.append(nvidia.getTemperature());
             } else if (vendor.contains("amd")) {
-                temperatures.append(getTemperatureForAMD());
+                AmdCard amd = new AmdCard();
+                temperatures.append(amd.getTemperature());
             }
             else if(vendor.contains("intel")){
-                temperatures.append(getTemperatureForIntel());
+                IntelCard intel = new IntelCard();
+                temperatures.append(intel.getTemperature());
             }
         }
         return !temperatures.isEmpty() ? temperatures.toString() : "Немає даних";
@@ -170,85 +162,20 @@ public class SystemInformation {
             String vendor = gpu.getVendor().toLowerCase();
 
             if (vendor.contains("nvidia")) {
-                temperatures.append(getTemperatureForNVIDIA());
+                NvidiaCard nvidia = new NvidiaCard();
+                temperatures.append(nvidia.getTemperature());
             } else if (vendor.contains("amd")) {
-                temperatures.append(getTemperatureForAMD());
+                AmdCard amd = new AmdCard();
+                temperatures.append(amd.getTemperature());
             } else if (vendor.contains("intel")) {
-                temperatures.append(getTemperatureForIntel());
+                IntelCard intel = new IntelCard();
+                temperatures.append(intel.getTemperature());
             } else {
                 temperatures.append("Невідомий виробник відеокарти: ").append(gpu.getName()).append("\n");
             }
         }
 
         return !temperatures.isEmpty() ? temperatures.toString() : "Немає даних";
-    }
-
-    /**
-     * Retrieves the temperature for an NVIDIA GPU.
-     *
-     * @return a string with the temperature of the NVIDIA GPU.
-     */
-    private static String getTemperatureForNVIDIA() {
-        try {
-            Process process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            StringBuilder result = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                result.append("NVIDIA GPU: ").append(line.trim()).append(" °C\n");
-            }
-            return result.toString();
-        } catch (Exception e) {
-            ScopeLogger.logError("Error while retrieving temperature for NVIDIA GPU");
-            return "Помилка при отриманні температури для NVIDIA GPU";
-        }
-    }
-
-    /**
-     * Retrieves the temperature for an AMD GPU.
-     *
-     * @return a string with the temperature of the AMD GPU.
-     */
-    private static String getTemperatureForAMD() {
-        try {
-            Process process;
-            String os = System.getProperty("os.name").toLowerCase();
-
-            if (os.contains("win")) {
-                process = Runtime.getRuntime().exec("wmic /namespace:\\\\root\\wmi PATH MSAcpi_ThermalZoneTemperature get CurrentTemperature");
-            } else {
-                process = Runtime.getRuntime().exec("sensors | grep -i 'gpu'");
-            }
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            StringBuilder result = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                result.append("AMD GPU: ").append(line.trim()).append(" °C\n");
-            }
-            return result.toString();
-        } catch (Exception e) {
-            ScopeLogger.logError("Error while retrieving temperature for AMD GPU");
-            return "Помилка при отриманні температури для AMD GPU";
-        }
-    }
-
-    /**
-     * Retrieves the temperature for an Intel GPU.
-     *
-     * @return a string with the temperature of the Intel GPU.
-     */
-    private static String getTemperatureForIntel() {
-        return "Intel GPU: " + getTemperatureCPU() + " °C\n";
-    }
-
-    /**
-     * Retrieves the name of the processor.
-     *
-     * @return a string containing the processor's name.
-     */
-    public static String getProcessorName(){
-        return layer.getProcessor().getProcessorIdentifier().getName();
     }
 
     /**
@@ -282,21 +209,6 @@ public class SystemInformation {
     }
 
     /**
-     * Retrieves the current CPU usage percentage.
-     *
-     * @return a string with the CPU usage as a percentage.
-     */
-    public static String getCPUUsage(){
-        CentralProcessor processor = layer.getProcessor();
-
-        long delay = 1000;
-
-        double loadCPU = processor.getSystemCpuLoad(delay) * 100;
-
-        return String.format("%.2f%%", loadCPU);
-    }
-
-    /**
      * Retrieves the GPU usage percentage for the discrete GPU.
      *
      * @return a string with the GPU usage, or a message indicating no GPU is found.
@@ -312,115 +224,19 @@ public class SystemInformation {
         StringBuilder usage = new StringBuilder();
 
         if (vendor.contains("nvidia")) {
-            usage.append(getGPULoadForNvidia());
+            NvidiaCard nvidia = new NvidiaCard();
+            usage.append(nvidia.getGPULoad());
         } else if (vendor.contains("amd")) {
-            usage.append(getGPULoadForAMD());
+            AmdCard amd = new AmdCard();
+            usage.append(amd.getGPULoad());
         } else if (vendor.contains("intel")) {
-            usage.append(getGPULoadForIntel());
+            IntelCard intel = new IntelCard();
+            usage.append(intel.getGPULoad());
         } else {
             usage.append("Не підтримується виробником");
         }
 
         return !usage.isEmpty() ? usage.toString() : "Немає даних";
-
-    }
-
-    /**
-     * Retrieves the GPU load for an NVIDIA GPU.
-     *
-     * @return a string with the load percentage for the NVIDIA GPU.
-     */
-    private static String getGPULoadForNvidia(){
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-
-            Process process;
-            process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            return reader.readLine();
-        } catch (IOException e) {
-            return "Не вдалося отримати використання для NVIDIA";
-        }
-    }
-
-    /**
-     * Retrieves the GPU load for an AMD GPU.
-     *
-     * @return a string with the load percentage for the AMD GPU.
-     */
-    private static String getGPULoadForAMD() {
-        String os = System.getProperty("os.name").toLowerCase();
-        StringBuilder result = new StringBuilder();
-
-        try {
-            if (os.contains("win")) {
-                Process process = Runtime.getRuntime().exec("wmic path Win32_VideoController get LoadPercentage");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains("%")) {
-                        result.append(line.trim()).append("\n");
-                    }
-                }
-            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-                Process process = Runtime.getRuntime().exec("sensors | grep -i 'gpu'");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    result.append(line.trim()).append("\n");
-                }
-
-                if (result.isEmpty()) {
-                    process = Runtime.getRuntime().exec("radeontop -d 1 -n 1");
-                    reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-                    while ((line = reader.readLine()) != null) {
-                        if (line.contains("Load")) {
-                            result.append(line.trim()).append("\n");
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            ScopeLogger.logError("Error while retrieving load for AMD GPU");
-            result.append("Помилка при отриманні завантаження для AMD GPU");
-        }
-
-        return !result.isEmpty() ? result.toString() : "Не вдалося отримати завантаження GPU";
-    }
-
-    /**
-     * Retrieves the GPU load for an Intel GPU.
-     *
-     * @return a string with the load percentage for the Intel GPU.
-     */
-    private static String getGPULoadForIntel() {
-        String os = System.getProperty("os.name").toLowerCase();
-        StringBuilder result = new StringBuilder();
-
-        try {
-            if (os.contains("win")) {
-                result.append("Not supported.");
-            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-                Process process = Runtime.getRuntime().exec("sudo intel_gpu_top -d 1 -n 1");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains("Gpu") || line.contains("Render") || line.contains("Active")) {
-                        result.append(line.trim()).append("\n");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            ScopeLogger.logError("Error while retrieving load for Intel GPU");
-            result.append("Помилка при отриманні завантаження для Intel GPU");
-        }
-
-        return !result.isEmpty() ? result.toString() : "Не вдалося отримати завантаження Intel GPU";
     }
 
     /**
