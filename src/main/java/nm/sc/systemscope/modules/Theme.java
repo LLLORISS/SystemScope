@@ -12,4 +12,4 @@ public enum Theme{
      * Represents the light theme.
      */
     LIGHT
-};
+}

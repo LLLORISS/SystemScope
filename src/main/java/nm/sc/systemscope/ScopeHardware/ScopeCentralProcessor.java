@@ -5,7 +5,6 @@ import oshi.hardware.*;
 /**
  * The {@code ScopeCentralProcessor} class provides methods to retrieve information about the system's CPU,
  * such as the processor name, CPU usage, and CPU temperature.
- *
  * This class uses the OSHI (Operating System and Hardware Information) library to access hardware details.
  * The CPU details are retrieved through the HardwareAbstractionLayer (HAL) provided by OSHI.
  */

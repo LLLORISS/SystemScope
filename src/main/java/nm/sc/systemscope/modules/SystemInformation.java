@@ -3,6 +3,7 @@ package nm.sc.systemscope.modules;
 import nm.sc.systemscope.ScopeHardware.*;
 import oshi.SystemInfo;
 import oshi.hardware.*;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.List;

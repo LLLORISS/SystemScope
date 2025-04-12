@@ -43,6 +43,10 @@
                <Label text="Disk:" styleClass="pc_label_info"/>
                <Label fx:id="DiskStorage" styleClass="pc_loaded_info"/>
             </HBox>
+            <HBox spacing="15">
+               <Label text="Battery Capacity:" styleClass="pc_label_info"/>
+               <Label fx:id="BatteryCapacity" styleClass="pc_loaded_info"/>
+            </HBox>
          </VBox>
 
          <VBox spacing="15" minWidth="500" minHeight="300" styleClass="VBoxSection">
@@ -79,6 +83,7 @@
                     maxWidth="Infinity"/>
             <Button fx:id="themeToggleBtn" text="Світла тема" onAction="#onThemeToggleClicked" styleClass="main-button"
                     maxWidth="Infinity"/>
+            <Button text="Чат з ШІ" onAction="#onOpenAnalyzeChat" styleClass="main-button" maxWidth="Infinity"/>
          </VBox>
       </HBox>
       <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30"

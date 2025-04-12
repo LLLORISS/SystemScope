@@ -33,7 +33,8 @@ public class XYChartDataAdapter implements JsonSerializer<XYChart.Data<String, N
      * @return The {@link XYChart.Data} object with the extracted X and Y values.
      * @throws JsonParseException If the JSON has the wrong format or the required data is missing.
      */
-    @Override public XYChart.Data<String, Number> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    @Override public XYChart.Data<String, Number> deserialize(
+            JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         String xValue = jsonObject.get("x").getAsString();
         double yValue = jsonObject.get("y").getAsDouble();

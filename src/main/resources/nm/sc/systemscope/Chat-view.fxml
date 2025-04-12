@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="nm.sc.systemscope.controllers.AiChatController"
+            prefWidth="600">
+
+    <VBox spacing="10" prefHeight="600" prefWidth="380"
+          AnchorPane.topAnchor="20"
+          AnchorPane.bottomAnchor="20"
+          AnchorPane.leftAnchor="20"
+          AnchorPane.rightAnchor="20">
+
+        <Label text="💬 Чат з ШІ" styleClass="section-title"/>
+
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+            <VBox fx:id="chatMessages" spacing="10" styleClass="message-container"/>
+        </ScrollPane>
+
+        <HBox spacing="10">
+            <TextField fx:id="chatInput" promptText="Введіть запит..." HBox.hgrow="ALWAYS"/>
+            <Button text="Надіслати" onAction="#onSendChat" styleClass="main-button"/>
+        </HBox>
+        <HBox>
+            <Button text="Аналізувати дані" onAction="#onAnalyzeData" styleClass="main-button"/>
+            <Button text="Очистити історію" onAction="#onClearChat" styleClass="main-button"/>
+        </HBox>
+    </VBox>
+</AnchorPane>

@@ -3,7 +3,6 @@ package nm.sc.systemscope.modules;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +31,8 @@ public class ScopeListView<T> extends ListView<T> {
      * @param lst the list of items to search
      * @param <T> the type of elements in the list
      * @return a list of items that match the search input; if the search input is null or empty, returns the original list
-     * @throws IOException if an I/O error occurs (currently not utilized, can be removed if unnecessary)
      */
-    public static <T> List<T> searchItems(String searchInput, List<T> lst) throws IOException {
+    public static <T> List<T> searchItems(String searchInput, List<T> lst) {
         List<T> filtered = new ArrayList<>();
 
         if (searchInput == null || searchInput.trim().isEmpty()) {

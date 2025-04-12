@@ -41,8 +41,6 @@ public class NvidiaCard implements ScopeGraphicCard{
      */
     @Override public String getGPULoad(){
         try {
-            String os = System.getProperty("os.name").toLowerCase();
-
             Process process;
             process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits");
 

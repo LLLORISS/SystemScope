@@ -119,7 +119,7 @@ public class LogsListViewController extends BaseScopeController {
      * If the operation is canceled, no files are deleted.
      */
     @FXML public void removeAllLogFiles(){
-        ScopeAlert alert = new ScopeAlert(Alert.AlertType.CONFIRMATION, "Ви впевнені що хочете видалити всі файли лотів?");
+        ScopeAlert alert = new ScopeAlert(Alert.AlertType.CONFIRMATION, "Ви впевнені що хочете видалити всі файли логів?");
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {

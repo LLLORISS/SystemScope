@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import java.io.IOException;
 import javafx.collections.ObservableList;
+import javafx.stage.Stage;
+import nm.sc.systemscope.ScopeHardware.ScopeBattery;
 import nm.sc.systemscope.ScopeHardware.ScopeCentralProcessor;
 import nm.sc.systemscope.ScopeHardware.ScopeMotherBoard;
 import nm.sc.systemscope.ScopeHardware.ScopeUsbDevice;
@@ -32,6 +34,7 @@ public class SystemScopeController extends BaseScopeController {
     @FXML private Label GPU;
     @FXML private Label RAM;
     @FXML private Label DiskStorage;
+    @FXML private Label BatteryCapacity;
     @FXML private Label TempCPU;
     @FXML private Label TempGPU;
     @FXML private Label FansSpeed;
@@ -44,6 +47,7 @@ public class SystemScopeController extends BaseScopeController {
     private ObservableList<ProcessInfo> observableList;
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
+    private AiChatController aiChatController;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -62,6 +66,7 @@ public class SystemScopeController extends BaseScopeController {
             RAM.setText(SystemInformation.getRAM());
             DiskStorage.setText(SystemInformation.getDiskStorage());
             updateTemperature();
+            BatteryCapacity.setText(ScopeBattery.getBatteryCapacity() + " mAh");
         });
 
         try{
@@ -138,6 +143,29 @@ public class SystemScopeController extends BaseScopeController {
         loader.getStage().setTitle("Логи");
 
         loader.showAndWait();
+    }
+
+    /**
+     * Opens the "Chat-view" FXML and initializes the AI chat controller.
+     * This method loads the FXML file for the chat view, sets up the controller,
+     * and displays the chat window with the specified settings (like non-resizable, always on top).
+     *
+     * @throws IOException If an error occurs during the loading of the FXML file.
+     */
+    @FXML public void onOpenAnalyzeChat() throws IOException {
+        ScopeLoaderFXML loader = new ScopeLoaderFXML("Chat-view.fxml");
+
+        aiChatController = (AiChatController) loader.getController();
+        aiChatController.setStage(this.stage);
+
+        Stage chatStage = loader.getStage();
+        chatStage.setResizable(false);
+        chatStage.setTitle("ScopeHelper");
+
+        chatStage.setY(0);
+
+        chatStage.setAlwaysOnTop(true);
+        chatStage.show();
     }
 
     /**

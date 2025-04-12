@@ -21,6 +21,7 @@ public class DataStorage {
     private static final String GPUsagePath = dataFolderPath + "UsageGPU.json";
     private static final String averagesPath = dataFolderPath + "Averages.json";
     private static final String configPath = "config.properties";
+    private static final String chatHistoryPath = dataFolderPath + "chatHistory.json";
 
     static {
         createDataFolderAndFiles();
@@ -45,6 +46,7 @@ public class DataStorage {
         createFile(CPUsagePath, "UsageCPU.json");
         createFile(GPUsagePath, "UsageGPU.json");
         createFile(averagesPath, "Averages.json");
+        createFile(chatHistoryPath, "ChatHistory.json");
     }
 
     /**
@@ -382,5 +384,61 @@ public class DataStorage {
         }
 
         return logs;
+    }
+
+    /**
+     * Saves the given chat history to a file in JSON format.
+     * This method writes the list of chat messages to a file at the specified path.
+     * If an error occurs during saving, it logs the error.
+     *
+     * @param messages A list of ChatMessage objects representing the chat history to be saved.
+     */
+    public static void saveChatHistory(List<ChatMessage> messages){
+        try(FileWriter writer = new FileWriter(chatHistoryPath)){
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(messages, writer);
+        }
+        catch(IOException e){
+            ScopeLogger.logError("Error while saving chat history: ", e);
+        }
+    }
+
+    /**
+     * Loads the chat history from a file and returns it as a list of ChatMessage objects.
+     * If the file is empty, doesn't exist, or an error occurs during loading or parsing,
+     * it returns an empty list.
+     *
+     * @return A list of ChatMessage objects representing the loaded chat history.
+     */
+    public static List<ChatMessage> loadChatHistory() {
+        List<ChatMessage> chatHistory = new ArrayList<>();
+        File file = new File(chatHistoryPath);
+
+        if (!file.exists() || file.length() == 0) {
+            ScopeLogger.logInfo("Chat history file is empty or does not exist.");
+            return chatHistory;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            Gson gson = new Gson();
+            chatHistory = gson.fromJson(reader, new TypeToken<List<ChatMessage>>() {}.getType());
+
+            if (chatHistory == null) {
+                chatHistory = new ArrayList<>();
+            }
+        } catch (IOException | JsonSyntaxException e) {
+            ScopeLogger.logError("Error parsing chat history JSON: ", e);
+            chatHistory = new ArrayList<>();
+        }
+
+        return chatHistory;
+    }
+
+    /**
+     * Clears the chat history by deleting the chat history file.
+     * This method deletes the file specified by `chatHistoryPath`.
+     */
+    public static void clearChatHistory(){
+        deleteFile(chatHistoryPath, "chatHistory.json");
     }
 }

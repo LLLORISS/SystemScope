@@ -14,7 +14,7 @@ public interface ScopeGraphicCard {
      *
      * @return a string representing the GPU temperature.
      */
-    public String getTemperature();
+    String getTemperature();
 
     /**
      * Retrieves the load (utilization) of the GPU.
@@ -23,5 +23,5 @@ public interface ScopeGraphicCard {
      *
      * @return a string representing the GPU load as a percentage.
      */
-    public String getGPULoad();
+    String getGPULoad();
 }
