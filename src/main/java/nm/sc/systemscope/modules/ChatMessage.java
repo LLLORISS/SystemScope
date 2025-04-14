@@ -1,26 +1,16 @@
 package nm.sc.systemscope.modules;
 
+import com.google.gson.annotations.Expose;
+
 /**
- * A record that represents a chat message.
- * This class stores the content of the message and the sender information.
+ * Represents a chat message in the system.
+ * Contains the message text and the sender's identity (either user or assistant).
+ *
+ * <p>This class is used to store chat messages, and is annotated for JSON serialization/deserialization using Gson.</p>
  */
-public record ChatMessage(String message, Sender sender) {
+public record ChatMessage(
+        @Expose String message,
 
-    /**
-     * Gets the content of the chat message.
-     *
-     * @return The message text.
-     */
-    public String message() {
-        return message;
-    }
-
-    /**
-     * Gets the sender of the chat message.
-     *
-     * @return The sender of the message (either USER or AI).
-     */
-    public Sender sender() {
-        return sender;
-    }
+        @Expose Sender sender
+) {
 }

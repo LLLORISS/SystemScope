@@ -29,4 +29,18 @@ public interface SceneController {
      * @return the {@link Scene} associated with this controller
      */
     Scene getScene();
+
+    /**
+     * Shows the associated {@link Stage} if it's not already visible.
+     *
+     * <p>This method should be used to display the stage to the user.</p>
+     */
+    void show();
+
+    /**
+     * Closes the associated {@link Stage}.
+     *
+     * <p>This method should be used to close the stage when the application or window should be terminated.</p>
+     */
+    void close();
 }

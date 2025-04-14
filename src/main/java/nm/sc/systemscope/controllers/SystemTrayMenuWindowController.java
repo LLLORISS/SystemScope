@@ -5,7 +5,10 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.application.Platform;
 import nm.sc.systemscope.modules.Benchmark;
+import nm.sc.systemscope.modules.ScopeLoaderFXML;
 import nm.sc.systemscope.modules.SystemTrayManager;
+
+import java.io.IOException;
 
 /**
  * Controller for the system tray menu window.
@@ -13,12 +16,16 @@ import nm.sc.systemscope.modules.SystemTrayManager;
  */
 public class SystemTrayMenuWindowController extends BaseScopeController {
     @FXML private Button showButton;
+    @FXML private Button AIButton;
     @FXML private Button benchmarkButton;
     @FXML private Button exitButton;
 
+    BaseScopeController aiChatController;
+
     /**
      * Initializes the controller with references to the primary stage and menu stage.
-     * Sets up event handlers for the buttons.
+     * Sets up event handlers for the buttons, including showing the main window, opening the AI chat interface,
+     * starting/stopping the benchmark, and exiting the application.
      *
      * @param primaryStage The main application window.
      * @param menuStage    The tray menu window.
@@ -26,7 +33,7 @@ public class SystemTrayMenuWindowController extends BaseScopeController {
     public void initialize(Stage primaryStage, Stage menuStage) {
 
         if(Benchmark.getBenchmarkStarted()){
-            benchmarkButton.setText("Зупинити бенчмаркУ");
+            benchmarkButton.setText("Зупинити бенчмарк");
         }
 
         showButton.setOnAction(e -> {
@@ -35,12 +42,33 @@ public class SystemTrayMenuWindowController extends BaseScopeController {
             SystemTrayManager.removeTrayIcon();
         });
 
+        AIButton.setOnAction( e -> {
+            ScopeLoaderFXML loader;
+            try {
+                loader = new ScopeLoaderFXML("Chat-view.fxml");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            aiChatController = (AiChatController) loader.getController();
+            aiChatController.setStage(this.stage);
+
+            Stage chatStage = loader.getStage();
+            chatStage.setResizable(false);
+            chatStage.setTitle("ScopeHelper");
+
+            chatStage.setY(0);
+
+            chatStage.setAlwaysOnTop(true);
+            chatStage.show();
+        });
+
         benchmarkButton.setOnAction(e->{
             if(!Benchmark.getBenchmarkStarted() ){
                 Benchmark.startBenchmark();
                 Platform.runLater(() -> benchmarkButton.setText("Зупинити бенчмарк"));
             }
-            else{
+            else {
                 Benchmark.stopBenchmark();
                 Platform.runLater(() -> benchmarkButton.setText("Бенчмарк"));
             }

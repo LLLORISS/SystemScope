@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import javafx.scene.chart.XYChart;
+import nm.sc.systemscope.adapters.ChatMessageAdapter;
 import nm.sc.systemscope.adapters.XYChartDataAdapter;
 import java.io.*;
 import java.util.*;
@@ -21,6 +22,7 @@ public class DataStorage {
     private static final String GPUsagePath = dataFolderPath + "UsageGPU.json";
     private static final String averagesPath = dataFolderPath + "Averages.json";
     private static final String configPath = "config.properties";
+    private static final String configAIPath = "config_ai.properties";
     private static final String chatHistoryPath = dataFolderPath + "chatHistory.json";
 
     static {
@@ -387,18 +389,52 @@ public class DataStorage {
     }
 
     /**
+     * Loads AI configuration data from a properties file and returns it as a {@link Map}.
+     * The configuration includes the API key, API URL, model, and model description.
+     * The values are stored in a map with keys:
+     * - "API_KEY"
+     * - "API_URL"
+     * - "MODEL"
+     * - "MODEL_DESCRIPTION"
+     *
+     * <p>This method loads the configuration from the properties file specified by {@code configAIPath}.</p>
+     *
+     * @return A {@link Map} containing the configuration values. The map contains the following keys:
+     *         - "API_KEY" : The API key for the AI service.
+     *         - "API_URL" : The URL of the AI service, with spaces removed.
+     *         - "MODEL" : The name of the AI model.
+     *         - "MODEL_DESCRIPTION" : A description of the AI model.
+     */
+    public static Map<String,String> getConfigAI(){
+        Map<String,String> result = new HashMap<>();
+        try(InputStream input = new FileInputStream(configAIPath)){
+            Properties prop = new Properties();
+            prop.load(input);
+
+            result.put("API_KEY", prop.getProperty("API_KEY"));
+            result.put("API_URL", prop.getProperty("API_URL").replace(" ", ""));
+            result.put("MODEL", prop.getProperty("model"));
+            result.put("MODEL_DESCRIPTION", prop.getProperty("model_description"));
+        }
+        catch(IOException e){
+            ScopeLogger.logError("Error while receiving AI model data");
+        }
+
+        return result;
+    }
+
+    /**
      * Saves the given chat history to a file in JSON format.
      * This method writes the list of chat messages to a file at the specified path.
      * If an error occurs during saving, it logs the error.
      *
      * @param messages A list of ChatMessage objects representing the chat history to be saved.
      */
-    public static void saveChatHistory(List<ChatMessage> messages){
-        try(FileWriter writer = new FileWriter(chatHistoryPath)){
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public static void saveChatHistory(List<ChatMessage> messages) {
+        try (FileWriter writer = new FileWriter(chatHistoryPath)) {
+            Gson gson = new GsonBuilder().registerTypeAdapter(ChatMessage.class, new ChatMessageAdapter()).create();
             gson.toJson(messages, writer);
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             ScopeLogger.logError("Error while saving chat history: ", e);
         }
     }
@@ -420,7 +456,7 @@ public class DataStorage {
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().registerTypeAdapter(ChatMessage.class, new ChatMessageAdapter()).create();
             chatHistory = gson.fromJson(reader, new TypeToken<List<ChatMessage>>() {}.getType());
 
             if (chatHistory == null) {

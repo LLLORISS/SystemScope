@@ -53,4 +53,23 @@ public class BaseScopeController implements SceneController {
     @Override public Scene getScene(){
         return this.scene;
     }
+
+    /**
+     * Displays the {@link Stage} if it is not already shown.
+     */
+    @Override public void show() {
+        if (stage != null && !stage.isShowing()) {
+            this.stage.show();
+        }
+    }
+
+    /**
+     * Closes the {@link Stage} if it is not already closed.
+     */
+
+    @Override public void close() {
+        if (stage != null) {
+            stage.close();
+        }
+    }
 }

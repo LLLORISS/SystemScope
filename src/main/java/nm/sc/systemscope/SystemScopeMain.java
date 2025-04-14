@@ -28,6 +28,7 @@ public class SystemScopeMain extends Application {
             setStageParams(stage);
 
             stage.setMaximized(true);
+
             SystemTrayManager.addToSystemTray(stage);
 
             loader.show();

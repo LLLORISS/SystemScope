@@ -10,6 +10,7 @@
       styleClass="tray-menu">
 
     <Button fx:id="showButton" text="Показати вікно" styleClass="menu-tray-button"/>
+    <Button fx:id="AIButton" text="ScopeHelper" styleClass="menu-tray-button"/>
     <Button fx:id="benchmarkButton" text="Бенчмарк" styleClass="menu-tray-button"/>
     <Button fx:id="exitButton" text="Вихід" styleClass="menu-tray-button"/>
 </VBox>

@@ -47,7 +47,6 @@ public class SystemScopeController extends BaseScopeController {
     private ObservableList<ProcessInfo> observableList;
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
-    private AiChatController aiChatController;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -155,7 +154,7 @@ public class SystemScopeController extends BaseScopeController {
     @FXML public void onOpenAnalyzeChat() throws IOException {
         ScopeLoaderFXML loader = new ScopeLoaderFXML("Chat-view.fxml");
 
-        aiChatController = (AiChatController) loader.getController();
+        AiChatController aiChatController = (AiChatController) loader.getController();
         aiChatController.setStage(this.stage);
 
         Stage chatStage = loader.getStage();
