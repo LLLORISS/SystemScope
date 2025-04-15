@@ -139,6 +139,16 @@ public class DataStorage {
             writer.write("Average CPU Usage: " + auCPU + "\n");
             writer.write("Average GPU Usage: " + auGPU + "\n");
 
+            writer.write("--------------------------------------------------\n\n");
+            writer.write("-----------------ScopeHelper report---------------\n");
+
+            writer.write(ScopeAIHelper.request("Analyze Data on ukrainian and english: " +
+                    "Average CPU Temp: " + atCPU + "\n" +
+                    "Average CPU Usage: " + auCPU + "\n" +
+                    "Average GPU Temp: " + atGPU + "\n" +
+                    "Average GPU Usage: " + auGPU + "\n" +
+                    "Game name: " + gameName));
+
             writer.write("--------------------------------------------------\n");
 
             ScopeLogger.logInfo("Data written to file: {}", fileName);
@@ -418,6 +428,34 @@ public class DataStorage {
         }
         catch(IOException e){
             ScopeLogger.logError("Error while receiving AI model data");
+        }
+
+        return result;
+    }
+
+    /**
+     * Saves the AI configuration settings to a properties file.
+     *
+     * <p>This method takes a map containing configuration values (API key, API URL, model, and model description),
+     * sets them as properties, and writes them to a file specified by {@code configAIPath}.</p>
+     *
+     * @param cfg a map containing the configuration values with the keys: "API_KEY", "API_URL", "MODEL", and "MODEL_DESCRIPTION"
+     * @return {@code true} if the configuration was successfully saved; {@code false} if an error occurred while saving
+     */
+    public static boolean saveConfigAI(Map<String, String> cfg){
+        boolean result = false;
+        Properties prop = new Properties();
+
+        prop.setProperty("API_KEY", cfg.getOrDefault("API_KEY", ""));
+        prop.setProperty("API_URL", cfg.getOrDefault("API_URL", ""));
+        prop.setProperty("model", cfg.getOrDefault("MODEL", ""));
+        prop.setProperty("model_description", cfg.getOrDefault("MODEL_DESCRIPTION", ""));
+
+        try (OutputStream output = new FileOutputStream(configAIPath)) {
+            prop.store(output, "AI Model Configuration");
+            result = true;
+        } catch (IOException e) {
+            ScopeLogger.logError("Error while saving AI model config");
         }
 
         return result;

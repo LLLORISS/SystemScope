@@ -55,6 +55,13 @@ public class BaseScopeController implements SceneController {
     }
 
     /**
+     * Returns the {@link Stage} associated with this controller.
+     *
+     * @return the {@link Stage} associated with this controller
+     */
+    @Override public Stage getStage() {return this.stage; }
+
+    /**
      * Displays the {@link Stage} if it is not already shown.
      */
     @Override public void show() {

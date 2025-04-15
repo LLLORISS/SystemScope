@@ -21,9 +21,9 @@ public class BenchWindow {
     private JLabel tempGPULabel;
     private JLabel CPUUsageLabel;
     private JLabel GPUUsageLabel;
-    private static java.util.List<Integer> temperaturesCPU;
-    private static java.util.List<Integer> temperaturesGPU;
-    private static java.util.List<Integer> usagesCPU;
+    private static List<Integer> temperaturesCPU;
+    private static List<Integer> temperaturesGPU;
+    private static List<Integer> usagesCPU;
     private static List<Integer> usagesGPU;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 

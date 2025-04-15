@@ -90,13 +90,11 @@ public class AiChatController extends BaseScopeController{
      */
     @FXML public void onAnalyzeData() {
         addMessage("Проведи аналітику поточних показників системи", Sender.user);
-
-        String systemInfo = gatherSystemInfo();
-
-       hideOnRequest();
+        hideOnRequest();
 
         new Thread(() -> {
             try {
+                String systemInfo = gatherSystemInfo();
                 String response = ScopeAIHelper.request(systemInfo);
                 Platform.runLater(() -> addMessage(response, Sender.assistant));
             } catch (Exception e) {
@@ -106,7 +104,6 @@ public class AiChatController extends BaseScopeController{
             }
         }).start();
     }
-
 
     /**
      * Clears the chat history and removes all messages from the view.

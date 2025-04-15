@@ -84,6 +84,7 @@
             <Button fx:id="themeToggleBtn" text="Світла тема" onAction="#onThemeToggleClicked" styleClass="main-button"
                     maxWidth="Infinity"/>
             <Button text="Чат з ШІ" onAction="#onOpenAnalyzeChat" styleClass="main-button" maxWidth="Infinity"/>
+            <Button text="Налаштування" onAction="#onOpenSettings" styleClass="main-button" maxWidth="Infinity"/>
          </VBox>
       </HBox>
       <VBox alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="30" AnchorPane.leftAnchor="30"

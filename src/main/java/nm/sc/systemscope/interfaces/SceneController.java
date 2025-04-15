@@ -31,6 +31,15 @@ public interface SceneController {
     Scene getScene();
 
     /**
+     * Gets the {@link Stage} associated with this controller.
+     *
+     * <p>This method retrieves the {@link Stage} that is managed by this controller.</p>
+     *
+     * @return the {@link Stage} associated with this controller
+     */
+    Stage getStage();
+
+    /**
      * Shows the associated {@link Stage} if it's not already visible.
      *
      * <p>This method should be used to display the stage to the user.</p>

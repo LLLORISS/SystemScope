@@ -48,6 +48,8 @@ public class SystemScopeController extends BaseScopeController {
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private Stage aiStage;
+    private Stage settingsStage;
 
     /**
      * A method that initializes initial values
@@ -152,19 +154,56 @@ public class SystemScopeController extends BaseScopeController {
      * @throws IOException If an error occurs during the loading of the FXML file.
      */
     @FXML public void onOpenAnalyzeChat() throws IOException {
+        if (aiStage != null && aiStage.isShowing()) {
+            aiStage.toFront();
+            return;
+        }
+
         ScopeLoaderFXML loader = new ScopeLoaderFXML("Chat-view.fxml");
 
         AiChatController aiChatController = (AiChatController) loader.getController();
         aiChatController.setStage(this.stage);
 
-        Stage chatStage = loader.getStage();
-        chatStage.setResizable(false);
-        chatStage.setTitle("ScopeHelper");
+        aiStage = loader.getStage();
+        aiStage.setResizable(false);
+        aiStage.setTitle("ScopeHelper");
+        aiStage.setY(0);
+        aiStage.setAlwaysOnTop(true);
+        aiStage.setOnCloseRequest(event -> aiStage = null);
 
-        chatStage.setY(0);
+        aiStage.show();
+    }
 
-        chatStage.setAlwaysOnTop(true);
-        chatStage.show();
+    /**
+     * Opens the settings window if it is not already open, or brings it to the front if it is.
+     * This method loads the "Settings-view.fxml" file, initializes the settings window,
+     * sets up the necessary properties (e.g., non-resizable, always on top),
+     * and shows the settings stage.
+     * If the settings window is already open and visible, it brings the window to the front
+     * instead of opening a new instance. It also ensures that when the window is closed,
+     * the reference to the settings window is set to null, allowing it to be reopened later.
+     *
+     * @throws IOException if there is an error loading the FXML file for the settings view.
+     */
+    @FXML public void onOpenSettings() throws IOException {
+        if(settingsStage != null && settingsStage.isShowing()){
+            settingsStage.toFront();
+            return;
+        }
+
+        ScopeLoaderFXML loader = new ScopeLoaderFXML("Settings-view.fxml");
+
+        SettingsViewController settingsViewController = (SettingsViewController) loader.getController();
+        settingsViewController.setStage(settingsStage);
+
+        settingsStage = loader.getStage();
+        settingsStage.setResizable(false);
+        settingsStage.setTitle("Налаштування");
+        settingsStage.setY(0);
+        settingsStage.setAlwaysOnTop(true);
+        settingsStage.setOnCloseRequest(event -> settingsStage = null);
+
+        settingsStage.show();
     }
 
     /**
