@@ -8,6 +8,11 @@
             fx:controller="nm.sc.systemscope.controllers.SettingsViewController">
 
     <TabPane prefWidth="1000" prefHeight="800">
+        <Tab text="Загальні" closable="false">
+            <AnchorPane>
+
+            </AnchorPane>
+        </Tab>
         <Tab text="AI Settings" closable="false" >
             <AnchorPane>
                 <VBox styleClass="settings-tab" spacing="20" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"

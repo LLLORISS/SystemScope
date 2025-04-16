@@ -3,11 +3,15 @@ package nm.sc.systemscope.controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import nm.sc.systemscope.ScopeHardware.ScopeCentralProcessor;
 import nm.sc.systemscope.modules.*;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +29,8 @@ public class AiChatController extends BaseScopeController{
     @FXML private Button analyzeBtn;
     @FXML private Button clearBtn;
 
-    private List<ChatMessage> messages = new ArrayList<>();
+    private List<ChatMessage> currentMessages = new ArrayList<>();
+    private List<ChatMessage> loadedMessages = new ArrayList<>();
 
     /**
      * Initializes the controller by loading chat history and setting up event handlers.
@@ -33,16 +38,16 @@ public class AiChatController extends BaseScopeController{
      * Sets up the close event to save chat history.
      */
     @FXML public void initialize(){
-        messages = DataStorage.loadChatHistory();
-        if (messages == null) {
-            messages = new ArrayList<>();
+        loadedMessages = DataStorage.loadChatHistory();
+        if (loadedMessages == null) {
+            loadedMessages = new ArrayList<>();
         }
 
-        for(ChatMessage chatMessage : messages){
-            Label label = createLabel(chatMessage.message(), chatMessage.sender());
-
-            chatMessages.getChildren().add(label);
+        for(ChatMessage chatMessage : loadedMessages){
+            addMessage(chatMessage);
         }
+
+        this.loadedMessages.clear();
 
         Platform.runLater(() -> {
             if (chatMessages.getHeight() > chatScrollPane.getHeight()) {
@@ -50,8 +55,15 @@ public class AiChatController extends BaseScopeController{
             }
 
             if (this.getScene() != null && this.getScene().getWindow() != null) {
-                this.getScene().getWindow().setOnCloseRequest(event -> DataStorage.saveChatHistory(messages));
+                this.getScene().getWindow().setOnCloseRequest(event -> DataStorage.saveChatHistory(currentMessages));
             }
+
+            chatInput.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    sendBtn.fire();
+                    event.consume();
+                }
+            });
         });
 
         ScopeAIHelper.loadAndInitializeModel();
@@ -66,7 +78,9 @@ public class AiChatController extends BaseScopeController{
         String input = chatInput.getText().trim();
         if (input.isEmpty()) return;
 
-        addMessage(input, Sender.user);
+        String timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+
+        addMessage(new ChatMessage(input, Sender.user, timestamp));
         chatInput.setText("");
 
         new Thread(() -> {
@@ -74,9 +88,9 @@ public class AiChatController extends BaseScopeController{
                 hideOnRequest();
 
                 String response = ScopeAIHelper.request(input);
-                Platform.runLater(() -> addMessage(response, Sender.assistant));
+                Platform.runLater(() -> addMessage(new ChatMessage(response, Sender.assistant)));
             } catch (Exception e) {
-                Platform.runLater(() -> addMessage("Сталася помилка під час обробки запиту", Sender.assistant));
+                Platform.runLater(() -> addMessage(new ChatMessage("Сталася помилка під час обробки запиту", Sender.assistant)));
             } finally {
                 showOnResponse();
             }
@@ -89,16 +103,16 @@ public class AiChatController extends BaseScopeController{
      * Currently, this feature is not fully implemented.
      */
     @FXML public void onAnalyzeData() {
-        addMessage("Проведи аналітику поточних показників системи", Sender.user);
+        addMessage(new ChatMessage("Проведи аналітику поточних показників системи", Sender.user));
         hideOnRequest();
 
         new Thread(() -> {
             try {
                 String systemInfo = gatherSystemInfo();
                 String response = ScopeAIHelper.request(systemInfo);
-                Platform.runLater(() -> addMessage(response, Sender.assistant));
+                Platform.runLater(() -> addMessage(new ChatMessage(response, Sender.assistant)));
             } catch (Exception e) {
-                Platform.runLater(() -> addMessage("Сталася помилка під час обробки запиту", Sender.assistant));
+                Platform.runLater(() -> addMessage(new ChatMessage("Сталася помилка під час обробки запиту", Sender.assistant)));
             } finally {
                 showOnResponse();
             }
@@ -111,7 +125,7 @@ public class AiChatController extends BaseScopeController{
      */
     @FXML public void onClearChat(){
         DataStorage.clearChatHistory();
-        this.messages.clear();
+        this.currentMessages.clear();
         chatMessages.getChildren().clear();
         ScopeAIHelper.clearChatHistory();
     }
@@ -133,20 +147,29 @@ public class AiChatController extends BaseScopeController{
     }
 
     /**
-     * Adds a new message to the chat history and the view.
-     * The message is added to the list of messages and a corresponding label is created and displayed.
+     * Adds a new message to the chat interface and updates the chat history.
+     * The message is wrapped in a container with the corresponding sender's label and time.
      *
-     * @param text The text content of the message.
-     * @param sender The sender of the message (either user or AI).
+     * @param message The message to be added to the chat.
      */
-    public void addMessage(String text, Sender sender) {
-        if (messages == null) {
-            messages = new ArrayList<>();
+    public void addMessage(ChatMessage message) {
+        if (currentMessages == null) {
+            currentMessages = new ArrayList<>();
         }
-        Label messageLabel = createLabel(text, sender);
 
-        messages.add(new ChatMessage(text, sender));
-        chatMessages.getChildren().add(messageLabel);
+        String messageTime = (message.getTime() != null && !message.getTime().isEmpty()) ? message.getTime() : LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+
+        Label messageLabel = createLabel(message.getMessage(), message.getSender());
+
+        Label timeLabel = new Label(messageTime);
+        timeLabel.getStyleClass().add("message-time");
+
+        VBox messageContainer = new VBox();
+        messageContainer.getChildren().addAll(messageLabel, timeLabel);
+        messageContainer.getStyleClass().add("message-box");
+
+        currentMessages.add(new ChatMessage(message.getMessage(), message.getSender(), messageTime));
+        chatMessages.getChildren().add(messageContainer);
     }
 
     /**

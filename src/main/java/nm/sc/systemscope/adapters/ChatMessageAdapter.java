@@ -32,10 +32,11 @@ public class ChatMessageAdapter implements JsonSerializer<ChatMessage>, JsonDese
      * @param context The serialization context.
      * @return A {@link JsonElement} representing the {@link ChatMessage}.
      */
-    @Override public JsonElement serialize(ChatMessage src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(ChatMessage src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("message", src.message());
-        jsonObject.addProperty("sender", src.sender().toString());
+        jsonObject.addProperty("message", src.getMessage());
+        jsonObject.addProperty("sender", src.getSender().toString());
+        jsonObject.addProperty("time", src.getTime());
         return jsonObject;
     }
 
@@ -57,6 +58,8 @@ public class ChatMessageAdapter implements JsonSerializer<ChatMessage>, JsonDese
         JsonObject jsonObject = json.getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
         Sender sender = Sender.valueOf(jsonObject.get("sender").getAsString());
-        return new ChatMessage(message, sender);
+        String time = jsonObject.has("time") ? jsonObject.get("time").getAsString() : "??:??";
+
+        return new ChatMessage(message, sender, time);
     }
 }

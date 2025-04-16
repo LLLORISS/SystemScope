@@ -62,8 +62,8 @@ public class ScopeAIHelper {
 
         for (ChatMessage chatMessage : chatHistory) {
             JsonObject message = new JsonObject();
-            message.addProperty("role", chatMessage.sender().name());
-            message.addProperty("content", chatMessage.message());
+            message.addProperty("role", chatMessage.getSender().name());
+            message.addProperty("content", chatMessage.getMessage());
             previousChatHistory.add(message);
         }
     }

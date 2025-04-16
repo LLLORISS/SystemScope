@@ -371,6 +371,17 @@ TextArea .scroll-bar .decrement-button:hover {
     -fx-border-radius: 10px;
 }
 
+.message-time {
+    -fx-text-fill: #cccccc;
+    -fx-font-size: 10px;
+    -fx-alignment: BOTTOM_RIGHT;
+}
+
+.message-text {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
 .user-message {
     -fx-padding: 10px;
     -fx-background-color: #232b36;

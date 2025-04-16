@@ -1,16 +1,66 @@
 package nm.sc.systemscope.modules;
 
-import com.google.gson.annotations.Expose;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
- * Represents a chat message in the system.
- * Contains the message text and the sender's identity (either user or assistant).
- *
- * <p>This class is used to store chat messages, and is annotated for JSON serialization/deserialization using Gson.</p>
+ * Represents a chat message with content, sender, and timestamp.
+ * This class is used to store individual chat messages in the AI chat system.
  */
-public record ChatMessage(
-        @Expose String message,
+public class ChatMessage {
 
-        @Expose Sender sender
-) {
+    private final String message;
+    private final Sender sender;
+    private final String time;
+
+    /**
+     * Constructs a ChatMessage with the specified text and sender.
+     * The current time is used as the message timestamp.
+     *
+     * @param text The content of the message.
+     * @param sender The sender of the message (user or assistant).
+     */
+    public ChatMessage(String text, Sender sender) {
+        this(text, sender, LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+    }
+
+    /**
+     * Constructs a ChatMessage with the specified text, sender, and timestamp.
+     *
+     * @param text The content of the message.
+     * @param sender The sender of the message (user or assistant).
+     * @param time The time when the message was sent, formatted as HH:mm.
+     */
+    public ChatMessage(String text, Sender sender, String time) {
+        this.message = text;
+        this.sender = sender;
+        this.time = time;
+    }
+
+    /**
+     * Returns the content of the chat message.
+     *
+     * @return The text of the chat message.
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Returns the sender of the chat message.
+     *
+     * @return The sender of the message (either user or assistant).
+     */
+    public Sender getSender() {
+        return sender;
+    }
+
+    /**
+     * Returns the time when the message was sent.
+     *
+     * @return The time the message was sent, formatted as HH:mm.
+     */
+    public String getTime() {
+        return time;
+    }
 }
