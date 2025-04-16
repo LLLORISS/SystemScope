@@ -40,9 +40,7 @@ public class ScopeAIHelper {
      * Loads and initializes the AI model with chat history.
      * This method loads the chat history from data storage and passes it to the model initialization method.
      */
-    public static void loadAndInitializeModel() {
-        List<ChatMessage> chatHistory = DataStorage.loadChatHistory();
-
+    public static void loadAndInitializeModel(List<ChatMessage> chatHistory) {
         initializeModelWithHistory(chatHistory);
     }
 

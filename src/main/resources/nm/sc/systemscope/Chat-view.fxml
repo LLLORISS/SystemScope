@@ -6,28 +6,36 @@
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="nm.sc.systemscope.controllers.AiChatController"
-            prefWidth="600">
+            prefWidth="800">
 
-    <VBox spacing="10" prefHeight="600" prefWidth="380"
-          AnchorPane.topAnchor="20"
-          AnchorPane.bottomAnchor="20"
-          AnchorPane.leftAnchor="20"
-          AnchorPane.rightAnchor="20">
+    <HBox spacing="10" AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
 
-        <Label text="💬 Чат з ШІ" styleClass="section-title"/>
+        <VBox spacing="10" prefWidth="250" VBox.vgrow="ALWAYS">
+            <HBox spacing="5">
+                <Label text="Чати" styleClass="section-title"/>
+                <Button text="Створити" onAction="#onCreateChatBtn" styleClass="main-button"/>
+            </HBox>
+            <ListView fx:id="chatListView" prefHeight="600" onMouseClicked="#onChatSelected" VBox.vgrow="ALWAYS" styleClass="process-list"/>
+        </VBox>
 
-        <ScrollPane fx:id="chatScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
-            <VBox fx:id="chatMessages" spacing="10" styleClass="message-container"/>
-        </ScrollPane>
+        <VBox spacing="10" prefHeight="600" prefWidth="600" VBox.vgrow="ALWAYS">
+            <Label text="💬 Чат з ШІ" styleClass="section-title"/>
 
-        <HBox alignment="CENTER" spacing="10">
-            <TextField fx:id="chatInput" promptText="Введіть запит..." HBox.hgrow="ALWAYS"/>
-            <Button fx:id="sendBtn" text="Надіслати" onAction="#onSendChat" styleClass="main-button"/>
-            <ProgressIndicator fx:id="loadingIndicator"  visible="false" />
-        </HBox>
-        <HBox spacing="5">
-            <Button fx:id="analyzeBtn" text="Аналізувати дані" onAction="#onAnalyzeData" styleClass="main-button"/>
-            <Button fx:id="clearBtn" text="Очистити історію" onAction="#onClearChat" styleClass="main-button"/>
-        </HBox>
-    </VBox>
+            <ScrollPane fx:id="chatScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="chatMessages" spacing="10" styleClass="message-container"/>
+            </ScrollPane>
+
+            <HBox alignment="CENTER" spacing="10">
+                <TextField fx:id="chatInput" promptText="Введіть запит..." HBox.hgrow="ALWAYS"/>
+                <Button fx:id="sendBtn" text="Надіслати" onAction="#onSendChat" styleClass="main-button"/>
+                <ProgressIndicator fx:id="loadingIndicator" visible="false" />
+            </HBox>
+
+            <HBox spacing="5">
+                <Button fx:id="analyzeBtn" text="Аналізувати дані" onAction="#onAnalyzeData" styleClass="main-button"/>
+                <Button fx:id="clearBtn" text="Очистити історію" onAction="#onClearChat" styleClass="main-button"/>
+            </HBox>
+        </VBox>
+
+    </HBox>
 </AnchorPane>

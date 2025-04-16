@@ -6,9 +6,13 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import javafx.scene.chart.XYChart;
 import nm.sc.systemscope.adapters.ChatMessageAdapter;
+import nm.sc.systemscope.adapters.ScopeChatAdapter;
 import nm.sc.systemscope.adapters.XYChartDataAdapter;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * The {@code DataStorage} class provides functionality for saving and loading CPU/GPU
  * temperature and usage data, as well as storing theme settings in a configuration file.
@@ -23,7 +27,7 @@ public class DataStorage {
     private static final String averagesPath = dataFolderPath + "Averages.json";
     private static final String configPath = "config.properties";
     private static final String configAIPath = "config_ai.properties";
-    private static final String chatHistoryPath = dataFolderPath + "chatHistory.json";
+    private static final String chatHistoryPath = dataFolderPath + "chat_logs/";
 
     static {
         createDataFolderAndFiles();
@@ -462,57 +466,112 @@ public class DataStorage {
     }
 
     /**
-     * Saves the given chat history to a file in JSON format.
-     * This method writes the list of chat messages to a file at the specified path.
-     * If an error occurs during saving, it logs the error.
+     * Saves the provided chat history into a JSON file.
+     * <p>
+     * This method serializes the given {@link ScopeChat} object and stores it in a JSON file
+     * within a folder specified by the {@code chatHistoryPath}. The file is named using
+     * the chat's name and ID, ensuring each chat history is saved in a unique file.
+     * </p>
+     * <p>
+     * If the folder does not exist, it will be created. If any errors occur during
+     * the process, they are logged using {@link ScopeLogger}.
+     * </p>
      *
-     * @param messages A list of ChatMessage objects representing the chat history to be saved.
+     * @param chat The {@link ScopeChat} object to be saved, which contains the message history.
      */
-    public static void saveChatHistory(List<ChatMessage> messages) {
-        try (FileWriter writer = new FileWriter(chatHistoryPath)) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(ChatMessage.class, new ChatMessageAdapter()).create();
-            gson.toJson(messages, writer);
+    public static void saveChatHistory(ScopeChat chat) {
+        File folder = new File(chatHistoryPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String filename = chat.getChatName() + chat.getChatID() + ".json";
+        File file = new File(folder, filename);
+
+        try (FileWriter writer = new FileWriter(file, false)) {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(ScopeChat.class, new ScopeChatAdapter())
+                    .registerTypeAdapter(ChatMessage.class, new ChatMessageAdapter())
+                    .create();
+            gson.toJson(chat, writer);
         } catch (IOException e) {
-            ScopeLogger.logError("Error while saving chat history: ", e);
+            ScopeLogger.logError("Помилка при збереженні історії чату: " + filename, e);
         }
     }
 
     /**
-     * Loads the chat history from a file and returns it as a list of ChatMessage objects.
-     * If the file is empty, doesn't exist, or an error occurs during loading or parsing,
-     * it returns an empty list.
+     * Loads all chat histories from the chat history folder.
+     * <p>
+     * This method reads all JSON files from the folder specified by the {@code chatHistoryPath}
+     * and deserializes them into a list of {@link ScopeChat} objects. It attempts to extract
+     * the chat ID and name from the file name and assigns them to each {@link ScopeChat} object.
+     * If the file name does not contain a valid UUID, an error is logged.
+     * </p>
      *
-     * @return A list of ChatMessage objects representing the loaded chat history.
+     * @return A list of {@link ScopeChat} objects representing the chat histories.
      */
-    public static List<ChatMessage> loadChatHistory() {
-        List<ChatMessage> chatHistory = new ArrayList<>();
-        File file = new File(chatHistoryPath);
+    public static List<ScopeChat> loadChatHistory() {
+        List<ScopeChat> chatList = new ArrayList<>();
 
-        if (!file.exists() || file.length() == 0) {
-            ScopeLogger.logInfo("Chat history file is empty or does not exist.");
-            return chatHistory;
+        File folder = new File(chatHistoryPath);
+        if (!folder.exists() || !folder.isDirectory()) {
+            return chatList;
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(ChatMessage.class, new ChatMessageAdapter()).create();
-            chatHistory = gson.fromJson(reader, new TypeToken<List<ChatMessage>>() {}.getType());
+        File[] files = folder.listFiles((dir, name) -> name.endsWith(".json"));
+        if (files == null) {
+            return chatList;
+        }
 
-            if (chatHistory == null) {
-                chatHistory = new ArrayList<>();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(ScopeChat.class, new ScopeChatAdapter())
+                .registerTypeAdapter(ChatMessage.class, new ChatMessageAdapter())
+                .create();
+
+        Pattern uuidPattern = Pattern.compile("[0-9a-fA-F-]{36}");
+
+        for (File file : files) {
+            try (FileReader reader = new FileReader(file)) {
+                ScopeChat chat = gson.fromJson(reader, ScopeChat.class);
+                if (chat != null) {
+                    String fileName = file.getName();
+                    Matcher matcher = uuidPattern.matcher(fileName);
+
+                    if (matcher.find()) {
+                        String chatId = matcher.group();
+                        String chatName = fileName.substring(0, matcher.start()).trim();
+
+                        chat.setChatName(chatName);
+                        chat.setChatID(chatId);
+
+                        chatList.add(chat);
+                    } else {
+                        ScopeLogger.logError("Не вдалося знайти UUID в імені файлу: " + fileName, Optional.empty());
+                    }
+                }
+            } catch (IOException e) {
+                ScopeLogger.logError("Помилка при завантаженні чату з файлу: " + file.getName(), e);
             }
-        } catch (IOException | JsonSyntaxException e) {
-            ScopeLogger.logError("Error parsing chat history JSON: ", e);
-            chatHistory = new ArrayList<>();
         }
 
-        return chatHistory;
+        return chatList;
     }
 
     /**
-     * Clears the chat history by deleting the chat history file.
-     * This method deletes the file specified by `chatHistoryPath`.
+     * Clears the message history of the provided chat and saves the updated chat to a file.
+     * <p>
+     * This method removes all messages from the provided {@link ScopeChat} object's history
+     * and immediately saves the chat with the cleared history to its respective file.
+     * </p>
+     *
+     * @param chat The {@link ScopeChat} object whose message history is to be cleared.
      */
-    public static void clearChatHistory(){
-        deleteFile(chatHistoryPath, "chatHistory.json");
+    public static void clearChatHistory(ScopeChat chat){
+        if (chat != null) {
+            chat.getMessageHistory().clear();
+
+            saveChatHistory(chat);
+
+        }
     }
 }

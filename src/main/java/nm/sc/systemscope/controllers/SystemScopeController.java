@@ -121,13 +121,14 @@ public class SystemScopeController extends BaseScopeController {
 
         scopeChartsController = (ScopeChartsController) loader.getController();
 
-        loader.getStage().setResizable(false);
-        loader.getStage().setTitle("Графіки");
+        Stage stage = loader.getStage();
+        stage.setResizable(false);
+        stage.setTitle("Графіки");
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        loader.getStage().setWidth(screenBounds.getWidth());
-        loader.getStage().setHeight(screenBounds.getHeight());
-        loader.showAndWait();
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
+        stage.showAndWait();
     }
 
     /**

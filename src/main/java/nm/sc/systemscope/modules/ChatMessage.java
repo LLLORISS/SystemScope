@@ -11,7 +11,7 @@ public class ChatMessage {
 
     private final String message;
     private final Sender sender;
-    private final String time;
+    private String time;
 
     /**
      * Constructs a ChatMessage with the specified text and sender.
@@ -62,5 +62,14 @@ public class ChatMessage {
      */
     public String getTime() {
         return time;
+    }
+
+    /**
+     * Sets the time of the message.
+     *
+     * @param time The new time for the message, formatted as HH:mm.
+     */
+    public void setTime(String time) {
+        this.time = time;
     }
 }
