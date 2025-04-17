@@ -21,8 +21,6 @@ public class SystemScopeMain extends Application {
      */
     @Override public void start(Stage stage) throws IOException {
         try {
-            DataStorage.saveThemeToConfig(Theme.DARK);
-
             ScopeLoaderFXML loader = new ScopeLoaderFXML("SystemScopeMain-view.fxml");
             loader.setStage(stage);
             setStageParams(stage);

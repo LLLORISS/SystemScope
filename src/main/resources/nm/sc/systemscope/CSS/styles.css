@@ -660,3 +660,52 @@ Button {
     -fx-padding: 10px 20px;
 }
 
+.check-box {
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-background-color: #34495e;
+    -fx-padding: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #5d6d7e;
+    -fx-border-radius: 5px;
+}
+
+.check-box:selected {
+    -fx-background-color: #007acc;
+    -fx-text-fill: white;
+}
+
+.check-box .check-mark {
+    -fx-background-color: #05c46b;
+    -fx-background-radius: 5px;
+}
+
+.check-box:selected .check-mark {
+    -fx-background-color: #5d6d7e;
+}
+
+.check-box .check-mark {
+    -fx-background-color: transparent;
+}
+
+.toggle-button {
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-background-color: #34495e;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #05c46b;
+    -fx-text-fill: white;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #2c3e50;
+}
+
+.toggle-button:pressed {
+    -fx-background-color: #009432;
+}
+

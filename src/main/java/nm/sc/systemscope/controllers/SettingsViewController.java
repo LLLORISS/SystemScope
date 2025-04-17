@@ -8,15 +8,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
-import nm.sc.systemscope.modules.DataStorage;
-import nm.sc.systemscope.modules.ScopeAlert;
-import nm.sc.systemscope.modules.ScopeToast;
+import nm.sc.systemscope.modules.*;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The {@code SettingsViewController} class is responsible for managing the settings view of the application.
@@ -52,11 +48,16 @@ public class SettingsViewController extends BaseScopeController{
     @FXML private Button copyModelBtn;
     @FXML private Button copyModelDescriptionBtn;
 
+    @FXML private CheckBox saveLogsCheckBox;
+    @FXML private CheckBox aiReportCheckBox;
+
+    @FXML private ToggleButton darkThemeButton;
+    @FXML private ToggleButton lightThemeButton;
+
     private boolean apiKeyUnlocked = false;
     private boolean apiUrlUnlocked = false;
     private boolean modelUnlocked = false;
     private boolean modelDescriptionUnlocked = false;
-
 
     /**
      * Initializes the settings view with data from the configuration storage.
@@ -64,24 +65,41 @@ public class SettingsViewController extends BaseScopeController{
      * It also sets up tooltips for the copy buttons.
      */
     @FXML private void initialize() {
-        Map<String, String> cfg = DataStorage.getConfigAI();
-        if(!cfg.isEmpty()) {
-            Platform.runLater(() -> {
-                apiKeyField.setText(cfg.get("API_KEY"));
-                apiUrlField.setText(cfg.get("API_URL"));
-                modelField.setText(cfg.get("MODEL"));
-                modelDescriptionField.setText(cfg.get("MODEL_DESCRIPTION"));
-                modelDescriptionField.setWrapText(true);
+        Platform.runLater(() -> {
+            apiKeyField.setText(ScopeConfigManager.getAPI_KEY());
+            apiUrlField.setText(ScopeConfigManager.getAPI_URL());
+            modelField.setText(ScopeConfigManager.getMODEL());
+            modelDescriptionField.setText(ScopeConfigManager.getMODEL_DESCRIPTION());
+            modelDescriptionField.setWrapText(true);
 
-                Tooltip copyTooltip = new Tooltip("Скопіювати в буфер обміну");
-                copyTooltip.setShowDelay(Duration.ZERO);
+            Tooltip copyTooltip = new Tooltip("Скопіювати в буфер обміну");
+            copyTooltip.setShowDelay(Duration.ZERO);
 
-                copyApiKeyBtn.setTooltip(copyTooltip);
-                copyApiUrlBtn.setTooltip(copyTooltip);
-                copyModelBtn.setTooltip(copyTooltip);
-                copyModelDescriptionBtn.setTooltip(copyTooltip);
-            });
-        }
+            copyApiKeyBtn.setTooltip(copyTooltip);
+            copyApiUrlBtn.setTooltip(copyTooltip);
+            copyModelBtn.setTooltip(copyTooltip);
+            copyModelDescriptionBtn.setTooltip(copyTooltip);
+
+            saveLogsCheckBox.setSelected(ScopeConfigManager.isSaveBenchLogs());
+            aiReportCheckBox.setSelected(ScopeConfigManager.isGenerateAIReport());
+
+            if(ScopeConfigManager.getTheme() == Theme.DARK){
+                Platform.runLater(() -> {
+                    darkThemeButton.setSelected(true);
+                    lightThemeButton.setSelected(false);
+                });
+            }
+            else{
+                Platform.runLater(() -> {
+                    lightThemeButton.setSelected(false);
+                    darkThemeButton.setSelected(true);
+                });
+            }
+
+            if(!ScopeConfigManager.isSaveBenchLogs()){
+                aiReportCheckBox.setDisable(true);
+            }
+        });
     }
 
     /**
@@ -156,27 +174,79 @@ public class SettingsViewController extends BaseScopeController{
      * Saves the configuration settings to the storage, and displays a success or error alert.
      */
     @FXML public void onSaveSettings(){
-        Map<String, String> cfg = new HashMap<>();
-
         String apiKeyText = apiKeyField.getText();
         String apiUrlText = apiUrlField.getText();
         String modelText = modelField.getText();
         String modelDescription = modelDescriptionField.getText();
 
-        cfg.put("API_KEY", apiKeyText);
-        cfg.put("API_URL", apiUrlText);
-        cfg.put("MODEL", modelText);
-        cfg.put("MODEL_DESCRIPTION", modelDescription);
+        ScopeConfigManager.setAPI_KEY(apiKeyText);
+        ScopeConfigManager.setAPI_URL(apiUrlText);
+        ScopeConfigManager.setMODEL(modelText);
+        ScopeConfigManager.setMODEL_DESCRIPTION(modelDescription);
 
-
-        if(DataStorage.saveConfigAI(cfg)){
-            ScopeAlert alert = new ScopeAlert(Alert.AlertType.INFORMATION, "Дані успішно збережені");
-            alert.show();
+        ScopeAlert alert;
+        if(ScopeConfigManager.getSaveStatus()){
+            alert = new ScopeAlert(Alert.AlertType.INFORMATION, "Дані успішно збережені");
         }
         else{
-            ScopeAlert alert = new ScopeAlert(Alert.AlertType.ERROR, "Помилка збереження конфігурації");
-            alert.show();
+            alert = new ScopeAlert(Alert.AlertType.ERROR, "Помилка збереження конфігурації");
         }
+        alert.show();
+    }
+
+    /**
+     * Called when the "Save Logs" checkbox is toggled.
+     * Updates the save logs setting and enables/disables the AI report checkbox accordingly.
+     */
+    @FXML public void onToggleSaveLogs(){
+        ScopeConfigManager.swapSaveBenchLogs();
+        ScopeConfigManager.swapGenerateAIReport();
+        if(ScopeConfigManager.isGenerateAIReport()) {
+            Platform.runLater(() -> {
+                aiReportCheckBox.setSelected(false);
+                aiReportCheckBox.setDisable(true);
+            });
+        }
+        else{
+            Platform.runLater(() -> aiReportCheckBox.setDisable(false));
+        }
+    }
+
+
+    /**
+     * Called when the "AI Report" checkbox is toggled.
+     * Updates the configuration to enable or disable AI report generation.
+     */
+    @FXML public void onToggleAIReport(){
+        ScopeConfigManager.swapGenerateAIReport();
+    }
+
+    /**
+     * Switches the application to the dark theme if it is not already selected.
+     * Updates the theme setting and applies the dark theme.
+     */
+    @FXML private void onDarkThemeSelected() {
+        if (theme.getTheme() != Theme.DARK) {
+            theme.setTheme(Theme.DARK);
+            ScopeConfigManager.setTheme(Theme.DARK);
+            theme.applyTheme();
+        }
+        darkThemeButton.setSelected(true);
+        lightThemeButton.setSelected(false);
+    }
+
+    /**
+     * Switches the application to the light theme if it is not already selected.
+     * Updates the theme setting and applies the light theme.
+     */
+    @FXML private void onLightThemeSelected() {
+        if (theme.getTheme() != Theme.LIGHT) {
+            theme.setTheme(Theme.LIGHT);
+            ScopeConfigManager.setTheme(Theme.LIGHT);
+            theme.applyTheme();
+        }
+        lightThemeButton.setSelected(true);
+        darkThemeButton.setSelected(false);
     }
 
     /**

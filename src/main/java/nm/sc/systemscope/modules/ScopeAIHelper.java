@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The {@code ScopeAIHelper} class provides methods to interact with an AI model through HTTP requests.
@@ -27,12 +26,10 @@ import java.util.Map;
  * </p>
  */
 public class ScopeAIHelper {
-    private static final Map<String, String> config = DataStorage.getConfigAI();
-
-    private static final String API_KEY = config.get("API_KEY");
-    private static final String API_URL = config.get("API_URL");
-    private static final String MODEL = config.get("MODEL");
-    private static final String MODEL_DESCRIPTION = config.get("MODEL_DESCRIPTION");
+    private static final String API_KEY = ScopeConfigManager.getAPI_KEY();
+    private static final String API_URL = ScopeConfigManager.getAPI_URL();
+    private static final String MODEL = ScopeConfigManager.getMODEL();
+    private static final String MODEL_DESCRIPTION = ScopeConfigManager.getMODEL_DESCRIPTION();
 
     private static JsonArray previousChatHistory = new JsonArray();
 

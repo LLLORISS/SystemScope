@@ -10,7 +10,38 @@
     <TabPane prefWidth="1000" prefHeight="800">
         <Tab text="Загальні" closable="false">
             <AnchorPane>
+                <VBox spacing="20" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                      AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                      styleClass="settings-tab">
 
+                    <Label text="Загальні налаштування" alignment="CENTER" styleClass="settings-title"/>
+
+                    <VBox spacing="10" styleClass="settings-section" >
+                        <Label text="Інтерфейс" styleClass="settings-title" alignment="CENTER"/>
+
+                        <HBox spacing="10" alignment="CENTER">
+                            <Label text="Вибір теми: " styleClass="settings-label"/>
+                            <ToggleButton text="Темна" styleClass="toggle-button" fx:id="darkThemeButton" onAction="#onDarkThemeSelected"/>
+
+                            <ToggleButton text="Світла" styleClass="toggle-button" fx:id="lightThemeButton" onAction="#onLightThemeSelected"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="settings-section">
+                        <Label text="Бенчмарк" styleClass="settings-title" alignment="CENTER"/>
+                        <VBox spacing="10">
+                            <CheckBox fx:id="saveLogsCheckBox"
+                                      text="Зберігати логи після бенчмарку"
+                                      onAction="#onToggleSaveLogs"
+                                      styleClass="settings-checkbox"/>
+
+                            <CheckBox fx:id="aiReportCheckBox"
+                                      text="Звіт від AI після завершення бенчмарку"
+                                      onAction="#onToggleAIReport"
+                                      styleClass="settings-checkbox"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
             </AnchorPane>
         </Tab>
         <Tab text="AI Settings" closable="false" >

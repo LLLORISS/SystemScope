@@ -81,8 +81,6 @@
                     maxWidth="Infinity"/>
             <Button text="Логи бенчмарків" onAction="#onBenchLogsClicked" styleClass="main-button"
                     maxWidth="Infinity"/>
-            <Button fx:id="themeToggleBtn" text="Світла тема" onAction="#onThemeToggleClicked" styleClass="main-button"
-                    maxWidth="Infinity"/>
             <Button text="Чат з ШІ" onAction="#onOpenAnalyzeChat" styleClass="main-button" maxWidth="Infinity"/>
             <Button text="Налаштування" onAction="#onOpenSettings" styleClass="main-button" maxWidth="Infinity"/>
          </VBox>

@@ -39,7 +39,6 @@ public class SystemScopeController extends BaseScopeController {
     @FXML private Label TempGPU;
     @FXML private Label FansSpeed;
     @FXML private Button benchBtn;
-    @FXML private Button themeToggleBtn;
     @FXML private TextField searchField;
     @FXML private ScopeListView<ProcessInfo> processList;
     @FXML private ScopeListView<ScopeUsbDevice> devicesList;
@@ -56,7 +55,6 @@ public class SystemScopeController extends BaseScopeController {
      */
     @FXML public void initialize() {
         Platform.runLater(() -> {
-            scene = themeToggleBtn.getScene();
 
             InfoPC.setText(SystemInformation.getComputerName());
             String baseboardString = ScopeMotherBoard.getManufacturer() + " "
@@ -245,23 +243,6 @@ public class SystemScopeController extends BaseScopeController {
     }
 
     /**
-     * Changes the theme color to the opposite (dark or light)
-     */
-    @FXML public void onThemeToggleClicked(){
-
-        if(this.theme.getTheme() == Theme.DARK){
-            theme.setTheme(Theme.LIGHT);
-        }
-        else {
-            theme.setTheme(Theme.DARK);
-        }
-        Platform.runLater(() -> {
-            this.theme.applyTheme();
-            this.updateTheme();
-        });
-    }
-
-    /**
      * A method that launches a window with a file selection for the benchmark and controls the benchmarking process
      */
     @FXML public void onBenchClicked(){
@@ -312,22 +293,6 @@ public class SystemScopeController extends BaseScopeController {
         } else {
             throw new NumberFormatException("Failed to find a numeric value in: " + tempString);
         }
-    }
-
-    /**
-     * Updates the text of the theme toggle button based on the current theme.
-     * <p>
-     * indicating the option to switch to the light theme.,
-     * indicating the option to switch to the dark theme.
-     */
-    public void updateTheme() {
-        Platform.runLater(()->{
-            if (theme.getTheme() == Theme.DARK) {
-                themeToggleBtn.setText("Світла тема");
-            } else {
-                themeToggleBtn.setText("Темна тема");
-            }
-        });
     }
 
     /**

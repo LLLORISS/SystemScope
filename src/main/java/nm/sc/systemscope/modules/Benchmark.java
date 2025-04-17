@@ -198,10 +198,11 @@ public class Benchmark {
 
             double duration = (endTime - startTime) / 1000.0;
 
-            DataStorage.createLogFile(processName, benchController.getBenchmarkName(), BenchWindow.getTemperaturesCPU(),
-                    BenchWindow.getTemperaturesGPU(), BenchWindow.getUsagesCPU(), BenchWindow.getUsagesGPU(),
-                    BenchWindow.getAverageTempCPU(), BenchWindow.getAverageTempGPU(), BenchWindow.getAverageUsageCPU(), BenchWindow.getAverageUsageGPU(), duration);
-
+            if(ScopeConfigManager.isSaveBenchLogs()) {
+                DataStorage.createLogFile(processName, benchController.getBenchmarkName(), BenchWindow.getTemperaturesCPU(),
+                        BenchWindow.getTemperaturesGPU(), BenchWindow.getUsagesCPU(), BenchWindow.getUsagesGPU(),
+                        BenchWindow.getAverageTempCPU(), BenchWindow.getAverageTempGPU(), BenchWindow.getAverageUsageCPU(), BenchWindow.getAverageUsageGPU(), duration);
+            }
             clearInfo();
         } catch (IOException | InterruptedException e) {
             ScopeLogger.logError("Помилка зупинки процесу: {}", e.getMessage(), e);

@@ -25,8 +25,6 @@ public class DataStorage {
     private static final String CPUsagePath = dataFolderPath + "UsageCPU.json";
     private static final String GPUsagePath = dataFolderPath + "UsageGPU.json";
     private static final String averagesPath = dataFolderPath + "Averages.json";
-    private static final String configPath = "config.properties";
-    private static final String configAIPath = "config_ai.properties";
     private static final String chatHistoryPath = dataFolderPath + "chat_logs/";
 
     static {
@@ -144,16 +142,19 @@ public class DataStorage {
             writer.write("Average GPU Usage: " + auGPU + "\n");
 
             writer.write("--------------------------------------------------\n\n");
-            writer.write("-----------------ScopeHelper report---------------\n");
 
-            writer.write(ScopeAIHelper.request("Analyze Data on ukrainian and english: " +
-                    "Average CPU Temp: " + atCPU + "\n" +
-                    "Average CPU Usage: " + auCPU + "\n" +
-                    "Average GPU Temp: " + atGPU + "\n" +
-                    "Average GPU Usage: " + auGPU + "\n" +
-                    "Game name: " + gameName));
+            if(ScopeConfigManager.isGenerateAIReport()) {
+                writer.write("-----------------ScopeHelper report---------------\n");
 
-            writer.write("--------------------------------------------------\n");
+                writer.write(ScopeAIHelper.request("Analyze Data on ukrainian and english: " +
+                        "Average CPU Temp: " + atCPU + "\n" +
+                        "Average CPU Usage: " + auCPU + "\n" +
+                        "Average GPU Temp: " + atGPU + "\n" +
+                        "Average GPU Usage: " + auGPU + "\n" +
+                        "Game name: " + gameName));
+
+                writer.write("--------------------------------------------------\n");
+            }
 
             ScopeLogger.logInfo("Data written to file: {}", fileName);
         } catch (IOException e) {
@@ -339,38 +340,6 @@ public class DataStorage {
     }
 
     /**
-     * Loads the theme setting from the configuration file.
-     *
-     * @return The loaded theme, or {@code Theme.DARK} if an error occurs.
-     */
-    public static Theme loadThemeFromConfig() {
-        Properties props = new Properties();
-        try (InputStream stream = new FileInputStream(configPath)) {
-            props.load(stream);
-            String theme = props.getProperty("theme", "DARK");
-            return Theme.valueOf(theme.toUpperCase());
-        } catch (IOException | IllegalArgumentException e) {
-            return Theme.DARK;
-        }
-    }
-
-    /**
-     * Saves the theme setting to the configuration file.
-     *
-     * @param theme The theme to save.
-     */
-    public static void saveThemeToConfig(Theme theme) {
-        Properties props = new Properties();
-        props.setProperty("theme", theme.name());
-
-        try (OutputStream output = new FileOutputStream(configPath)) {
-            props.store(output, "Theme Configuration");
-        } catch (IOException e) {
-            ScopeLogger.logError("Error while saving theme to config file: " + configPath, e);
-        }
-    }
-
-    /**
      * Retrieves a list of benchmark log files from the specified logs directory.
      * Each log file is represented as a {@link ScopeBenchLog} object, which contains the file's absolute path and name.
      *
@@ -400,69 +369,6 @@ public class DataStorage {
         }
 
         return logs;
-    }
-
-    /**
-     * Loads AI configuration data from a properties file and returns it as a {@link Map}.
-     * The configuration includes the API key, API URL, model, and model description.
-     * The values are stored in a map with keys:
-     * - "API_KEY"
-     * - "API_URL"
-     * - "MODEL"
-     * - "MODEL_DESCRIPTION"
-     *
-     * <p>This method loads the configuration from the properties file specified by {@code configAIPath}.</p>
-     *
-     * @return A {@link Map} containing the configuration values. The map contains the following keys:
-     *         - "API_KEY" : The API key for the AI service.
-     *         - "API_URL" : The URL of the AI service, with spaces removed.
-     *         - "MODEL" : The name of the AI model.
-     *         - "MODEL_DESCRIPTION" : A description of the AI model.
-     */
-    public static Map<String,String> getConfigAI(){
-        Map<String,String> result = new HashMap<>();
-        try(InputStream input = new FileInputStream(configAIPath)){
-            Properties prop = new Properties();
-            prop.load(input);
-
-            result.put("API_KEY", prop.getProperty("API_KEY"));
-            result.put("API_URL", prop.getProperty("API_URL").replace(" ", ""));
-            result.put("MODEL", prop.getProperty("model"));
-            result.put("MODEL_DESCRIPTION", prop.getProperty("model_description"));
-        }
-        catch(IOException e){
-            ScopeLogger.logError("Error while receiving AI model data");
-        }
-
-        return result;
-    }
-
-    /**
-     * Saves the AI configuration settings to a properties file.
-     *
-     * <p>This method takes a map containing configuration values (API key, API URL, model, and model description),
-     * sets them as properties, and writes them to a file specified by {@code configAIPath}.</p>
-     *
-     * @param cfg a map containing the configuration values with the keys: "API_KEY", "API_URL", "MODEL", and "MODEL_DESCRIPTION"
-     * @return {@code true} if the configuration was successfully saved; {@code false} if an error occurred while saving
-     */
-    public static boolean saveConfigAI(Map<String, String> cfg){
-        boolean result = false;
-        Properties prop = new Properties();
-
-        prop.setProperty("API_KEY", cfg.getOrDefault("API_KEY", ""));
-        prop.setProperty("API_URL", cfg.getOrDefault("API_URL", ""));
-        prop.setProperty("model", cfg.getOrDefault("MODEL", ""));
-        prop.setProperty("model_description", cfg.getOrDefault("MODEL_DESCRIPTION", ""));
-
-        try (OutputStream output = new FileOutputStream(configAIPath)) {
-            prop.store(output, "AI Model Configuration");
-            result = true;
-        } catch (IOException e) {
-            ScopeLogger.logError("Error while saving AI model config");
-        }
-
-        return result;
     }
 
     /**

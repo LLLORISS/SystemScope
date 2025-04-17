@@ -12,13 +12,12 @@ public class ScopeTheme {
     private Scene scene;
 
     /**
-     * Constructs a ScopeTheme object and initializes the theme and scene.
-     * The theme is loaded from the configuration using {@link DataStorage#loadThemeFromConfig()}.
+     * Constructor that initializes the theme from the configuration and assigns it to the provided JavaFX scene.
      *
      * @param scene The JavaFX scene to which the theme will be applied.
      */
     public ScopeTheme(Scene scene){
-        this.theme = DataStorage.loadThemeFromConfig();
+        this.theme = ScopeConfigManager.getTheme();
         this.scene = scene;
     }
 
@@ -43,7 +42,7 @@ public class ScopeTheme {
 
             this.scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource(themeStyleFile)).toExternalForm());
 
-            DataStorage.saveThemeToConfig(theme);
+            ScopeConfigManager.setTheme(theme);
         }
     }
 
