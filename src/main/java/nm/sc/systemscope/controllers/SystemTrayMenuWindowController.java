@@ -15,11 +15,7 @@ import java.io.IOException;
  * Handles user interactions such as restoring the main application window and exiting the application.
  */
 public class SystemTrayMenuWindowController extends BaseScopeController {
-    @FXML private Button showButton;
-    @FXML private Button AIButton;
-    @FXML private Button benchmarkButton;
-    @FXML private Button exitButton;
-
+    @FXML private Button showButton, AIButton, benchmarkButton, exitButton;
     BaseScopeController aiChatController;
 
     /**

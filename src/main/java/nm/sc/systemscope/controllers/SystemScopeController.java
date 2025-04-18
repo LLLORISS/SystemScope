@@ -28,16 +28,7 @@ import java.util.regex.Pattern;
  * The class that manages the main SystemScope window
  */
 public class SystemScopeController extends BaseScopeController {
-    @FXML private Label InfoPC;
-    @FXML private Label Baseboard;
-    @FXML private Label CPU;
-    @FXML private Label GPU;
-    @FXML private Label RAM;
-    @FXML private Label DiskStorage;
-    @FXML private Label BatteryCapacity;
-    @FXML private Label TempCPU;
-    @FXML private Label TempGPU;
-    @FXML private Label FansSpeed;
+    @FXML private Label InfoPC, Baseboard, CPU, GPU, RAM, DiskStorage, BatteryCapacity, TempCPU, TempGPU, FansSpeed;
     @FXML private Button benchBtn;
     @FXML private TextField searchField;
     @FXML private ScopeListView<ProcessInfo> processList;
@@ -47,8 +38,7 @@ public class SystemScopeController extends BaseScopeController {
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private Stage aiStage;
-    private Stage settingsStage;
+    private Stage aiStage, settingsStage;
 
     /**
      * A method that initializes initial values

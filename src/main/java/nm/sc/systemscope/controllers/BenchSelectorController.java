@@ -19,8 +19,7 @@ public class BenchSelectorController extends BaseScopeController {
     @FXML private Boolean startClicked = false;
     @FXML private TextField nameLogTextField;
 
-    private String selectedFile;
-    private String benchmarkName;
+    private String selectedFile, benchmarkName;
 
     /**
      * A method that checks the selected file and sets the path to the selected file

@@ -16,19 +16,9 @@ import java.util.concurrent.TimeUnit;
  * A class that controls events and implements the functions of the main interface
  */
 public class ScopeChartsController extends BaseScopeController {
-    @FXML private ScopeLineChart tempCPUChart;
-    @FXML private ScopeLineChart tempGPUChart;
-    @FXML private ScopeLineChart usageCPUChart;
-    @FXML private ScopeLineChart usageGPUChart;
-    @FXML private Label labelAverageTempCPU;
-    @FXML private Label labelAverageTempGPU;
-    @FXML private Label labelAverageUsageCPU;
-    @FXML private Label labelAverageUsageGPU;
-    @FXML private Label labelLastTempCPU;
-    @FXML private Label labelLastTempGPU;
-    @FXML private Label labelLastUsageCPU;
-    @FXML private Label labelLastUsageGPU;
-
+    @FXML private ScopeLineChart tempCPUChart, tempGPUChart, usageCPUChart, usageGPUChart;
+    @FXML private Label labelAverageTempCPU, labelAverageTempGPU, labelAverageUsageCPU,
+            labelAverageUsageGPU, labelLastTempCPU, labelLastTempGPU, labelLastUsageCPU, labelLastUsageGPU;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private ScheduledExecutorService executorService;
 

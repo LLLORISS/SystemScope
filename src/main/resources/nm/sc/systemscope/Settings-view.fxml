@@ -40,6 +40,27 @@
                                       onAction="#onToggleAIReport"
                                       styleClass="settings-checkbox"/>
                         </VBox>
+
+                        <Label text="Відображення показників Бенчмарку" styleClass="settings-title" alignment="CENTER"/>
+                        <VBox spacing="10">
+                            <CheckBox fx:id="showCPUTempCheckBox"
+                                      text="Температура CPU"
+                                      onAction="#onToggleCPUTemp"
+                                      styleClass="settings-checkbox"/>
+
+                            <CheckBox fx:id="showCPUUsageCheckBox"
+                                      text="Використання CPU"
+                                      onAction="#onToggleCPUUsage"
+                                      styleClass="settings-checkbox"/>
+                            <CheckBox fx:id="showGPUTempCheckBox"
+                                      text="Температура GPU"
+                                      onAction="#onToggleGPUTemp"
+                                      styleClass="settings-checkbox"/>
+                            <CheckBox fx:id="showGPUUsageCheckBox"
+                                      text="Використання GPU"
+                                      onAction="#onToggleGPUUsage"
+                                      styleClass="settings-checkbox"/>
+                        </VBox>
                     </VBox>
                 </VBox>
             </AnchorPane>

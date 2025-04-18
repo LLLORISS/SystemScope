@@ -13,8 +13,7 @@ import java.util.UUID;
  */
 public class ScopeChat {
     private List<ChatMessage> messageHistory;
-    private String chatID;
-    private String chatName;
+    private String chatID, chatName;
 
     /**
      * Constructs an empty {@link ScopeChat} with a generated unique chat ID.

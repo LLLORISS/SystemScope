@@ -23,7 +23,6 @@ import java.awt.event.MouseEvent;
 public class SystemTrayManager {
     private static TrayIcon icon;
     private static boolean isTrayIconAdded = false;
-
     private static Stage menuStage = null;
 
     /**

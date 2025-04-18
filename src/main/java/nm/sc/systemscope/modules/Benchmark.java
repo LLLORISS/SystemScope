@@ -11,13 +11,11 @@ import java.io.IOException;
  * A class that contains information about the current benchmark
  */
 public class Benchmark {
-    private static String processName;
-    private static String absolutePath;
+    private static String processName, absolutePath;
     private static boolean benchmarkStarted;
     private static BenchWindow benchWindow = null;
     private static SystemScopeController controller;
-    private static long startTime;
-    private static long endTime;
+    private static long startTime, endTime;
     private static BenchSelectorController benchController;
 
     /**

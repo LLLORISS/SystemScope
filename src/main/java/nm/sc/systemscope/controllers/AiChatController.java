@@ -31,9 +31,7 @@ public class AiChatController extends BaseScopeController {
     @FXML private ListView<ScopeChat> chatListView;
     @FXML private ScrollPane chatScrollPane;
     @FXML private ProgressIndicator loadingIndicator;
-    @FXML private Button sendBtn;
-    @FXML private Button analyzeBtn;
-    @FXML private Button clearBtn;
+    @FXML private Button sendBtn, analyzeBtn, clearBtn;
     private List<ChatMessage> currentMessages = new ArrayList<>();
     private ScopeChat currentChat;
 

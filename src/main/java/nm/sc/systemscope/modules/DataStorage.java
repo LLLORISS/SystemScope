@@ -112,46 +112,83 @@ public class DataStorage {
             writer.write("Selected file: " + gameName + "\n");
             writer.write("Timestamp: " + time + "\n");
 
-            writer.write("CPU Temperature (°C): ");
-            for (Integer temp : tCPU) {
-                writer.write(temp + " ");
-            }
-            writer.write("\n");
+            boolean showCPUT = ScopeConfigManager.isShowCPUTemp();
+            boolean showCPUU = ScopeConfigManager.isShowCPUUsage();
+            boolean showGPUT = ScopeConfigManager.isShowGPUTemp();
+            boolean showGPUU = ScopeConfigManager.isShowGPUUsage();
 
-            writer.write("GPU Temperature (°C): ");
-            for (Integer temp : tGPU) {
-                writer.write(temp + " ");
+            if(showCPUT) {
+                writer.write("CPU Temperature (°C): ");
+                for (Integer temp : tCPU) {
+                    writer.write(temp + " ");
+                }
+                writer.write("\n");
             }
-            writer.write("\n");
 
-            writer.write("CPU Usage (%): ");
-            for (Integer usage : uCPU) {
-                writer.write(usage + " ");
+            if(showGPUT) {
+                writer.write("GPU Temperature (°C): ");
+                for (Integer temp : tGPU) {
+                    writer.write(temp + " ");
+                }
+                writer.write("\n");
             }
-            writer.write("\n");
 
-            writer.write("GPU Usage (%): ");
-            for (Integer usage : uGPU) {
-                writer.write(usage + " ");
+            if(showCPUU) {
+                writer.write("CPU Usage (%): ");
+                for (Integer usage : uCPU) {
+                    writer.write(usage + " ");
+                }
+                writer.write("\n");
             }
-            writer.write("\n");
 
-            writer.write("Average CPU Temperature: " + atCPU + "\n");
-            writer.write("Average GPU Temperature: " + atGPU + "\n");
-            writer.write("Average CPU Usage: " + auCPU + "\n");
-            writer.write("Average GPU Usage: " + auGPU + "\n");
+            if(showGPUU) {
+                writer.write("GPU Usage (%): ");
+                for (Integer usage : uGPU) {
+                    writer.write(usage + " ");
+                }
+                writer.write("\n");
+            }
+
+            if(showCPUT) {
+                writer.write("Average CPU Temperature: " + atCPU + "\n");
+            }
+            if(showGPUT) {
+                writer.write("Average GPU Temperature: " + atGPU + "\n");
+            }
+            if(showCPUU) {
+                writer.write("Average CPU Usage: " + auCPU + "\n");
+            }
+            if(showGPUU) {
+                writer.write("Average GPU Usage: " + auGPU + "\n");
+            }
 
             writer.write("--------------------------------------------------\n\n");
 
+            System.out.println(ScopeConfigManager.isGenerateAIReport());
             if(ScopeConfigManager.isGenerateAIReport()) {
                 writer.write("-----------------ScopeHelper report---------------\n");
 
-                writer.write(ScopeAIHelper.request("Analyze Data on ukrainian and english: " +
-                        "Average CPU Temp: " + atCPU + "\n" +
-                        "Average CPU Usage: " + auCPU + "\n" +
-                        "Average GPU Temp: " + atGPU + "\n" +
-                        "Average GPU Usage: " + auGPU + "\n" +
-                        "Game name: " + gameName));
+                StringBuilder aiMessage = new StringBuilder("Analyze Data on ukrainian and english:\n");
+
+                if (ScopeConfigManager.isShowCPUTemp()) {
+                    aiMessage.append("Average CPU Temp: ").append(atCPU).append("\n");
+                }
+                if (ScopeConfigManager.isShowCPUUsage()) {
+                    aiMessage.append("Average CPU Usage: ").append(auCPU).append("\n");
+                }
+                if (ScopeConfigManager.isShowGPUTemp()) {
+                    aiMessage.append("Average GPU Temp: ").append(atGPU).append("\n");
+                }
+                if (ScopeConfigManager.isShowGPUUsage()) {
+                    aiMessage.append("Average GPU Usage: ").append(auGPU).append("\n");
+                }
+
+                aiMessage.append("Game name: ").append(gameName);
+
+                String report = ScopeAIHelper.request(aiMessage.toString());
+
+
+                writer.write(report + "\n");
 
                 writer.write("--------------------------------------------------\n");
             }

@@ -6,8 +6,7 @@ package nm.sc.systemscope.modules;
  * such as its location and name for easier management and retrieval.
  */
 public class ScopeBenchLog {
-    private final String absolutePath;
-    private final String fileName;
+    private final String absolutePath, fileName;
 
     /**
      * Default constructor that initializes the fields to null.

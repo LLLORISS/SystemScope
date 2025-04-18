@@ -10,12 +10,7 @@ import java.util.List;
  */
 public class ScopeUsbDevice implements UsbDevice {
 
-    private final String deviceName;
-    private final String vendor;
-    private final String vendorID;
-    private final String productID;
-    private final String serialNumber;
-    private final String uniqueDeviceID;
+    private final String deviceName, vendor, vendorID, productID, serialNumber, uniqueDeviceID;
     private final List<UsbDevice> connectedDevice;
 
     /**

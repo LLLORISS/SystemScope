@@ -1,0 +1,4 @@
+Benchmark Log
+Selected file: test
+Timestamp: 3.066
+CPU Temperature (°C): 

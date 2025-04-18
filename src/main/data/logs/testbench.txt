@@ -1,0 +1,5 @@
+Benchmark Log
+Selected file: test
+Timestamp: 4.652
+--------------------------------------------------
+

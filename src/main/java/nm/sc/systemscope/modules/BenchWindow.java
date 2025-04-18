@@ -17,70 +17,80 @@ import java.util.concurrent.TimeUnit;
 public class BenchWindow {
 
     private JFrame frame;
-    private JLabel tempCPULabel;
-    private JLabel tempGPULabel;
-    private JLabel CPUUsageLabel;
-    private JLabel GPUUsageLabel;
-    private static List<Integer> temperaturesCPU;
-    private static List<Integer> temperaturesGPU;
-    private static List<Integer> usagesCPU;
-    private static List<Integer> usagesGPU;
+    private JLabel tempCPULabel, tempGPULabel, CPUUsageLabel, GPUUsageLabel;
+    private static List<Integer> temperaturesCPU, temperaturesGPU, usagesCPU, usagesGPU;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private boolean isShowCPUTemp, isShowCPUUsage, isShowGPUTemp, isShowGPUUsage;
 
     /**
      * Initializes the benchmark window and starts the scheduled updates.
      */
     public void initialize() {
-        scheduler.scheduleAtFixedRate(this::updateBenchmark, 0, 1, TimeUnit.SECONDS);
+        if(ScopeConfigManager.isShowBenchmark()) {
+            scheduler.scheduleAtFixedRate(this::updateBenchmark, 0, 1, TimeUnit.SECONDS);
 
-        temperaturesCPU = new ArrayList<>();
-        temperaturesGPU = new ArrayList<>();
-        usagesCPU = new ArrayList<>();
-        usagesGPU = new ArrayList<>();
+            isShowCPUTemp = ScopeConfigManager.isShowCPUTemp();
+            isShowCPUUsage = ScopeConfigManager.isShowCPUUsage();
+            isShowGPUTemp = ScopeConfigManager.isShowGPUTemp();
+            isShowGPUUsage = ScopeConfigManager.isShowGPUUsage();
 
-        frame = new JFrame("Bench Window");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 200);
-        frame.setLocation(0, 0);
-        frame.setAlwaysOnTop(true);
-        frame.setUndecorated(true);
-        frame.getRootPane().setOpaque(false);
-        frame.setBackground(new Color(0, 0, 0, 0));
+            frame = new JFrame("Bench Window");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(400, 200);
+            frame.setLocation(0, 0);
+            frame.setAlwaysOnTop(true);
+            frame.setUndecorated(true);
+            frame.getRootPane().setOpaque(false);
+            frame.setBackground(new Color(0, 0, 0, 0));
 
-        frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+            frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-        TransparentPane glass = new TransparentPane();
-        frame.setGlassPane(glass);
-        glass.setVisible(true);
+            TransparentPane glass = new TransparentPane();
+            frame.setGlassPane(glass);
+            glass.setVisible(true);
 
-        JLabel head= new JLabel("SYSTEM SCOPE", SwingConstants.CENTER);
-        head.setForeground(Color.YELLOW);
-        head.setFont(new Font("Segoe UI", Font.BOLD, 25));
-        frame.getContentPane().add(head);
+            JLabel head = new JLabel("SYSTEM SCOPE", SwingConstants.CENTER);
+            head.setForeground(Color.YELLOW);
+            head.setFont(new Font("Segoe UI", Font.BOLD, 25));
+            frame.getContentPane().add(head);
 
-        tempCPULabel = new JLabel("CPU TEMP: " + ScopeCentralProcessor.getTemperatureCPU(), SwingConstants.LEFT);
-        tempCPULabel.setForeground(Color.PINK);
-        tempCPULabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        frame.getContentPane().add(tempCPULabel);
+            if(isShowCPUTemp) {
+                temperaturesCPU = new ArrayList<>();
+                tempCPULabel = new JLabel("CPU TEMP: " + ScopeCentralProcessor.getTemperatureCPU(), SwingConstants.LEFT);
+                tempCPULabel.setForeground(Color.PINK);
+                tempCPULabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+                frame.getContentPane().add(tempCPULabel);
+            }
 
-        CPUUsageLabel = new JLabel("CPU Usage: ", SwingConstants.LEFT);
-        CPUUsageLabel.setForeground(Color.PINK);
-        CPUUsageLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        frame.getContentPane().add(CPUUsageLabel);
+            if(isShowCPUUsage) {
+                usagesCPU = new ArrayList<>();
+                CPUUsageLabel = new JLabel("CPU Usage: ", SwingConstants.LEFT);
+                CPUUsageLabel.setForeground(Color.PINK);
+                CPUUsageLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+                frame.getContentPane().add(CPUUsageLabel);
+            }
 
-        tempGPULabel = new JLabel("GPU TEMP: " , SwingConstants.LEFT);
-        tempGPULabel.setForeground(Color.PINK);
-        tempGPULabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        frame.getContentPane().add(tempGPULabel);
+            if(isShowGPUTemp) {
+                temperaturesGPU = new ArrayList<>();
+                tempGPULabel = new JLabel("GPU TEMP: ", SwingConstants.LEFT);
+                tempGPULabel.setForeground(Color.PINK);
+                tempGPULabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+                frame.getContentPane().add(tempGPULabel);
+            }
 
-        GPUUsageLabel = new JLabel("GPU Usage: ", SwingConstants.LEFT);
-        GPUUsageLabel.setForeground(Color.PINK);
-        GPUUsageLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        frame.getContentPane().add(GPUUsageLabel);
+            if(isShowGPUUsage) {
+                usagesGPU = new ArrayList<>();
+                GPUUsageLabel = new JLabel("GPU Usage: ", SwingConstants.LEFT);
+                GPUUsageLabel.setForeground(Color.PINK);
+                GPUUsageLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+                frame.getContentPane().add(GPUUsageLabel);
+            }
 
-        updateBenchmark();
+            updateBenchmark();
 
-        frame.setVisible(true);
+            frame.setVisible(true);
+        }
     }
 
     /**
@@ -117,44 +127,60 @@ public class BenchWindow {
     /**
      * Updates the benchmark data displayed in the window.
      */
-    private void updateBenchmark(){
-        String tempCPU = ScopeCentralProcessor.getTemperatureCPU();
-        String tempGPU = SystemInformation.getTemperatureDiscreteGPU();
-        String usageCPU = ScopeCentralProcessor.getCPUUsage();
-        String usageGPU = SystemInformation.getGPUUsage();
+    private void updateBenchmark() {
+        String tempCPU = null;
+        String tempGPU = null;
+        String usageCPU = null;
+        String usageGPU = null;
 
-        usageCPU = usageCPU.replace("%", "");
-        usageGPU = usageGPU.replace("%", "");
-
-        String intPartTempCPU = tempCPU.replaceAll("[^0-9.]", "");
-        String intPartTempGPU = tempGPU.replaceAll("[^0-9.]", "");
-
-        String intPartUsageCPU = usageCPU.split(",")[0];
-        String intPartUsageGPU = usageGPU.split(",")[0];
+        if (isShowCPUTemp) {
+            tempCPU = ScopeCentralProcessor.getTemperatureCPU();
+        }
+        if (isShowGPUTemp) {
+            tempGPU = SystemInformation.getTemperatureDiscreteGPU();
+        }
+        if (isShowCPUUsage) {
+            usageCPU = ScopeCentralProcessor.getCPUUsage();
+        }
+        if (isShowGPUUsage) {
+            usageGPU = SystemInformation.getGPUUsage();
+        }
 
         try {
-            int intPartCPU = Integer.parseInt(intPartUsageCPU);
-            int intPartGPU = Integer.parseInt(intPartUsageGPU);
-
-            new Thread(() -> {
+            if (tempCPU != null) {
+                String intPartTempCPU = tempCPU.replaceAll("[^0-9.]", "");
                 temperaturesCPU.add((int) Double.parseDouble(intPartTempCPU.split("\\.")[0].trim()));
+            }
+            if (tempGPU != null) {
+                String intPartTempGPU = tempGPU.replaceAll("[^0-9.]", "");
                 temperaturesGPU.add((int) Double.parseDouble(intPartTempGPU.split("\\.")[0].trim()));
-
+            }
+            if (usageCPU != null) {
+                usageCPU = usageCPU.replace("%", "");
+                String intPartUsageCPU = usageCPU.split(",")[0];
+                int intPartCPU = Integer.parseInt(intPartUsageCPU);
                 usagesCPU.add(intPartCPU);
+            }
+            if (usageGPU != null) {
+                usageGPU = usageGPU.replace("%", "");
+                String intPartUsageGPU = usageGPU.split(",")[0];
+                int intPartGPU = Integer.parseInt(intPartUsageGPU);
                 usagesGPU.add(intPartGPU);
-            }).start();
-
+            }
         } catch (NumberFormatException e) {
             ScopeLogger.logError("Error parsing temperature or usage values", e);
         }
 
+        String finalTempCPU = tempCPU;
+        String finalTempGPU = tempGPU;
         String finalUsageCPU = usageCPU;
         String finalUsageGPU = usageGPU;
+
         SwingUtilities.invokeLater(() -> {
-            tempCPULabel.setText("CPU Temp: " + tempCPU);
-            tempGPULabel.setText(tempGPU);
-            CPUUsageLabel.setText("CPU Usage: " + finalUsageCPU);
-            GPUUsageLabel.setText("GPU Usage: " + finalUsageGPU);
+            if (finalTempCPU != null) tempCPULabel.setText("CPU Temp: " + finalTempCPU);
+            if (finalTempGPU != null) tempGPULabel.setText(finalTempGPU);
+            if (finalUsageCPU != null) CPUUsageLabel.setText("CPU Usage: " + finalUsageCPU);
+            if (finalUsageGPU != null) GPUUsageLabel.setText("GPU Usage: " + finalUsageGPU);
         });
     }
 

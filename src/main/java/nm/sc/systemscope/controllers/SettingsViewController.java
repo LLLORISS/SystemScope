@@ -33,31 +33,19 @@ import java.awt.datatransfer.StringSelection;
  * </pre>
  */
 public class SettingsViewController extends BaseScopeController{
-    @FXML private TextField apiKeyField;
-    @FXML private TextField apiUrlField;
-    @FXML private TextField modelField;
+    @FXML private TextField apiKeyField, apiUrlField, modelField;
     @FXML private TextArea modelDescriptionField;
 
-    @FXML private Button unlockApiKeyBtn;
-    @FXML private Button unlockApiUrlBtn;
-    @FXML private Button unlockModelBtn;
-    @FXML private Button unlockDescriptionModelBtn;
+    @FXML private Button unlockApiKeyBtn, unlockApiUrlBtn, unlockModelBtn, unlockDescriptionModelBtn;
 
-    @FXML private Button copyApiKeyBtn;
-    @FXML private Button copyApiUrlBtn;
-    @FXML private Button copyModelBtn;
-    @FXML private Button copyModelDescriptionBtn;
+    @FXML private Button copyApiKeyBtn, copyApiUrlBtn, copyModelBtn, copyModelDescriptionBtn;
 
-    @FXML private CheckBox saveLogsCheckBox;
-    @FXML private CheckBox aiReportCheckBox;
+    @FXML private CheckBox saveLogsCheckBox, aiReportCheckBox,
+            showCPUTempCheckBox, showCPUUsageCheckBox, showGPUTempCheckBox, showGPUUsageCheckBox;
 
-    @FXML private ToggleButton darkThemeButton;
-    @FXML private ToggleButton lightThemeButton;
+    @FXML private ToggleButton darkThemeButton, lightThemeButton;
 
-    private boolean apiKeyUnlocked = false;
-    private boolean apiUrlUnlocked = false;
-    private boolean modelUnlocked = false;
-    private boolean modelDescriptionUnlocked = false;
+    private boolean apiKeyUnlocked = false, apiUrlUnlocked = false, modelUnlocked = false, modelDescriptionUnlocked = false;
 
     /**
      * Initializes the settings view with data from the configuration storage.
@@ -80,8 +68,16 @@ public class SettingsViewController extends BaseScopeController{
             copyModelBtn.setTooltip(copyTooltip);
             copyModelDescriptionBtn.setTooltip(copyTooltip);
 
+            updateAIReportCheckbox();
+
             saveLogsCheckBox.setSelected(ScopeConfigManager.isSaveBenchLogs());
             aiReportCheckBox.setSelected(ScopeConfigManager.isGenerateAIReport());
+            showCPUTempCheckBox.setSelected(ScopeConfigManager.isShowCPUTemp());
+            showCPUUsageCheckBox.setSelected(ScopeConfigManager.isShowCPUUsage());
+            showGPUTempCheckBox.setSelected(ScopeConfigManager.isShowGPUTemp());
+            showGPUUsageCheckBox.setSelected(ScopeConfigManager.isShowGPUUsage());
+
+            updateCheckBox();
 
             if(ScopeConfigManager.getTheme() == Theme.DARK){
                 Platform.runLater(() -> {
@@ -100,6 +96,19 @@ public class SettingsViewController extends BaseScopeController{
                 aiReportCheckBox.setDisable(true);
             }
         });
+    }
+
+    private void updateAIReportCheckbox() {
+        if(saveLogsCheckBox.isSelected()) {
+            boolean isAnyCheckboxSelected = showCPUTempCheckBox.isSelected() ||
+                    showCPUUsageCheckBox.isSelected() ||
+                    showGPUTempCheckBox.isSelected() ||
+                    showGPUUsageCheckBox.isSelected();
+
+            aiReportCheckBox.setDisable(!isAnyCheckboxSelected);
+            aiReportCheckBox.setSelected(isAnyCheckboxSelected);
+            ScopeConfigManager.swapGenerateAIReport();
+        }
     }
 
     /**
@@ -194,6 +203,45 @@ public class SettingsViewController extends BaseScopeController{
         alert.show();
     }
 
+    private void updateCheckBox(){
+        if(ScopeConfigManager.isSaveBenchLogs()) {
+            Platform.runLater(() -> {
+                showCPUTempCheckBox.setDisable(false);
+                showCPUTempCheckBox.setSelected(false);
+                ScopeConfigManager.setShowCPUTemp(false);
+
+                showGPUTempCheckBox.setDisable(false);
+                showGPUTempCheckBox.setSelected(false);
+                ScopeConfigManager.setShowGPUTemp(false);
+
+                showCPUUsageCheckBox.setDisable(false);
+                showCPUUsageCheckBox.setSelected(false);
+                ScopeConfigManager.setShowCPUUsage(false);
+
+                showGPUUsageCheckBox.setDisable(false);
+                showGPUUsageCheckBox.setSelected(false);
+                ScopeConfigManager.setShowGPUUsage(false);
+            });
+        }
+        else{
+            showCPUTempCheckBox.setDisable(true);
+            showCPUTempCheckBox.setSelected(false);
+            ScopeConfigManager.setShowCPUTemp(false);
+
+            showGPUTempCheckBox.setDisable(true);
+            showGPUTempCheckBox.setSelected(false);
+            ScopeConfigManager.setShowGPUTemp(false);
+
+            showCPUUsageCheckBox.setDisable(true);
+            showCPUUsageCheckBox.setSelected(false);
+            ScopeConfigManager.setShowCPUUsage(false);
+
+            showGPUUsageCheckBox.setDisable(true);
+            showGPUUsageCheckBox.setSelected(false);
+            ScopeConfigManager.setShowGPUUsage(false);
+        }
+    }
+
     /**
      * Called when the "Save Logs" checkbox is toggled.
      * Updates the save logs setting and enables/disables the AI report checkbox accordingly.
@@ -201,6 +249,9 @@ public class SettingsViewController extends BaseScopeController{
     @FXML public void onToggleSaveLogs(){
         ScopeConfigManager.swapSaveBenchLogs();
         ScopeConfigManager.swapGenerateAIReport();
+
+        updateCheckBox();
+
         if(ScopeConfigManager.isGenerateAIReport()) {
             Platform.runLater(() -> {
                 aiReportCheckBox.setSelected(false);
@@ -210,6 +261,7 @@ public class SettingsViewController extends BaseScopeController{
         else{
             Platform.runLater(() -> aiReportCheckBox.setDisable(false));
         }
+        updateAIReportCheckbox();
     }
 
 
@@ -219,6 +271,30 @@ public class SettingsViewController extends BaseScopeController{
      */
     @FXML public void onToggleAIReport(){
         ScopeConfigManager.swapGenerateAIReport();
+    }
+
+    @FXML public void onToggleCPUTemp(){
+        updateAIReportCheckbox();
+        boolean selected = showCPUTempCheckBox.isSelected();
+        ScopeConfigManager.setShowCPUTemp(selected);
+    }
+
+    @FXML public void onToggleCPUUsage(){
+        updateAIReportCheckbox();
+        boolean selected = showCPUUsageCheckBox.isSelected();
+        ScopeConfigManager.setShowCPUUsage(selected);
+    }
+
+    @FXML public void onToggleGPUTemp(){
+        updateAIReportCheckbox();
+        boolean selected = showGPUTempCheckBox.isSelected();
+        ScopeConfigManager.setShowGPUTemp(selected);
+    }
+
+    @FXML public void onToggleGPUUsage(){
+        updateAIReportCheckbox();
+        boolean selected = showGPUUsageCheckBox.isSelected();
+        ScopeConfigManager.setShowGPUUsage(selected);
     }
 
     /**

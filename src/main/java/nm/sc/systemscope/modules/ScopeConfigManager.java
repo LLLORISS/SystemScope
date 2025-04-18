@@ -12,16 +12,10 @@ import java.util.Properties;
  */
 public class ScopeConfigManager {
     private static final String CONFIG_FILE = "config.properties";
+    private static String API_KEY = "", API_URL = "", MODEL_DESCRIPTION = "", MODEL = "";
     private static final Properties props = new Properties();
-
     private static Theme theme = Theme.DARK;
-    private static boolean saveBenchLogs = false;
-    private static boolean generateAIReport = false;
-    private static String API_KEY = "";
-    private static String API_URL = "";
-    private static String MODEL_DESCRIPTION = "";
-    private static String MODEL = "";
-    private static boolean lastSave = true;
+    private static boolean saveBenchLogs, generateAIReport, showCPUTemp, showCPUUsage, showGPUTemp, showGPUUsage, lastSave = true;
 
     static {
         File configFile = new File(CONFIG_FILE);
@@ -39,8 +33,12 @@ public class ScopeConfigManager {
      */
     private static void setDefaults() {
         theme = Theme.DARK;
-        saveBenchLogs = false;
+        saveBenchLogs = true;
         generateAIReport = false;
+        showCPUTemp = true;
+        showGPUTemp = true;
+        showCPUUsage = true;
+        showGPUUsage = true;
         API_KEY = "";
         API_URL = "";
         MODEL_DESCRIPTION = "";
@@ -49,6 +47,10 @@ public class ScopeConfigManager {
         props.setProperty("theme", theme.toString());
         props.setProperty("saveBenchLogs", String.valueOf(saveBenchLogs));
         props.setProperty("generateAIReport", String.valueOf(generateAIReport));
+        props.setProperty("show_cpu_temp", String.valueOf(showCPUTemp));
+        props.setProperty("show_cpu_usage", String.valueOf(showCPUUsage));
+        props.setProperty("show_gpu_temp", String.valueOf(showGPUTemp));
+        props.setProperty("show_gpu_usage", String.valueOf(showGPUUsage));
         props.setProperty("API_KEY", API_KEY);
         props.setProperty("API_URL", API_URL);
         props.setProperty("model_description", MODEL_DESCRIPTION);
@@ -65,6 +67,10 @@ public class ScopeConfigManager {
             theme = Theme.fromString(props.getProperty("theme", "dark"));
             saveBenchLogs = Boolean.parseBoolean(props.getProperty("saveBenchLogs", "false"));
             generateAIReport = Boolean.parseBoolean(props.getProperty("generateAIReport", "false"));
+            showCPUTemp = Boolean.parseBoolean(props.getProperty("show_cpu_temp", "false"));
+            showCPUUsage = Boolean.parseBoolean(props.getProperty("show_cpu_usage", "false"));
+            showGPUTemp = Boolean.parseBoolean(props.getProperty("show_gpu_temp", "false"));
+            showGPUUsage = Boolean.parseBoolean(props.getProperty("show_gpu_usage", "false"));
             API_KEY = props.getProperty("API_KEY", "");
             API_URL = props.getProperty("API_URL", "");
             MODEL_DESCRIPTION = props.getProperty("model_description", "");
@@ -129,8 +135,42 @@ public class ScopeConfigManager {
      *
      * @return true if AI report generation is enabled, false otherwise
      */
-    public static boolean isGenerateAIReport() {
-        return generateAIReport;
+    public static boolean isGenerateAIReport() { return generateAIReport; }
+
+    public static boolean isShowCPUTemp() { return showCPUTemp;}
+
+    public static void setShowCPUTemp(boolean key) {
+        showCPUTemp = key;
+        props.setProperty("show_cpu_temp", String.valueOf(showCPUTemp));
+        save();
+    }
+
+    public static boolean isShowCPUUsage() { return showCPUUsage; }
+
+    public static void setShowCPUUsage(boolean key) {
+        showCPUUsage = key;
+        props.setProperty("show_cpu_usage", String.valueOf(showCPUUsage));
+        save();
+    }
+
+    public static boolean isShowGPUTemp() { return showGPUTemp; }
+
+    public static void setShowGPUTemp(boolean key) {
+        showGPUTemp = key;
+        props.setProperty("show_gpu_temp", String.valueOf(showGPUTemp));
+        save();
+    }
+
+    public static boolean isShowGPUUsage() { return showGPUUsage; }
+
+    public static void setShowGPUUsage(boolean key) {
+        showGPUUsage = key;
+        props.setProperty("show_gpu_usage", String.valueOf(showGPUUsage));
+        save();
+    }
+
+    public static boolean isShowBenchmark(){
+        return showCPUTemp || showCPUUsage || showGPUTemp || showGPUUsage;
     }
 
     /**
@@ -220,27 +260,6 @@ public class ScopeConfigManager {
         MODEL = model;
         props.setProperty("model", model);
         save();
-    }
-
-    /**
-     * Updates a configuration parameter by key and value, then saves the config.
-     *
-     * @param key the property key
-     * @param value the value to set
-     */
-    public static void updateParam(String key, String value) {
-        props.setProperty(key, value);
-        save();
-    }
-
-    /**
-     * Gets the value of a configuration parameter by key.
-     *
-     * @param key the property key
-     * @return the value associated with the key, or null if not found
-     */
-    public static String getParam(String key) {
-        return props.getProperty(key);
     }
 
     /**
