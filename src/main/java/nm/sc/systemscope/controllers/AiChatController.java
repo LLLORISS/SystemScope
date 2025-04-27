@@ -13,7 +13,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import nm.sc.systemscope.ScopeHardware.ScopeCentralProcessor;
 import nm.sc.systemscope.modules.*;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

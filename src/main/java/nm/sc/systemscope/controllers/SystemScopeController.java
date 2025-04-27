@@ -19,6 +19,7 @@ import nm.sc.systemscope.ScopeHardware.ScopeUsbDevice;
 import nm.sc.systemscope.modules.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,7 +38,8 @@ public class SystemScopeController extends BaseScopeController {
     private ObservableList<ProcessInfo> observableList;
     private ObservableList<ScopeUsbDevice> observableDevicesList;
     private ScopeChartsController scopeChartsController;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static ScheduledFuture<?> temperatureTask;
     private Stage aiStage, settingsStage;
 
     /**
@@ -82,7 +84,7 @@ public class SystemScopeController extends BaseScopeController {
             ScopeLogger.logError("Error while initializing processes and devices: {}", e.getMessage(), e);
         }
 
-        scheduler.scheduleAtFixedRate(this::updateTemperature, 0, 2, TimeUnit.SECONDS);
+        startUpdater();
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
@@ -182,10 +184,12 @@ public class SystemScopeController extends BaseScopeController {
 
         ScopeLoaderFXML loader = new ScopeLoaderFXML("Settings-view.fxml");
 
+        settingsStage = loader.getStage();
+
         SettingsViewController settingsViewController = (SettingsViewController) loader.getController();
         settingsViewController.setStage(settingsStage);
+        settingsViewController.setSystemScopeController(this);
 
-        settingsStage = loader.getStage();
         settingsStage.setResizable(false);
         settingsStage.setTitle("Налаштування");
         settingsStage.setY(0);
@@ -286,7 +290,37 @@ public class SystemScopeController extends BaseScopeController {
     }
 
     /**
-     * A method that updates the current values of components
+     * Starts or restarts the scheduled task for updating temperature data.
+     * <p>
+     * If a previous temperature update task is running, it will be canceled first.
+     * Then a new task is scheduled with a fixed delay, based on the value
+     * retrieved from {@code ScopeConfigManager#getMainDelay()}.
+     * </p>
+     */
+    public void startUpdater(){
+        if (temperatureTask != null && !temperatureTask.isCancelled()) {
+            temperatureTask.cancel(false);
+        }
+
+        int delay = ScopeConfigManager.getMainDelay();
+        temperatureTask = scheduler.scheduleAtFixedRate(this::updateTemperature, 0, delay, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Updates the CPU temperature, GPU temperature, and fan speed information.
+     * <p>
+     * Fetches the latest temperature and fan speed data from the system using
+     * {@code ScopeCentralProcessor} and {@code SystemInformation}.
+     * Parses the retrieved data and updates the corresponding UI labels on the JavaFX Application Thread.
+     * Handles temperature parsing errors gracefully by logging them.
+     * </p>
+     *
+     * <p>Details:</p>
+     * <ul>
+     *     <li>CPU temperature is displayed with a color indicating its zone (e.g., normal, warning, danger).</li>
+     *     <li>GPU temperature displays information for one or two GPUs, if available.</li>
+     *     <li>Fan speed is shown; if fans are not found, the text is colored orange, otherwise green.</li>
+     * </ul>
      */
     private void updateTemperature() {
         Task<Void> updateTask = new Task<>() {

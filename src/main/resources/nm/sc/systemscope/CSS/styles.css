@@ -310,7 +310,7 @@ TextField:focused {
 
 TextArea {
     -fx-background-color: #34495e;
-    -fx-text-fill: black;
+    -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-padding: 10px;
     -fx-border-radius: 5px;

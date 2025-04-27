@@ -9,7 +9,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class ChatMessage {
 
-    private final String message, time;
+    private final String message;
+    private String time;
     private final Sender sender;
 
     /**

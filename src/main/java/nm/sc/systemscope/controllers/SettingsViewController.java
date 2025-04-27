@@ -9,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import nm.sc.systemscope.modules.*;
-
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -33,12 +32,11 @@ import java.awt.datatransfer.StringSelection;
  * </pre>
  */
 public class SettingsViewController extends BaseScopeController{
-    @FXML private TextField apiKeyField, apiUrlField, modelField;
+    @FXML private TextField apiKeyField, apiUrlField, modelField, mainDelayField;
     @FXML private TextArea modelDescriptionField;
 
-    @FXML private Button unlockApiKeyBtn, unlockApiUrlBtn, unlockModelBtn, unlockDescriptionModelBtn;
-
-    @FXML private Button copyApiKeyBtn, copyApiUrlBtn, copyModelBtn, copyModelDescriptionBtn;
+    @FXML private Button unlockApiKeyBtn, unlockApiUrlBtn, unlockModelBtn, unlockDescriptionModelBtn,
+            copyApiKeyBtn, copyApiUrlBtn, copyModelBtn, copyModelDescriptionBtn;
 
     @FXML private CheckBox saveLogsCheckBox, aiReportCheckBox,
             showCPUTempCheckBox, showCPUUsageCheckBox, showGPUTempCheckBox, showGPUUsageCheckBox;
@@ -46,6 +44,8 @@ public class SettingsViewController extends BaseScopeController{
     @FXML private ToggleButton darkThemeButton, lightThemeButton;
 
     private boolean apiKeyUnlocked = false, apiUrlUnlocked = false, modelUnlocked = false, modelDescriptionUnlocked = false;
+
+    private SystemScopeController systemScopeController;
 
     /**
      * Initializes the settings view with data from the configuration storage.
@@ -59,6 +59,7 @@ public class SettingsViewController extends BaseScopeController{
             modelField.setText(ScopeConfigManager.getMODEL());
             modelDescriptionField.setText(ScopeConfigManager.getMODEL_DESCRIPTION());
             modelDescriptionField.setWrapText(true);
+            mainDelayField.setText(String.valueOf(ScopeConfigManager.getMainDelay()));
 
             Tooltip copyTooltip = new Tooltip("Скопіювати в буфер обміну");
             copyTooltip.setShowDelay(Duration.ZERO);
@@ -95,9 +96,30 @@ public class SettingsViewController extends BaseScopeController{
             if(!ScopeConfigManager.isSaveBenchLogs()){
                 aiReportCheckBox.setDisable(true);
             }
+            Platform.runLater(() -> {
+
+                mainDelayField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                    if (!newVal) {
+                        processMainDelayField();
+                    }
+                });
+                stage.setOnCloseRequest(event -> {
+                    processMainDelayField();
+                });
+            });
         });
     }
 
+    /**
+     * Updates the state of the "AI Report" checkbox based on current selections.
+     * <p>
+     * If the "Save Logs" checkbox is selected, this method checks whether any of the
+     * metric checkboxes ("CPU Temp", "CPU Usage", "GPU Temp", "GPU Usage") are selected.
+     * It enables or disables the "AI Report" checkbox accordingly.
+     * Additionally, if the "AI Report" checkbox is not selected, it ensures it remains unselected.
+     * Finally, it calls {@code ScopeConfigManager.swapGenerateAIReport()} to update the configuration.
+     * </p>
+     */
     private void updateAIReportCheckbox() {
         if(saveLogsCheckBox.isSelected()) {
             boolean isAnyCheckboxSelected = showCPUTempCheckBox.isSelected() ||
@@ -106,7 +128,9 @@ public class SettingsViewController extends BaseScopeController{
                     showGPUUsageCheckBox.isSelected();
 
             aiReportCheckBox.setDisable(!isAnyCheckboxSelected);
-            aiReportCheckBox.setSelected(isAnyCheckboxSelected);
+            if(!aiReportCheckBox.isSelected()) {
+                aiReportCheckBox.setSelected(false);
+            }
             ScopeConfigManager.swapGenerateAIReport();
         }
     }
@@ -203,23 +227,37 @@ public class SettingsViewController extends BaseScopeController{
         alert.show();
     }
 
+    /**
+     * Updates the state of metric checkboxes ("CPU Temp", "GPU Temp", "CPU Usage", "GPU Usage")
+     * based on the current configuration for saving benchmark logs.
+     * <p>
+     * If saving benchmark logs is enabled, this method enables the checkboxes
+     * and sets their selection states according to the corresponding values in {@code ScopeConfigManager}.
+     * Afterwards, it resets these configuration values to {@code false}.
+     * Updates are performed on the JavaFX Application Thread via {@code Platform.runLater()}.
+     * </p>
+     * <p>
+     * If saving benchmark logs is disabled, it disables all checkboxes, deselects them,
+     * and resets their corresponding values in {@code ScopeConfigManager} to {@code false}.
+     * </p>
+     */
     private void updateCheckBox(){
         if(ScopeConfigManager.isSaveBenchLogs()) {
             Platform.runLater(() -> {
                 showCPUTempCheckBox.setDisable(false);
-                showCPUTempCheckBox.setSelected(false);
+                showCPUTempCheckBox.setSelected(ScopeConfigManager.isShowCPUTemp());
                 ScopeConfigManager.setShowCPUTemp(false);
 
                 showGPUTempCheckBox.setDisable(false);
-                showGPUTempCheckBox.setSelected(false);
+                showGPUTempCheckBox.setSelected(ScopeConfigManager.isShowGPUTemp());
                 ScopeConfigManager.setShowGPUTemp(false);
 
                 showCPUUsageCheckBox.setDisable(false);
-                showCPUUsageCheckBox.setSelected(false);
+                showCPUUsageCheckBox.setSelected(ScopeConfigManager.isShowCPUUsage());
                 ScopeConfigManager.setShowCPUUsage(false);
 
                 showGPUUsageCheckBox.setDisable(false);
-                showGPUUsageCheckBox.setSelected(false);
+                showGPUUsageCheckBox.setSelected(ScopeConfigManager.isShowGPUUsage());
                 ScopeConfigManager.setShowGPUUsage(false);
             });
         }
@@ -273,24 +311,52 @@ public class SettingsViewController extends BaseScopeController{
         ScopeConfigManager.swapGenerateAIReport();
     }
 
+    /**
+     * Handles the toggle action for the "Show CPU Temperature" checkbox.
+     * <p>
+     * Updates the AI report checkbox availability and stores the new selection state
+     * in {@code ScopeConfigManager}.
+     * </p>
+     */
     @FXML public void onToggleCPUTemp(){
         updateAIReportCheckbox();
         boolean selected = showCPUTempCheckBox.isSelected();
         ScopeConfigManager.setShowCPUTemp(selected);
     }
 
+    /**
+     * Handles the toggle action for the "Show CPU Usage" checkbox.
+     * <p>
+     * Updates the AI report checkbox availability and stores the new selection state
+     * in {@code ScopeConfigManager}.
+     * </p>
+     */
     @FXML public void onToggleCPUUsage(){
         updateAIReportCheckbox();
         boolean selected = showCPUUsageCheckBox.isSelected();
         ScopeConfigManager.setShowCPUUsage(selected);
     }
 
+    /**
+     * Handles the toggle action for the "Show GPU Temperature" checkbox.
+     * <p>
+     * Updates the AI report checkbox availability and stores the new selection state
+     * in {@code ScopeConfigManager}.
+     * </p>
+     */
     @FXML public void onToggleGPUTemp(){
         updateAIReportCheckbox();
         boolean selected = showGPUTempCheckBox.isSelected();
         ScopeConfigManager.setShowGPUTemp(selected);
     }
 
+    /**
+     * Handles the toggle action for the "Show GPU Usage" checkbox.
+     * <p>
+     * Updates the AI report checkbox availability and stores the new selection state
+     * in {@code ScopeConfigManager}.
+     * </p>
+     */
     @FXML public void onToggleGPUUsage(){
         updateAIReportCheckbox();
         boolean selected = showGPUUsageCheckBox.isSelected();
@@ -377,4 +443,30 @@ public class SettingsViewController extends BaseScopeController{
         ScopeToast.show(apiKeyField.getScene().getWindow(), "Дані збережено", 1500, x, y);
     }
 
+    /**
+     * Processes the input from the main delay text field.
+     * <p>
+     * Attempts to parse the text as an integer and update the main delay setting
+     * in {@code ScopeConfigManager}. If parsing succeeds, it restarts the updater
+     * in the {@code SystemScopeController}. If parsing fails, logs an error.
+     * </p>
+     */
+    private void processMainDelayField() {
+        try {
+            int delay = Integer.parseInt(mainDelayField.getText().trim());
+            ScopeConfigManager.setMainDelay(delay);
+            systemScopeController.startUpdater();
+        } catch (NumberFormatException e) {
+            ScopeLogger.logError("Некоректне число: " + mainDelayField.getText());
+        }
+    }
+
+    /**
+     * Sets the {@code SystemScopeController} instance used by this class.
+     *
+     * @param controller the {@code SystemScopeController} to set
+     */
+    public void setSystemScopeController(SystemScopeController controller){
+        systemScopeController = controller;
+    }
 }

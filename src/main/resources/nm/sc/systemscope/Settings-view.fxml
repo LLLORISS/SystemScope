@@ -17,6 +17,14 @@
                     <Label text="Загальні налаштування" alignment="CENTER" styleClass="settings-title"/>
 
                     <VBox spacing="10" styleClass="settings-section" >
+                        <Label text="Загальні" styleClass="settings-title" alignment="CENTER"/>
+                        <HBox spacing="10">
+                            <Label text="Час оновлення показників" styleClass="settings-title"/>
+                            <TextField fx:id="mainDelayField" styleClass=""/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="settings-section" >
                         <Label text="Інтерфейс" styleClass="settings-title" alignment="CENTER"/>
 
                         <HBox spacing="10" alignment="CENTER">
